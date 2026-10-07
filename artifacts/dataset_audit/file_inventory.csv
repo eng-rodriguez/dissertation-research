@@ -1,0 +1,9 @@
+folder,ext,n_files,bytes
+Centro-Parietal-IED,.npy,366,84958848
+Frontal-IED,.npy,458,106314624
+Generalized-IED,.npy,573,133009344
+MAT_Files,.csv,1,1582
+MAT_Files,.mat,84,11794129536
+Non-IED,.npy,22933,5316257424
+Occipital-IED,.npy,417,96797376
+Temporal-IED,.npy,702,162779856

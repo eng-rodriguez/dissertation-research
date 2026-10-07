@@ -1,0 +1,55 @@
+{
+  "provenance": {
+    "generated_utc": "2026-10-07T03:11:25+00:00",
+    "git_commit": "7b0fd76d25087a45b9b8e95958e010e9b0204996",
+    "python": "3.12.4",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "platform": "macOS-26.6.2-arm64-arm-64bit"
+  },
+  "root": "data/raw/vepiset/extracted/opensource-dataset",
+  "checks": {
+    "npy_unparsed_names": 0,
+    "each_folder_has_one_label": true,
+    "all_sr_500": true,
+    "all_starts_on_4s_grid": true,
+    "n_epochs_shorter_than_4s": 65,
+    "short_epochs_are_last_in_recording": true,
+    "duplicate_epochs": 0,
+    "n_mat_files": 84,
+    "mat_ids_equal_epoch_ids": true,
+    "n_epochs_equals_paper": true,
+    "n_ied_epochs_equals_paper": true,
+    "n_non_ied_epochs_equals_paper": true,
+    "n_recordings_equals_paper": true,
+    "n_ied_recordings_equals_paper": true,
+    "all_recordings_29_channels": true,
+    "epochs_tile_recordings": true,
+    "ied_epochs_without_event": 12,
+    "non_ied_epochs_with_event": 50,
+    "recordings_with_marker_problems": 2,
+    "base_info_rows": 84,
+    "base_info_columns": [
+      "file_name",
+      "sex",
+      "age"
+    ],
+    "base_info_ids_equal_mat_ids": true
+  },
+  "epoch_label_totals": {
+    "non-IED": 22933,
+    "generalized": 573,
+    "frontal": 458,
+    "temporal": 702,
+    "centro-parietal": 366,
+    "occipital": 417
+  },
+  "recordings_by_n_ied_classes": {
+    "0": 32,
+    "1": 33,
+    "2": 17,
+    "4": 2
+  },
+  "state_rule": "state in force at epoch start plus markers inside the epoch; 'mixed' if two states, 'unlabelled' only before any marker",
+  "notes": []
+}
