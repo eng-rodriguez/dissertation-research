@@ -224,3 +224,6 @@ data/raw/*
 data/interim/*
 data/processed/*
 !data/**/.gitkeep
+
+# OS
+.DS_Store
