@@ -36,7 +36,7 @@ def _archive(tmp_path):
     # A: wake then sleep at 10 s (inside epoch 2), IEDs in epochs 1 and 4.
     _recording(root, "A001", 5,
                [("0.1", "0", "Waking"), ("5.0", "0", "!"), ("10.0", "0", "Sleeping"),
-                ("17.0", "0", "!")],
+                ("17.0", "0", "!"), ("18.0", "0", "!end")],
                {1: 3, 4: 5})
     # B: one run spanning epochs 0-1, no state markers.
     _recording(root, "B002", 3, [("1.0", "0", "!start"), ("5.0", "0", "!end")], {0: 1, 1: 1})
@@ -68,6 +68,7 @@ def test_audit_end_to_end(tmp_path):
     assert c["ied_epochs_without_event"] == 0 and c["non_ied_epochs_with_event"] == 0
     assert c["epochs_tile_recordings"] and c["all_recordings_29_channels"]
     assert c["base_info_ids_equal_mat_ids"]
+    assert c["recordings_with_marker_problems"] == 1
     assert s["recordings_by_n_ied_classes"] == {"1": 1, "2": 1}
 
     recs = {r["eeg_id"]: r for r in csv.DictReader(open(out / "subject_summary.csv"))}
@@ -75,6 +76,7 @@ def test_audit_end_to_end(tmp_path):
     assert (a["ep_wake"], a["ep_mixed"], a["ep_sleep"], a["ep_unlabelled"]) == ("2", "1", "2", "0")
     assert a["ied_ep_wake"] == "1" and a["ied_ep_sleep"] == "1"
     assert a["dominant_share"] == "0.5"
+    assert a["n_marker_problems"] == "1"
     assert recs["B002"]["n_ied_runs"] == "1" and recs["B002"]["ep_unlabelled"] == "3"
 
     classes = {r["class"]: r for r in csv.DictReader(open(out / "class_summary.csv"))}
@@ -82,8 +84,12 @@ def test_audit_end_to_end(tmp_path):
     assert classes["temporal"]["recordings"] == "1"
 
     vocab = {r["text"]: r["n_events"] for r in csv.DictReader(open(out / "event_text_vocabulary.csv"))}
-    assert vocab == {"!": "2", "Waking": "1", "Sleeping": "1", "!start": "1", "!end": "1"}
+    assert vocab == {"!": "2", "Waking": "1", "Sleeping": "1", "!start": "1", "!end": "2"}
     # Event-level timestamps stay in interim, never in artifacts.
     assert (interim / "events.csv").exists() and not (out / "events.csv").exists()
+    problems = list(csv.DictReader(open(interim / "marker_problems.csv")))
+    assert problems == [{"eeg_id": "A001", "problem": "!end at 18.0 without !start"}]
+    # No event onsets in artifacts: the problem text lives only in interim.
+    assert not any("without !start" in p.read_text() for p in out.glob("*"))
     # base_info rows are not copied into artifacts.
     assert not any("sex" in p.read_text() for p in out.glob("*.csv"))
