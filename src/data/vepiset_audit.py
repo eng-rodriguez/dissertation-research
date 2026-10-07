@@ -20,6 +20,9 @@ Spatial class exists only in the authors' epoch labels; MAT annotations carry
 Usage (from the repository root):
     python src/data/vepiset_audit.py checksum --zip data/raw/vepiset/raw/vepiset-dataset.zip
     python src/data/vepiset_audit.py audit --root data/raw/vepiset/extracted/opensource-dataset
+
+`audit` also writes channel_completeness.csv and confounding_report.md via
+vepiset_audit_report.py, which can be rerun alone on the committed tables.
 """
 
 from __future__ import annotations
@@ -423,6 +426,11 @@ def cmd_audit(args: argparse.Namespace) -> int:
     }
     out.mkdir(parents=True, exist_ok=True)
     (out / "audit_summary.json").write_text(json.dumps(summary, indent=2, default=str) + "\n")
+
+    # Derived outputs (channel completeness, confounding report) from the tables above.
+    import vepiset_audit_report
+
+    vepiset_audit_report.run(out)
     print(json.dumps(summary["checks"], indent=2, default=str))
     return 0
 
