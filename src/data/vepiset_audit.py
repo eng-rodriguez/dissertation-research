@@ -260,7 +260,7 @@ def cmd_audit(args: argparse.Namespace) -> int:
 
     vocab = collections.Counter()
     vocab_ids = collections.defaultdict(set)
-    event_rows, epoch_rows, rec_rows = [], [], []
+    event_rows, epoch_rows, rec_rows, problem_rows = [], [], [], []
     mismatch_total = collections.Counter()
 
     for k, eeg_id in enumerate(mat_ids, 1):
@@ -270,6 +270,7 @@ def cmd_audit(args: argparse.Namespace) -> int:
             vocab_ids[e["text"]].add(eeg_id)
             event_rows.append({"eeg_id": eeg_id, **e})
         points, runs, problems = ied_intervals(events)
+        problem_rows += [{"eeg_id": eeg_id, "problem": p} for p in problems]
         markers = state_markers(events)
         n_ch, n_samp = (shapes.get("eeg_data") or [None, None])[:2]
 
@@ -308,7 +309,7 @@ def cmd_audit(args: argparse.Namespace) -> int:
             "n_events": len(events),
             "n_ied_point_events": len(points),
             "n_ied_runs": len(runs),
-            "marker_problems": "; ".join(problems),
+            "n_marker_problems": len(problems),
             "n_state_markers": len(markers),
             "first_state": markers[0][1] if markers else "",
             "n_epochs": len(eps),
@@ -380,6 +381,8 @@ def cmd_audit(args: argparse.Namespace) -> int:
     # ---- event/epoch-level tables (interim, gitignored) ----
     write_csv(interim / "events.csv", event_rows,
               ["eeg_id", "row", "onset_s", "duration", "text"])
+    # Marker problems quote event onsets, so the detail stays in interim too.
+    write_csv(interim / "marker_problems.csv", problem_rows, ["eeg_id", "problem"])
     write_csv(interim / "epochs.csv", epoch_rows,
               ["eeg_id", "start", "end", "sr", "label", "folder", "state", "has_ied_event"])
 
@@ -396,7 +399,7 @@ def cmd_audit(args: argparse.Namespace) -> int:
         "epochs_tile_recordings": all(r["max_epoch_end_equals_n_samples"] for r in rec_rows),
         "ied_epochs_without_event": mismatch_total["ied_epoch_without_event"],
         "non_ied_epochs_with_event": mismatch_total["non_ied_epoch_with_event"],
-        "recordings_with_marker_problems": sum(1 for r in rec_rows if r["marker_problems"]),
+        "recordings_with_marker_problems": sum(1 for r in rec_rows if r["n_marker_problems"]),
     })
     base_info = mat_dir / "base_info.csv"
     if base_info.exists():
