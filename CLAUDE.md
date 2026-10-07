@@ -6,7 +6,7 @@ Act as a hands-on research engineer/data scientist implementing scientifically d
 ## Environment
 - Local OS: macOS.
 - Default shell: zsh-compatible commands.
-- Repository root: `research/repos/code/`.
+- Repository root: `research/repos/dissertation-research/`.
 - Manuscript: `research/docs/manuscript/`.
 - Dissertation: `research/docs/dissertation/`.
 - Google Colab is available for heavier compute/GPU. Colab work must use the version-controlled repository and must not become the sole authoritative implementation.
