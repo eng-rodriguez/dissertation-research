@@ -10,6 +10,7 @@ import scipy.io
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src" / "data"))
 import vepiset_audit as va  # noqa: E402
+import vepiset_audit_report as va_report  # noqa: E402
 
 FOLDERS = {0: "Non-IED", 1: "Generalized-IED", 2: "Frontal-IED", 3: "Temporal-IED",
            4: "Centro-Parietal-IED", 5: "Occipital-IED"}
@@ -91,5 +92,12 @@ def test_audit_end_to_end(tmp_path):
     assert problems == [{"eeg_id": "A001", "problem": "!end at 18.0 without !start"}]
     # No event onsets in artifacts: the problem text lives only in interim.
     assert not any("without !start" in p.read_text() for p in out.glob("*"))
+    # Derived outputs are written by the audit and regenerate byte-identically.
+    ch = list(csv.DictReader(open(out / "channel_completeness.csv")))
+    assert [r["channel_count_complete"] for r in ch] == ["True", "True"]
+    report = (out / "confounding_report.md").read_bytes()
+    assert b"Within-patient epoch clustering" in report
+    assert va_report.main(["--audit-dir", str(out)]) == 0
+    assert (out / "confounding_report.md").read_bytes() == report
     # base_info rows are not copied into artifacts.
     assert not any("sex" in p.read_text() for p in out.glob("*.csv"))
