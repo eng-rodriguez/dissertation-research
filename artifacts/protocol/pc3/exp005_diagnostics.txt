@@ -21,3 +21,21 @@ beta coupled     n=  4  IAAFT 0.313  shift 0.252  excess +0.062
 beta burst-burst n= 24  IAAFT 0.258  shift 0.243  excess +0.015
 beta burst-bg    n= 88  IAAFT 0.225  shift 0.226  excess -0.000
 beta bg-bg       n= 55  IAAFT 0.197  shift 0.194  excess +0.003
+
+Mechanism diagnostics (after the EXP-005 FAIL; not criteria)
+
+$ python experiments/EXP-005-pc3/diagnostics/envelope_timing.py <band>
+theta iaaft        envelope corr with original: burst channels +0.01, background -0.01
+theta shift        envelope corr with original: burst channels +0.05, background +0.01
+theta random_phase envelope corr with original: burst channels +0.03, background +0.00
+beta iaaft        envelope corr with original: burst channels +0.03, background +0.01
+beta shift        envelope corr with original: burst channels +0.03, background -0.00
+beta random_phase envelope corr with original: burst channels -0.01, background -0.00
+
+$ python experiments/EXP-005-pc3/diagnostics/same_channel_pair.py <band>
+theta coupled pairs, mean wPLI: IAAFT(i) vs IAAFT(j) 0.523 | IAAFT(i) vs IAAFT'(i) 0.571 | IAAFT(j) vs IAAFT'(j) 0.558
+theta                           random-phase(i) vs (j) 0.451 | random-phase(i) vs (i)' 0.478
+alpha coupled pairs, mean wPLI: IAAFT(i) vs IAAFT(j) 0.508 | IAAFT(i) vs IAAFT'(i) 0.529 | IAAFT(j) vs IAAFT'(j) 0.529
+alpha                           random-phase(i) vs (j) 0.431 | random-phase(i) vs (i)' 0.464
+beta coupled pairs, mean wPLI: IAAFT(i) vs IAAFT(j) 0.313 | IAAFT(i) vs IAAFT'(i) 0.332 | IAAFT(j) vs IAAFT'(j) 0.342
+beta                           random-phase(i) vs (j) 0.252 | random-phase(i) vs (i)' 0.276
