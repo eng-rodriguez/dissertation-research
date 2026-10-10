@@ -1,0 +1,15 @@
+{
+  "model": "b2_fc",
+  "common": "../common.json",
+  "window": "common.json#window",
+  "cv": "common.json#cv",
+  "learners": "common.json#learners (identical grid and budget for every ladder model)",
+  "training_weights": "common.json#training_weights",
+  "features": [
+    "B1",
+    "B2",
+    "FC: wPLI primary bands (513)"
+  ],
+  "issue": "2, 4.3",
+  "fc_config": "fc_wpli.json"
+}

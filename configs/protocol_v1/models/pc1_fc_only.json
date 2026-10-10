@@ -1,0 +1,13 @@
+{
+  "model": "pc1_fc_only",
+  "common": "../common.json",
+  "window": "common.json#window",
+  "cv": "common.json#cv",
+  "learners": "common.json#learners (identical grid and budget for every ladder model)",
+  "training_weights": "common.json#training_weights",
+  "features": [
+    "FC: wPLI primary bands (513)"
+  ],
+  "issue": 4,
+  "role": "PC-1 validity gate"
+}

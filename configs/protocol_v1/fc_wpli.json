@@ -1,0 +1,64 @@
+{
+  "estimator": "wPLI (within-window, sample-averaged; Vinck et al. 2011 [VERIFY]); no debiasing",
+  "input": "continuous CAR rows 1-19, float64",
+  "bands_hz": {
+    "delta": [
+      1,
+      4
+    ],
+    "theta": [
+      4,
+      8
+    ],
+    "alpha": [
+      8,
+      13
+    ],
+    "beta": [
+      13,
+      30
+    ],
+    "low_gamma": [
+      30,
+      45
+    ]
+  },
+  "primary_bands": [
+    "theta",
+    "alpha",
+    "beta"
+  ],
+  "exploratory_bands": [
+    "delta",
+    "low_gamma"
+  ],
+  "filter": {
+    "type": "butterworth bandpass",
+    "order": 4,
+    "zero_phase": "scipy.signal.sosfiltfilt (default odd padding)",
+    "applied_to": "whole continuous recording"
+  },
+  "analytic_signal": "scipy.signal.hilbert on the whole continuous band-passed recording",
+  "formula": "X_ij(t) = Im(z_i(t) conj(z_j(t))); wPLI_ij = |sum_t X_ij| / sum_t |X_ij|; 0 if denominator == 0 (counted)",
+  "features": {
+    "edges_per_band": 171,
+    "order": "stored channel order, upper triangle row-major",
+    "primary_dim": 513,
+    "secondary": [
+      "node strength per channel and band (mean over j != i)",
+      "global mean per band"
+    ]
+  },
+  "surrogate": {
+    "method": "per-channel IAAFT on each band-passed window (real-valued, before Hilbert)",
+    "max_iter": 200,
+    "tol": 1e-08,
+    "analytic_signal": "scipy.signal.hilbert on the surrogate window",
+    "realisations": {
+      "primary_2s_theta_alpha_beta": 5,
+      "sensitivity_4s_and_delta": 3
+    },
+    "aggregate": "mean wPLI per edge",
+    "seed": "first 8 bytes of SHA-256('fcsurr:20261010:<eeg_id>:<epoch start sample>:<band>:<realisation>:<channel>')"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "model": "b2_fcsurr",
+  "common": "../common.json",
+  "window": "common.json#window",
+  "cv": "common.json#cv",
+  "learners": "common.json#learners (identical grid and budget for every ladder model)",
+  "training_weights": "common.json#training_weights",
+  "features": [
+    "B1",
+    "B2",
+    "FC_surr: wPLI on IAAFT surrogates, primary bands (513)"
+  ],
+  "issue": 8,
+  "fc_config": "fc_wpli.json#surrogate"
+}

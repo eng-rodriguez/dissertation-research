@@ -1,0 +1,12 @@
+{
+  "model": "b1",
+  "common": "../common.json",
+  "window": "common.json#window",
+  "cv": "common.json#cv",
+  "learners": "common.json#learners (identical grid and budget for every ladder model)",
+  "training_weights": "common.json#training_weights",
+  "features": [
+    "B1 per-channel waveform + spectral (incl. delta/sigma state proxies)"
+  ],
+  "issue": 5
+}
