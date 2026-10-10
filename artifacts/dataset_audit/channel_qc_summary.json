@@ -1,0 +1,275 @@
+{
+  "n_recordings": 84,
+  "primary_eligible": {
+    "total": 77,
+    "ied_positive": 47,
+    "ied_free": 30
+  },
+  "pre_qc_eligible_ied_positive": {
+    "n_pre_qc": 46,
+    "n_surviving_primary": 41,
+    "removed": [
+      "DA001036",
+      "DA001037",
+      "DA00103H",
+      "DA00103K",
+      "DA00103U"
+    ]
+  },
+  "sensitivity_eligible": {
+    "total": 84,
+    "ied_positive": 52,
+    "pre_qc_eligible_ied_positive": 46
+  },
+  "n_recordings_by_bad_count": {
+    "0": 77,
+    "1": 6,
+    "2": 1
+  },
+  "bad_channel_counts_by_criterion": {
+    "flat": {
+      "Fp1": 0,
+      "Fp2": 0,
+      "F3": 0,
+      "F4": 0,
+      "C3": 0,
+      "C4": 0,
+      "P3": 0,
+      "P4": 0,
+      "O1": 0,
+      "O2": 0,
+      "F7": 0,
+      "F8": 0,
+      "T3": 0,
+      "T4": 0,
+      "T5": 0,
+      "T6": 0,
+      "Fz": 0,
+      "Cz": 0,
+      "Pz": 0
+    },
+    "clipping": {
+      "Fp1": 0,
+      "Fp2": 0,
+      "F3": 0,
+      "F4": 0,
+      "C3": 0,
+      "C4": 0,
+      "P3": 0,
+      "P4": 0,
+      "O1": 0,
+      "O2": 0,
+      "F7": 0,
+      "F8": 0,
+      "T3": 0,
+      "T4": 0,
+      "T5": 0,
+      "T6": 0,
+      "Fz": 0,
+      "Cz": 0,
+      "Pz": 0
+    },
+    "extreme_amplitude": {
+      "Fp1": 2,
+      "Fp2": 1,
+      "F3": 0,
+      "F4": 0,
+      "C3": 0,
+      "C4": 0,
+      "P3": 0,
+      "P4": 0,
+      "O1": 1,
+      "O2": 1,
+      "F7": 1,
+      "F8": 0,
+      "T3": 0,
+      "T4": 0,
+      "T5": 0,
+      "T6": 0,
+      "Fz": 0,
+      "Cz": 0,
+      "Pz": 0
+    },
+    "low_neighbour_correlation": {
+      "Fp1": 0,
+      "Fp2": 0,
+      "F3": 0,
+      "F4": 0,
+      "C3": 0,
+      "C4": 0,
+      "P3": 0,
+      "P4": 0,
+      "O1": 0,
+      "O2": 0,
+      "F7": 0,
+      "F8": 0,
+      "T3": 0,
+      "T4": 0,
+      "T5": 0,
+      "T6": 0,
+      "Fz": 0,
+      "Cz": 1,
+      "Pz": 1
+    }
+  },
+  "DA00100Y": {
+    "r_c3_c4": -0.781,
+    "c3c4_sum_diff_var_ratio": 0.1313,
+    "c3_low_corr_window_frac": 0.0,
+    "c4_low_corr_window_frac": 0.026,
+    "c3c4_satisfactory": true,
+    "bad_channels": "",
+    "primary_eligible": true
+  },
+  "epochs": {
+    "n": 25449,
+    "flagged": 33,
+    "ied_n": 2516,
+    "ied_flagged": 0,
+    "non_ied_n": 22933,
+    "non_ied_flagged": 33,
+    "ied_flag_rate": 0.0,
+    "non_ied_flag_rate": 0.0014
+  },
+  "stop_rule": {
+    "rule": ">= 41 of the 46 pre-QC-eligible IED-positive recordings must pass the primary rule",
+    "applicable": true,
+    "survivors": 41,
+    "threshold": 41,
+    "decision": "CONTINUE"
+  },
+  "criteria": {
+    "units": "eeg_data in volts, converted to microvolts",
+    "qc_reference": "flat and clipping use the stored referential rows; extreme amplitude and neighbour correlation use a per-sample median-across-19-channels reference (QC only)",
+    "flat": "robust SD (1.4826 x MAD) < 1.0 uV, or > 5% of first differences with |diff| < 0.01 uV",
+    "clipping": "> 0.1% of samples with |x| >= 0.999 x max|x| of that channel",
+    "extreme_amplitude": "z > 5, z = (log robust SD - median over channels) / max(1.4826 x MAD over channels, 0.1)",
+    "low_neighbour_correlation": "in > 50% of non-overlapping 4-s windows, the 95th percentile of the channel's 1-30 Hz correlations with its neighbours is < 0.4",
+    "neighbours": "10-20 electrodes within 0.65 head radii (2-D layout)",
+    "c3c4_satisfactory": "neither C3 nor C4 is flagged by any channel criterion",
+    "epoch_flag": "authors' epoch with any scalp channel of robust SD < 0.5 uV within the epoch, or > 1% of its samples at or above the recording-level clipping level",
+    "primary_eligible": "no bad scalp channel (includes satisfactory C3/C4); no interpolation",
+    "sensitivity_eligible": "primary eligible, or 1-2 bad scalp channels that are not neighbours (interpolated identically for all representations; sensitivity only)",
+    "stop_rule": ">= 41 of the 46 pre-QC-eligible IED-positive recordings must pass the primary rule"
+  },
+  "neighbours": {
+    "Fp1": [
+      "Fp2",
+      "F3",
+      "F7",
+      "Fz"
+    ],
+    "Fp2": [
+      "Fp1",
+      "F4",
+      "F8",
+      "Fz"
+    ],
+    "F3": [
+      "Fp1",
+      "C3",
+      "F7",
+      "Fz"
+    ],
+    "F4": [
+      "Fp2",
+      "C4",
+      "F8",
+      "Fz"
+    ],
+    "C3": [
+      "F3",
+      "P3",
+      "T3",
+      "Cz"
+    ],
+    "C4": [
+      "F4",
+      "P4",
+      "T4",
+      "Cz"
+    ],
+    "P3": [
+      "C3",
+      "O1",
+      "T5",
+      "Pz"
+    ],
+    "P4": [
+      "C4",
+      "O2",
+      "T6",
+      "Pz"
+    ],
+    "O1": [
+      "P3",
+      "O2",
+      "T5",
+      "Pz"
+    ],
+    "O2": [
+      "P4",
+      "O1",
+      "T6",
+      "Pz"
+    ],
+    "F7": [
+      "Fp1",
+      "F3",
+      "T3"
+    ],
+    "F8": [
+      "Fp2",
+      "F4",
+      "T4"
+    ],
+    "T3": [
+      "C3",
+      "F7",
+      "T5"
+    ],
+    "T4": [
+      "C4",
+      "F8",
+      "T6"
+    ],
+    "T5": [
+      "P3",
+      "O1",
+      "T3"
+    ],
+    "T6": [
+      "P4",
+      "O2",
+      "T4"
+    ],
+    "Fz": [
+      "Fp1",
+      "Fp2",
+      "F3",
+      "F4",
+      "Cz"
+    ],
+    "Cz": [
+      "C3",
+      "C4",
+      "Fz",
+      "Pz"
+    ],
+    "Pz": [
+      "P3",
+      "P4",
+      "O1",
+      "O2",
+      "Cz"
+    ]
+  },
+  "provenance": {
+    "generated_utc": "2026-10-10T13:43:49+00:00",
+    "git_commit": "8c5894ae46459169c9f3aa721fe4f2dd632f710b",
+    "python": "3.12.4",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "platform": "macOS-26.6.2-arm64-arm-64bit"
+  }
+}
