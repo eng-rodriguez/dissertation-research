@@ -1,0 +1,31 @@
+{
+  "benchmark": [
+    {
+      "window_s": 2.0,
+      "n_windows_timed": 100,
+      "sec_per_window_per_realisation": 0.31835,
+      "median_iterations": 130
+    },
+    {
+      "window_s": 4.0,
+      "n_windows_timed": 100,
+      "sec_per_window_per_realisation": 0.80585,
+      "median_iterations": 179
+    }
+  ],
+  "projection_single_core": {
+    "2s_k3_cpu_hours_all_epochs": 6.75,
+    "2s_k4_cpu_hours_all_epochs": 9.0,
+    "2s_k5_cpu_hours_all_epochs": 11.25,
+    "4s_k3_cpu_hours_all_epochs": 17.09,
+    "4s_k4_cpu_hours_all_epochs": 22.79,
+    "4s_k5_cpu_hours_all_epochs": 28.48
+  },
+  "fc_cost_multiplier_vs_real": "k (FC is computed once per realisation per window; CV repeats reuse cached features)",
+  "n_epochs": 25449,
+  "seed": 20261010,
+  "machine": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "python": "3.13.16",
+  "numpy": "2.5.3"
+}
