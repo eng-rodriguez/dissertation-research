@@ -1,0 +1,38 @@
+{
+  "confirmatory_evaluable_before": 36,
+  "confirmatory_evaluable_after": 35,
+  "evaluable_in_wake_after": 13,
+  "evaluable_in_sleep_after": 28,
+  "lost_evaluability": [
+    "DA00103R"
+  ],
+  "gained_evaluability": [],
+  "rule": {
+    "reference": 36,
+    "rdr_if_below": 33,
+    "result": "RECORD CHANGE IN 11"
+  },
+  "pilot_evaluable_after": 4,
+  "excluded_epochs_by_reason_and_class": {
+    "adjacent|nonied": 1916,
+    "edge|ied": 24,
+    "edge|nonied": 144,
+    "epoch_qc|nonied": 33,
+    "ied_no_marker|ied": 12,
+    "nonied_marker|nonied": 49,
+    "short|ied": 2,
+    "short|nonied": 63,
+    "state|ied": 13,
+    "state|nonied": 201
+  },
+  "ied_epochs_removed_by_edge_exclusion": 24,
+  "provenance": {
+    "generated_utc": "2026-10-10T15:27:49+00:00",
+    "git_commit": "26ec9210355c1ec56e1d5c7f9d601e4ab02db434",
+    "python": "3.12.4",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "script": "src/data/vepiset_evaluable_recount.py"
+  }
+}
