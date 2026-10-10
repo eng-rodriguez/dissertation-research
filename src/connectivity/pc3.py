@@ -9,16 +9,21 @@ Three checks on synthetic 19-channel data at 500 Hz, per primary band:
   null     - with no coupling, real wPLI (continuous-record Hilbert) and surrogate wPLI (window Hilbert)
              must match, with no systematic offset (06 §4.3 step 9).
 Design, seeds and pass criteria: experiments/EXP-001-pc3/config.json (committed before this code).
+EXP-005 (experiments/EXP-005-pc3/config.json; 11 LOG-2026-10-10-PC3) re-tests on fresh seeds with the
+surrogate check amended to: lag direction at chance in the surrogates, and surrogate wPLI equal to a
+shared-amplitude-spectrum null (each channel keeps its window amplitude spectrum, phases independent).
 Engineering check on synthetic data only; no vEpiSet data is read.
 
 Usage (from the repository root):
-    python src/connectivity/pc3.py
-Writes artifacts/protocol/pc3/pc3_report.json.
+    python src/connectivity/pc3.py                                                 # EXP-001
+    python src/connectivity/pc3.py --config experiments/EXP-005-pc3/config.json   # EXP-005
+Writes artifacts/protocol/pc3/pc3_report.json (EXP-001) or exp005_report.json (EXP-005).
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import platform
 import sys
@@ -37,6 +42,8 @@ import wpli as wp  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = ROOT / "experiments" / "EXP-001-pc3" / "config.json"
 BAND_CENTRE = {"theta": 6.0, "alpha": 10.5, "beta": 21.5}
+ID_PREFIX = {"EXP-001": "SYN", "EXP-005": "SYN5"}  # synthetic eeg_id prefix used in the surrogate seeds
+REPORT_NAME = {"EXP-001": "pc3_report.json", "EXP-005": "exp005_report.json"}
 
 
 def background(rng: np.random.Generator, n_ch: int, n: int, fs: int) -> np.ndarray:
@@ -74,7 +81,23 @@ def inject_bursts(x: np.ndarray, band: str, starts, win_n: int, pairs, signs, sn
     return x
 
 
-def lag_and_surrogate(band: str, design: dict) -> dict:
+def shared_spectrum_null(win: np.ndarray, seeds) -> np.ndarray:
+    """Each row keeps its Fourier amplitude spectrum with independent uniform random phases (DC, Nyquist 0)."""
+    n = win.shape[-1]
+    mag = np.abs(np.fft.rfft(win, axis=-1))
+    ph = np.vstack([np.random.default_rng(sd).uniform(0, 2 * np.pi, mag.shape[1]) for sd in seeds])
+    ph[:, 0] = 0
+    if n % 2 == 0:
+        ph[:, -1] = 0
+    return np.fft.irfft(mag * np.exp(1j * ph), n=n, axis=-1)
+
+
+def ftnull_seed(eeg_id: str, start: int, realisation: int, channel: int) -> int:
+    key = f"ftnull:{sg.GLOBAL_SEED}:{eeg_id}:{start}:{realisation}:{channel}"
+    return int.from_bytes(hashlib.sha256(key.encode()).digest()[:8], "big")
+
+
+def lag_and_surrogate(band: str, design: dict, prefix: str = "SYN") -> dict:
     fs, n_ch, win_n = design["fs"], design["n_channels"], int(design["window_s"] * design["fs"])
     lt, k = design["lag_test"], design["surrogate_realisations"]
     b_idx = design["bands"].index(band)
@@ -99,21 +122,42 @@ def lag_and_surrogate(band: str, design: dict) -> dict:
                                        zip(coupled, lt["lag_sign"])],
            "delay_samples": int(round(fs / (4 * BAND_CENTRE[band])))}
 
-    surr = sg.surrogate_fc(x, f"SYN-LAG-{band}", starts, win_n, k, bands=(band,), fs=fs)[band]["wpli"]
+    # Surrogates exactly as surrogates.surrogate_fc (same seeds), keeping the signed sum for the lag direction,
+    # and the shared-amplitude-spectrum null on the same band-passed windows.
+    eeg_id = f"{prefix}-LAG-{band}"
+    xb = wp.bandpass(wp.car(x), band, fs)
+    pairs = [tuple(p) for p in lt["coupled_pairs"]]
+    surr = np.zeros((len(starts), len(ei)))
+    hits = np.zeros(len(coupled))
+    null = np.zeros((len(starts), len(coupled)))
+    for w, s in enumerate(starts):
+        win = xb[:, s:s + win_n]
+        for r in range(k):
+            sv, _ = sg.iaaft_rows(win, [sg.surrogate_seed(eeg_id, s, band, r, c) for c in range(n_ch)])
+            zs = wp.analytic(sv)
+            surr[w] += wp.wpli(zs)[0] / k
+            si = wp.signed_imag(zs)
+            hits += [np.sign(si[e]) == sgn for e, sgn in zip(coupled, lt["lag_sign"])]
+            for q, (a, b) in enumerate(pairs):
+                zn = wp.analytic(shared_spectrum_null(win[[a, b]], [ftnull_seed(eeg_id, s, r, a), ftnull_seed(eeg_id, s, r, b)]))
+                null[w, q] += wp.wpli(zn)[0][0] / k
     ms = surr.mean(axis=0)
     surrogate = {"mean_wpli_coupled": ms[coupled].tolist(),
                  "uncoupled_mean_range": [float(ms[uncoupled].min()), float(ms[uncoupled].max())],
-                 "diff_mean_coupled_vs_uncoupled": float(ms[coupled].mean() - ms[uncoupled].mean())}
+                 "diff_mean_coupled_vs_uncoupled": float(ms[coupled].mean() - ms[uncoupled].mean()),
+                 "share_injected_direction": (hits / (len(starts) * k)).tolist(),
+                 "mean_wpli_shared_spectrum_null": null.mean(axis=0).tolist(),
+                 "diff_vs_shared_spectrum_null": (ms[coupled] - null.mean(axis=0)).tolist()}
     return {"lag": lag, "surrogate": surrogate}
 
 
-def null_match(band: str, design: dict) -> dict:
+def null_match(band: str, design: dict, prefix: str = "SYN") -> dict:
     fs, n_ch, win_n = design["fs"], design["n_channels"], int(design["window_s"] * design["fs"])
     nt, k = design["null_test"], design["surrogate_realisations"]
     starts = window_starts(nt["n_windows"], win_n, fs)
     x = background(np.random.default_rng(design["seeds"]["background_null"]), n_ch, int(nt["duration_s"] * fs), fs)
     real = wp.real_fc(x, starts, win_n, bands=(band,), fs=fs)[band]["wpli"]
-    s = sg.surrogate_fc(x, f"SYN-NULL-{band}", starts, win_n, k, bands=(band,), fs=fs, keep_realisations=True)[band]
+    s = sg.surrogate_fc(x, f"{prefix}-NULL-{band}", starts, win_n, k, bands=(band,), fs=fs, keep_realisations=True)[band]
     d = real.mean(axis=1) - s["wpli"].mean(axis=1)
     half = stats.t.ppf(0.975, d.size - 1) * d.std(ddof=1) / np.sqrt(d.size)
     return {"mean_real": float(real.mean()), "mean_surrogate_kavg": float(s["wpli"].mean()),
@@ -124,13 +168,13 @@ def null_match(band: str, design: dict) -> dict:
 
 
 def _band(args):
-    band, design = args
-    return band, {**lag_and_surrogate(band, design), "null": null_match(band, design)}
+    band, design, prefix = args
+    return band, {**lag_and_surrogate(band, design, prefix), "null": null_match(band, design, prefix)}
 
 
 def run(cfg: dict, workers: int | None = None) -> dict:
     design = cfg["synthetic_design"]
-    jobs = [(b, design) for b in design["bands"]]
+    jobs = [(b, design, ID_PREFIX[cfg["experiment"]]) for b in design["bands"]]
     if workers == 1:
         return dict(map(_band, jobs))
     with ProcessPoolExecutor(max_workers=workers or min(len(jobs), 3)) as ex:
@@ -142,17 +186,23 @@ def evaluate(report: dict, crit: dict) -> dict:
     out = {}
     for b, r in report.items():
         lc, sc, nc = crit["lag_recovery"], crit["surrogate_destruction"], crit["null_coupling_match"]
-        lo, hi = r["surrogate"]["uncoupled_mean_range"]
         out[b] = {
             "lag_min_wpli": min(r["lag"]["mean_wpli_coupled"]) >= lc["min_mean_wpli_coupled_edge"],
             "lag_top_edges": r["lag"]["coupled_are_top_edges"] is lc["coupled_edges_are_the_top_edges"],
             "lag_direction": min(r["lag"]["share_correct_direction"]) >= lc["min_share_windows_correct_lag_direction"],
-            "surr_within_range": all(lo <= m <= hi for m in r["surrogate"]["mean_wpli_coupled"]),
-            "surr_diff": abs(r["surrogate"]["diff_mean_coupled_vs_uncoupled"])
-            <= sc["max_abs_diff_mean_surrogate_coupled_vs_uncoupled"],
             "null_offset": max(abs(v) for v in r["null"]["offset_ci95"]) <= nc["max_abs_offset_ci_bound"],
             "null_ks": r["null"]["ks_distance"] <= nc["max_ks_distance_real_vs_single_realisation"],
         }
+        if "direction_share_range" in sc:  # EXP-005
+            lo, hi = sc["direction_share_range"]
+            out[b]["surr_direction_at_chance"] = all(lo <= v <= hi for v in r["surrogate"]["share_injected_direction"])
+            out[b]["surr_vs_shared_spectrum_null"] = max(abs(v) for v in r["surrogate"]["diff_vs_shared_spectrum_null"]) \
+                <= sc["max_abs_diff_surrogate_vs_shared_spectrum_null"]
+        else:  # EXP-001
+            lo, hi = r["surrogate"]["uncoupled_mean_range"]
+            out[b]["surr_within_range"] = all(lo <= m <= hi for m in r["surrogate"]["mean_wpli_coupled"])
+            out[b]["surr_diff"] = abs(r["surrogate"]["diff_mean_coupled_vs_uncoupled"]) \
+                <= sc["max_abs_diff_mean_surrogate_coupled_vs_uncoupled"]
     return out
 
 
@@ -172,7 +222,7 @@ def main() -> None:
            "environment": {"python": platform.python_version(), "numpy": np.__version__, "scipy": scipy.__version__,
                            "machine": platform.platform()}}
     Path(a.out).mkdir(parents=True, exist_ok=True)
-    (Path(a.out) / "pc3_report.json").write_text(json.dumps(out, indent=2) + "\n")
+    (Path(a.out) / REPORT_NAME[cfg["experiment"]]).write_text(json.dumps(out, indent=2) + "\n")
     print(json.dumps({"result": result, "checks": checks}, indent=2))
     sys.exit(0 if result == "PASS" else 1)
 

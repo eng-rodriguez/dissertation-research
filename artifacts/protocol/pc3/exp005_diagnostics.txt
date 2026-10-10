@@ -1,0 +1,23 @@
+EXP-005 diagnostics after the FAIL (2026-10-10). Not PC-3 criteria; run after the result was known.
+
+$ python experiments/EXP-005-pc3/diagnostics/xcorr_and_shift_null.py <band>
+theta max circular xcorr original vs IAAFT surrogate: burst channels median 0.85, background channels median 0.74
+theta coupled-edge mean wPLI: IAAFT surrogates [0.511 0.557 0.521 0.502] | independent random circular shifts [0.466 0.506 0.517 0.469]
+alpha max circular xcorr original vs IAAFT surrogate: burst channels median 0.79, background channels median 0.71
+alpha coupled-edge mean wPLI: IAAFT surrogates [0.507 0.513 0.507 0.505] | independent random circular shifts [0.45  0.484 0.46  0.445]
+beta max circular xcorr original vs IAAFT surrogate: burst channels median 0.53, background channels median 0.49
+beta coupled-edge mean wPLI: IAAFT surrogates [0.337 0.281 0.314 0.322] | independent random circular shifts [0.221 0.279 0.277 0.23 ]
+
+$ python experiments/EXP-005-pc3/diagnostics/edge_classes_vs_shift_null.py <band>
+theta coupled     n=  4  IAAFT 0.523  shift 0.490  excess +0.033
+theta burst-burst n= 24  IAAFT 0.463  shift 0.467  excess -0.004
+theta burst-bg    n= 88  IAAFT 0.435  shift 0.435  excess -0.000
+theta bg-bg       n= 55  IAAFT 0.371  shift 0.377  excess -0.006
+alpha coupled     n=  4  IAAFT 0.508  shift 0.460  excess +0.048
+alpha burst-burst n= 24  IAAFT 0.438  shift 0.420  excess +0.018
+alpha burst-bg    n= 88  IAAFT 0.389  shift 0.384  excess +0.005
+alpha bg-bg       n= 55  IAAFT 0.340  shift 0.345  excess -0.004
+beta coupled     n=  4  IAAFT 0.313  shift 0.252  excess +0.062
+beta burst-burst n= 24  IAAFT 0.258  shift 0.243  excess +0.015
+beta burst-bg    n= 88  IAAFT 0.225  shift 0.226  excess -0.000
+beta bg-bg       n= 55  IAAFT 0.197  shift 0.194  excess +0.003
