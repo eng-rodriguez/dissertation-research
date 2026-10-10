@@ -1,0 +1,178 @@
+{
+  "experiment": "EXP-001",
+  "result": "FAIL",
+  "checks": {
+    "theta": {
+      "lag_min_wpli": true,
+      "lag_top_edges": true,
+      "lag_direction": true,
+      "surr_within_range": false,
+      "surr_diff": false,
+      "null_offset": true,
+      "null_ks": true
+    },
+    "alpha": {
+      "lag_min_wpli": true,
+      "lag_top_edges": true,
+      "lag_direction": true,
+      "surr_within_range": false,
+      "surr_diff": false,
+      "null_offset": true,
+      "null_ks": true
+    },
+    "beta": {
+      "lag_min_wpli": true,
+      "lag_top_edges": true,
+      "lag_direction": true,
+      "surr_within_range": false,
+      "surr_diff": false,
+      "null_offset": true,
+      "null_ks": true
+    }
+  },
+  "report": {
+    "theta": {
+      "lag": {
+        "mean_wpli_coupled": [
+          0.9476644679126639,
+          0.9598538730676351,
+          0.9503174777025194,
+          0.9309338775464835
+        ],
+        "max_mean_wpli_uncoupled": 0.6333574132331747,
+        "coupled_are_top_edges": true,
+        "share_correct_direction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "delay_samples": 21
+      },
+      "surrogate": {
+        "mean_wpli_coupled": [
+          0.5165568369410545,
+          0.5688500486726313,
+          0.5266936527055137,
+          0.5244943741996793
+        ],
+        "uncoupled_mean_range": [
+          0.3178596258965047,
+          0.5274752078314837
+        ],
+        "diff_mean_coupled_vs_uncoupled": 0.11984287279138967
+      },
+      "null": {
+        "mean_real": 0.37877678890958155,
+        "mean_surrogate_kavg": 0.37278506559344377,
+        "offset_mean": 0.005991723316137775,
+        "offset_ci95": [
+          0.0014600566471928804,
+          0.01052338998508267
+        ],
+        "ks_distance": 0.01354775828460042,
+        "sd_real": 0.24751961291376004,
+        "sd_surrogate_single": 0.24717469800410807,
+        "sd_surrogate_kavg": 0.12300601172676394
+      }
+    },
+    "alpha": {
+      "lag": {
+        "mean_wpli_coupled": [
+          0.9570214827452896,
+          0.9614638581145342,
+          0.9616752133822248,
+          0.960778472244177
+        ],
+        "max_mean_wpli_uncoupled": 0.6255300759679264,
+        "coupled_are_top_edges": true,
+        "share_correct_direction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "delay_samples": 12
+      },
+      "surrogate": {
+        "mean_wpli_coupled": [
+          0.48680197134891795,
+          0.5057015894181367,
+          0.5164157147491484,
+          0.5235629356516557
+        ],
+        "uncoupled_mean_range": [
+          0.29044262545323474,
+          0.4823389735898729
+        ],
+        "diff_mean_coupled_vs_uncoupled": 0.13118351501041825
+      },
+      "null": {
+        "mean_real": 0.339527926087955,
+        "mean_surrogate_kavg": 0.33443705048482764,
+        "offset_mean": 0.005090875603127414,
+        "offset_ci95": [
+          0.0004003345435226284,
+          0.0097814166627322
+        ],
+        "ks_distance": 0.012865497076023358,
+        "sd_real": 0.22896459716992362,
+        "sd_surrogate_single": 0.22690125390484775,
+        "sd_surrogate_kavg": 0.1098953557927935
+      }
+    },
+    "beta": {
+      "lag": {
+        "mean_wpli_coupled": [
+          0.9529406536372818,
+          0.953324795747919,
+          0.9471656423864777,
+          0.9467028083582746
+        ],
+        "max_mean_wpli_uncoupled": 0.4006827557667498,
+        "coupled_are_top_edges": true,
+        "share_correct_direction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "delay_samples": 6
+      },
+      "surrogate": {
+        "mean_wpli_coupled": [
+          0.3252953037971202,
+          0.3116153268715572,
+          0.35983154552921487,
+          0.28685884708179404
+        ],
+        "uncoupled_mean_range": [
+          0.16854576158658954,
+          0.2782983211594367
+        ],
+        "diff_mean_coupled_vs_uncoupled": 0.09901072113598383
+      },
+      "null": {
+        "mean_real": 0.1956232687775344,
+        "mean_surrogate_kavg": 0.19480731612417632,
+        "offset_mean": 0.0008159526533580828,
+        "offset_ci95": [
+          -0.002413945760703089,
+          0.004045851067419255
+        ],
+        "ks_distance": 0.008674463937621835,
+        "sd_real": 0.1415333085590513,
+        "sd_surrogate_single": 0.14163658063640253,
+        "sd_surrogate_kavg": 0.06487569029514792
+      }
+    }
+  },
+  "config": "/home/claude/dissertation-research/experiments/EXP-001-pc3/config.json",
+  "runtime_s": 119.2,
+  "environment": {
+    "python": "3.13.16",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "machine": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39"
+  }
+}

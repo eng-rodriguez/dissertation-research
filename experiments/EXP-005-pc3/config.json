@@ -1,0 +1,95 @@
+{
+  "experiment": "EXP-005",
+  "name": "PC-3 re-test with amended surrogate-destruction criterion (supersedes EXP-001's gate; EXP-001 stays FAIL)",
+  "decision": "Josue 2026-10-10, decision card 'Re-test as EXP-005'; 11 LOG-2026-10-10-PC3",
+  "status_of_criteria": "fixed and committed before the EXP-005 code ran; amendment made after seeing EXP-001 (disclosed); fresh seeds",
+  "protocol": "06-EXPERIMENTAL-PROTOCOL.md v1.0 (RDR-013), configs/protocol_v1/fc_wpli.json",
+  "synthetic_design": {
+    "fs": 500,
+    "n_channels": 19,
+    "background": "independent per channel, Gaussian with 1/f power spectrum (exponent 1), no inter-channel coupling",
+    "reference": "CAR over the 19 channels, as in the real pipeline",
+    "window_s": 2.0,
+    "window_starts_s": "6 + 3k (k = 0..n_windows-1); the first and last 4 s of each recording are never used",
+    "bands": [
+      "theta",
+      "alpha",
+      "beta"
+    ],
+    "lag_test": {
+      "duration_s": 100,
+      "n_windows": 30,
+      "coupled_pairs": [
+        [
+          0,
+          5
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          7,
+          14
+        ],
+        [
+          11,
+          18
+        ]
+      ],
+      "lag_sign": [
+        1,
+        -1,
+        1,
+        -1
+      ],
+      "lag_sign_meaning": "+1: channel j lags channel i (expected sign of sum Im(z_i conj z_j) > 0); -1: i lags j",
+      "lag": "integer-sample delay nearest to a quarter period at the band centre (theta 6, alpha 10.5, beta 21.5 Hz)",
+      "burst": "band-limited Gaussian noise (same Butterworth order-4 band-pass) times a 1.6-s Hann taper centred in each window; the delayed copy is added to the lagging channel",
+      "snr": 3.0,
+      "snr_meaning": "burst RMS over the taper's non-zero span = snr x the source channel's in-band background RMS"
+    },
+    "null_test": {
+      "duration_s": 190,
+      "n_windows": 60
+    },
+    "surrogate_realisations": 5,
+    "seeds": {
+      "background_lag": 2026101201,
+      "background_null": 2026101202,
+      "bursts": 2026101203,
+      "surrogates": "06 section 4.3 step 8 rule with eeg_id 'SYN5-LAG-<band>' or 'SYN5-NULL-<band>'",
+      "shared_spectrum_null": "first 8 bytes (big-endian) of SHA-256('ftnull:20261010:SYN5-LAG-<band>:<window start sample>:<realisation>:<channel>')"
+    }
+  },
+  "shared_spectrum_null": {
+    "definition": "per window, coupled edge and realisation: each of the two band-passed window channels (same input as the IAAFT surrogate) keeps its own Fourier amplitude spectrum and gets independent uniform random phases (DC and Nyquist phase 0); window Hilbert; wPLI of the pair",
+    "realisations": 5,
+    "meaning": "the wPLI expected from two signals with these amplitude spectra and no phase relation"
+  },
+  "criteria": {
+    "lag_recovery": {
+      "min_mean_wpli_coupled_edge": 0.6,
+      "coupled_edges_are_the_top_edges": true,
+      "min_share_windows_correct_lag_direction": 0.95
+    },
+    "surrogate_destruction": {
+      "lag_direction_at_chance": "per coupled edge, the share of windows x realisations whose surrogate sum Im(z_i conj z_j) has the injected sign lies in [0.35, 0.65] (chance 0.5; 150 draws, SE 0.041)",
+      "direction_share_range": [
+        0.35,
+        0.65
+      ],
+      "max_abs_diff_surrogate_vs_shared_spectrum_null": 0.05,
+      "diff_definition": "per coupled edge: mean over windows of k-averaged IAAFT surrogate wPLI minus mean over windows of k-averaged shared-spectrum-null wPLI"
+    },
+    "null_coupling_match": {
+      "offset": "per window: mean over 171 edges of real wPLI minus mean of k-averaged surrogate wPLI; 95% t-interval over windows",
+      "max_abs_offset_ci_bound": 0.02,
+      "max_ks_distance_real_vs_single_realisation": 0.1
+    },
+    "reported_not_criteria": [
+      "EXP-001 surrogate checks (coupled vs all uncoupled edges)"
+    ],
+    "pass_rule": "PASS only if every criterion holds in every primary band (theta, alpha, beta)"
+  }
+}
