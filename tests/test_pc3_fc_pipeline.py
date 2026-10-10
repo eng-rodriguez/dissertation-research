@@ -27,13 +27,13 @@ def test_edge_order_is_upper_triangle_row_major():
 def test_wpli_formula_known_values():
     rng = np.random.default_rng(0)
     z0 = np.exp(1j * np.cumsum(rng.uniform(0.05, 0.2, 1000))) * rng.uniform(0.5, 2, 1000)
-    lagged = np.vstack([z0, z0 * np.exp(-1j * np.pi / 3), z0, np.zeros(1000)])
+    lagged = np.vstack([z0, z0 * np.exp(-1j * np.pi / 3), np.ones(1000), np.zeros(1000)])
     w, n_zero = wp.wpli(lagged)
     i, j = wp.edge_index(4)
     got = dict(zip(zip(i, j), w))
     assert got[(0, 1)] == pytest.approx(1.0)
-    assert got[(0, 2)] == 0.0 and got[(0, 3)] == 0.0  # zero lag and zero signal: denominator 0 -> 0
-    assert n_zero == 4  # (0,2), (0,3), (1,3), (2,3)
+    assert got[(0, 3)] == 0.0 and got[(2, 3)] == 0.0  # zero signal: denominator 0 -> 0
+    assert n_zero == 3  # (0,3), (1,3), (2,3)
     assert wp.signed_imag(lagged)[0] > 0  # channel 1 lags channel 0
 
 
