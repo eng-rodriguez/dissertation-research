@@ -4,6 +4,8 @@
     "n_inner": 4,
     "fallback": 3
   },
+  "evaluable_source": "pre-exclusion F-3 groups",
+  "n_group_changes_applied": 0,
   "n_outer_splits": 50,
   "n_fallback_to_3": 0,
   "n_failures": 0,

@@ -17,6 +17,8 @@ stops and the failure is recorded as a protocol deviation for Josue. No other fa
 
 Usage (from the repository root):
     python src/design/inner_folds.py --check
+    python src/design/inner_folds.py --check --evaluable artifacts/dataset_audit/evaluable_recount.csv
+The second form applies the rule to the post-exclusion evaluable set (06 issue 2, R3).
 """
 
 from __future__ import annotations
@@ -68,8 +70,22 @@ def derive(train_ids, recs: dict[str, dict], repeat_seed: int, outer_fold: int, 
     return inner, n, bad
 
 
-def check(manifest: Path, qc_csv: Path, state_matrix: Path) -> dict:
+def apply_recount(recs: dict[str, dict], recount_csv: Path) -> int:
+    """Replace group and evaluable states with the post-exclusion recount (R3). Returns changes."""
+    changed = 0
+    for r in csv.DictReader(recount_csv.open()):
+        rec = recs[r["eeg_id"]]
+        states = [s for s in r["evaluable_states_after"].split("+") if s]
+        changed += rec["group"] != r["group_after"]
+        rec["group"], rec["evaluable_states"] = r["group_after"], states
+        if states:
+            rec["coverage"] = "+".join(states)
+    return changed
+
+
+def check(manifest: Path, qc_csv: Path, state_matrix: Path, recount_csv: Path | None = None) -> dict:
     recs = f3.load_recordings(qc_csv, state_matrix)
+    n_changed = apply_recount(recs, recount_csv) if recount_csv else 0
     rows = [r for r in csv.DictReader(manifest.open()) if r["analysis_set"] == "primary"]
     by = defaultdict(list)
     for r in rows:
@@ -87,6 +103,8 @@ def check(manifest: Path, qc_csv: Path, state_matrix: Path) -> dict:
                 failures.append({"repeat": rep, "outer_fold": k, "violations": bad})
             results.append({"repeat": rep, "outer_fold": k, "n_inner": n, "e_per_inner_validation": e_counts})
     return {"rule": {"min_e_validation": MIN_E_VALIDATION, "n_inner": N_INNER, "fallback": N_INNER_FALLBACK},
+            "evaluable_source": str(recount_csv) if recount_csv else "pre-exclusion F-3 groups",
+            "n_group_changes_applied": n_changed,
             "n_outer_splits": len(results), "n_fallback_to_3": fallbacks, "n_failures": len(failures),
             "min_e_in_any_inner_validation_fold": min_e, "failures": failures, "splits": results}
 
@@ -97,13 +115,16 @@ def main() -> None:
     ap.add_argument("--manifest", default="artifacts/protocol/f3/fold_manifest.csv")
     ap.add_argument("--qc", default="artifacts/dataset_audit/channel_qc.csv")
     ap.add_argument("--state-matrix", default="artifacts/dataset_audit/subject_state_matrix.csv")
-    ap.add_argument("--out", default="artifacts/protocol/f3/inner_fold_check.json")
+    ap.add_argument("--evaluable", help="post-exclusion recount CSV (R3); default: pre-exclusion groups")
+    ap.add_argument("--out", help="default: artifacts/protocol/f3/inner_fold_check[_post_exclusion].json")
     a = ap.parse_args()
     if not a.check:
         ap.error("nothing to do; use --check")
-    s = check(Path(a.manifest), Path(a.qc), Path(a.state_matrix))
-    Path(a.out).write_text(json.dumps(s, indent=2) + "\n")
-    print(json.dumps({k: s[k] for k in ("n_outer_splits", "n_fallback_to_3", "n_failures",
+    s = check(Path(a.manifest), Path(a.qc), Path(a.state_matrix), Path(a.evaluable) if a.evaluable else None)
+    out = a.out or ("artifacts/protocol/f3/inner_fold_check_post_exclusion.json" if a.evaluable
+                     else "artifacts/protocol/f3/inner_fold_check.json")
+    Path(out).write_text(json.dumps(s, indent=2) + "\n")
+    print(json.dumps({k: s[k] for k in ("n_group_changes_applied", "n_outer_splits", "n_fallback_to_3", "n_failures",
                                         "min_e_in_any_inner_validation_fold")}, indent=2))
     sys.exit(1 if s["n_failures"] else 0)
 
