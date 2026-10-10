@@ -46,8 +46,9 @@ import wpli as wp  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = ROOT / "experiments" / "EXP-001-pc3" / "config.json"
 BAND_CENTRE = {"theta": 6.0, "alpha": 10.5, "beta": 21.5}
-ID_PREFIX = {"EXP-001": "SYN", "EXP-005": "SYN5", "EXP-006": "SYN6"}  # synthetic eeg_id prefix used in the surrogate seeds
-REPORT_NAME = {"EXP-001": "pc3_report.json", "EXP-005": "exp005_report.json", "EXP-006": "exp006_report.json"}
+ID_PREFIX = {"EXP-001": "SYN", "EXP-005": "SYN5", "EXP-006": "SYN6", "EXP-007": "SYN7"}  # synthetic eeg_id prefix used in the surrogate seeds
+REPORT_NAME = {"EXP-001": "pc3_report.json", "EXP-005": "exp005_report.json", "EXP-006": "exp006_report.json",
+               "EXP-007": "exp007_report.json"}
 
 
 def background(rng: np.random.Generator, n_ch: int, n: int, fs: int) -> np.ndarray:
@@ -101,48 +102,37 @@ def ftnull_seed(eeg_id: str, start: int, realisation: int, channel: int) -> int:
     return int.from_bytes(hashlib.sha256(key.encode()).digest()[:8], "big")
 
 
-def lag_and_surrogate(band: str, design: dict, prefix: str = "SYN", same_channel_ref: bool = False) -> dict:
+def _lag_block(band: str, design: dict, eeg_id: str, rng_bg, rng_burst, same_channel_ref: bool) -> dict:
+    """One synthetic lag-test recording: per-window real and surrogate quantities."""
     fs, n_ch, win_n = design["fs"], design["n_channels"], int(design["window_s"] * design["fs"])
     lt, k = design["lag_test"], design["surrogate_realisations"]
-    b_idx = design["bands"].index(band)
-    seeds = design["seeds"]
     starts = window_starts(lt["n_windows"], win_n, fs)
-    x = background(np.random.default_rng([seeds["background_lag"], b_idx]), n_ch, int(lt["duration_s"] * fs), fs)
-    x = inject_bursts(x, band, starts, win_n, lt["coupled_pairs"], lt["lag_sign"], lt["snr"], fs,
-                      np.random.default_rng([seeds["bursts"], b_idx]))
+    x = background(rng_bg, n_ch, int(lt["duration_s"] * fs), fs)
+    x = inject_bursts(x, band, starts, win_n, lt["coupled_pairs"], lt["lag_sign"], lt["snr"], fs, rng_burst)
     ei, ej = wp.edge_index(n_ch)
     edge_of = {(a, b): e for e, (a, b) in enumerate(zip(ei, ej))}
-    coupled = [edge_of[tuple(p)] for p in lt["coupled_pairs"]]
-    uncoupled = np.setdiff1d(np.arange(len(ei)), coupled)
+    pairs = [tuple(p) for p in lt["coupled_pairs"]]
+    coupled = [edge_of[p] for p in pairs]
 
     z = wp.analytic(wp.bandpass(wp.car(x), band, fs))
     real = np.vstack([wp.wpli(z[:, s:s + win_n])[0] for s in starts])
     signed = np.vstack([wp.signed_imag(z[:, s:s + win_n]) for s in starts])
-    m = real.mean(axis=0)
-    lag = {"mean_wpli_coupled": m[coupled].tolist(),
-           "max_mean_wpli_uncoupled": float(m[uncoupled].max()),
-           "coupled_are_top_edges": set(np.argsort(m)[-len(coupled):].tolist()) == set(coupled),
-           "share_correct_direction": [float(np.mean(np.sign(signed[:, e]) == sg_)) for e, sg_ in
-                                       zip(coupled, lt["lag_sign"])],
-           "delay_samples": int(round(fs / (4 * BAND_CENTRE[band])))}
 
     # Surrogates exactly as surrogates.surrogate_fc (same seeds), keeping the signed sum for the lag direction,
-    # and the shared-amplitude-spectrum null on the same band-passed windows.
-    eeg_id = f"{prefix}-LAG-{band}"
+    # the shared-amplitude-spectrum null and (EXP-006 on) the same-channel reference on the same windows.
     xb = wp.bandpass(wp.car(x), band, fs)
-    pairs = [tuple(p) for p in lt["coupled_pairs"]]
     surr = np.zeros((len(starts), len(ei)))
     hits = np.zeros(len(coupled))
     null = np.zeros((len(starts), len(coupled)))
     ref = np.zeros((len(starts), len(coupled), 2))  # same-channel reference for channels a and b of each pair
+    chans = sorted({c for p in pairs for c in p})
+    row = {c: i for i, c in enumerate(chans)}
     for w, s in enumerate(starts):
         win = xb[:, s:s + win_n]
         for r in range(k):
             sv, _ = sg.iaaft_rows(win, [sg.surrogate_seed(eeg_id, s, band, r, c) for c in range(n_ch)])
             if same_channel_ref:
-                chans = sorted({c for p in pairs for c in p})
                 sv2, _ = sg.iaaft_rows(win[chans], [sg.surrogate_seed(f"{eeg_id}-REF", s, band, r, c) for c in chans])
-                row = {c: i for i, c in enumerate(chans)}
                 for q, pair in enumerate(pairs):
                     for h, c in enumerate(pair):
                         ref[w, q, h] += wp.wpli(wp.analytic(np.vstack([sv[c], sv2[row[c]]])))[0][0] / k
@@ -153,18 +143,71 @@ def lag_and_surrogate(band: str, design: dict, prefix: str = "SYN", same_channel
             for q, (a, b) in enumerate(pairs):
                 zn = wp.analytic(shared_spectrum_null(win[[a, b]], [ftnull_seed(eeg_id, s, r, a), ftnull_seed(eeg_id, s, r, b)]))
                 null[w, q] += wp.wpli(zn)[0][0] / k
-    ms = surr.mean(axis=0)
+    return {"real": real, "signed": signed, "surr": surr, "hits": hits, "draws": len(starts) * k, "null": null, "ref": ref}
+
+
+def _excess(blocks: list[dict], coupled) -> tuple[np.ndarray, np.ndarray]:
+    """Per coupled edge and channel: mean and Monte Carlo SE over windows of FC_surr minus the same-channel reference."""
+    surr = np.vstack([b["surr"] for b in blocks])[:, coupled]
+    ref = np.concatenate([b["ref"] for b in blocks])
+    d = surr[:, :, None] - ref
+    return d.mean(axis=0), d.std(axis=0, ddof=1) / np.sqrt(d.shape[0])
+
+
+def lag_and_surrogate(band: str, design: dict, prefix: str = "SYN", same_channel_ref: bool = False,
+                      max_se: float | None = None) -> dict:
+    lt = design["lag_test"]
+    b_idx = design["bands"].index(band)
+    seeds = design["seeds"]
+    n_ch = design["n_channels"]
+    ei, ej = wp.edge_index(n_ch)
+    edge_of = {(a, b): e for e, (a, b) in enumerate(zip(ei, ej))}
+    coupled = [edge_of[tuple(p)] for p in lt["coupled_pairs"]]
+    uncoupled = np.setdiff1d(np.arange(len(ei)), coupled)
+
+    def block(i):
+        return _lag_block(band, design, f"{prefix}-LAG-{band}-B{i:03d}",
+                          np.random.default_rng([seeds["background_lag"], b_idx, i]),
+                          np.random.default_rng([seeds["bursts"], b_idx, i]), same_channel_ref)
+
+    if "blocks" in lt:  # EXP-007: pool fresh blocks until every excess SE <= max_se (looks at SEs only)
+        bl = lt["blocks"]
+        blocks = [block(i) for i in range(bl["initial"])]
+        while _excess(blocks, coupled)[1].max() > max_se and len(blocks) < bl["max"]:
+            blocks += [block(i) for i in range(len(blocks), min(len(blocks) + bl["increment"], bl["max"]))]
+    else:  # EXP-001, EXP-005, EXP-006: one recording, original seeding
+        blocks = [_lag_block(band, design, f"{prefix}-LAG-{band}", np.random.default_rng([seeds["background_lag"], b_idx]),
+                             np.random.default_rng([seeds["bursts"], b_idx]), same_channel_ref)]
+
+    real = np.vstack([b["real"] for b in blocks])
+    signed = np.vstack([b["signed"] for b in blocks])
+    m = real.mean(axis=0)
+    fs = design["fs"]
+    lag = {"mean_wpli_coupled": m[coupled].tolist(),
+           "max_mean_wpli_uncoupled": float(m[uncoupled].max()),
+           "coupled_are_top_edges": set(np.argsort(m)[-len(coupled):].tolist()) == set(coupled),
+           "share_correct_direction": [float(np.mean(np.sign(signed[:, e]) == sg_)) for e, sg_ in
+                                       zip(coupled, lt["lag_sign"])],
+           "delay_samples": int(round(fs / (4 * BAND_CENTRE[band])))}
+    ms = np.vstack([b["surr"] for b in blocks]).mean(axis=0)
+    null = np.vstack([b["null"] for b in blocks]).mean(axis=0)
+    hits = sum(b["hits"] for b in blocks) / sum(b["draws"] for b in blocks)
     surrogate = {"mean_wpli_coupled": ms[coupled].tolist(),
                  "uncoupled_mean_range": [float(ms[uncoupled].min()), float(ms[uncoupled].max())],
                  "diff_mean_coupled_vs_uncoupled": float(ms[coupled].mean() - ms[uncoupled].mean()),
-                 "share_injected_direction": (hits / (len(starts) * k)).tolist(),
-                 "mean_wpli_shared_spectrum_null": null.mean(axis=0).tolist(),
-                 "diff_vs_shared_spectrum_null": (ms[coupled] - null.mean(axis=0)).tolist()}
+                 "share_injected_direction": hits.tolist(),
+                 "mean_wpli_shared_spectrum_null": null.tolist(),
+                 "diff_vs_shared_spectrum_null": (ms[coupled] - null).tolist()}
     if same_channel_ref:
-        mr = ref.mean(axis=0)
-        surrogate["same_channel_reference"] = mr.tolist()
-        surrogate["excess_over_same_channel_reference"] = (ms[coupled][:, None] - mr).tolist()
-    return {"lag": lag, "surrogate": surrogate}
+        surrogate["same_channel_reference"] = np.concatenate([b["ref"] for b in blocks]).mean(axis=0).tolist()
+        exc, se = _excess(blocks, coupled)
+        surrogate["excess_over_same_channel_reference"] = exc.tolist()
+        surrogate["excess_se"] = se.tolist()
+    out = {"lag": lag, "surrogate": surrogate}
+    if "blocks" in lt:
+        out["n_blocks"] = len(blocks)
+        out["n_windows"] = int(real.shape[0])
+    return out
 
 
 def null_match(band: str, design: dict, prefix: str = "SYN") -> dict:
@@ -184,14 +227,15 @@ def null_match(band: str, design: dict, prefix: str = "SYN") -> dict:
 
 
 def _band(args):
-    band, design, prefix, ref = args
-    return band, {**lag_and_surrogate(band, design, prefix, ref), "null": null_match(band, design, prefix)}
+    band, design, prefix, ref, max_se = args
+    return band, {**lag_and_surrogate(band, design, prefix, ref, max_se), "null": null_match(band, design, prefix)}
 
 
 def run(cfg: dict, workers: int | None = None) -> dict:
     design = cfg["synthetic_design"]
     ref = "max_excess_over_same_channel_reference" in cfg["criteria"]["surrogate_destruction"]
-    jobs = [(b, design, ID_PREFIX[cfg["experiment"]], ref) for b in design["bands"]]
+    max_se = cfg["criteria"]["surrogate_destruction"].get("precision", {}).get("max_se_per_excess")
+    jobs = [(b, design, ID_PREFIX[cfg["experiment"]], ref, max_se) for b in design["bands"]]
     if workers == 1:
         return dict(map(_band, jobs))
     with ProcessPoolExecutor(max_workers=workers or min(len(jobs), 3)) as ex:
@@ -217,6 +261,9 @@ def evaluate(report: dict, crit: dict) -> dict:
             out[b]["surr_vs_same_channel_reference"] = max(
                 v for pair in r["surrogate"]["excess_over_same_channel_reference"] for v in pair) \
                 <= sc["max_excess_over_same_channel_reference"]
+            if "precision" in sc:  # EXP-007
+                out[b]["excess_se_ok"] = max(v for pair in r["surrogate"]["excess_se"] for v in pair) \
+                    <= sc["precision"]["max_se_per_excess"]
         elif "max_abs_diff_surrogate_vs_shared_spectrum_null" in sc:  # EXP-005
             out[b]["surr_vs_shared_spectrum_null"] = max(abs(v) for v in r["surrogate"]["diff_vs_shared_spectrum_null"]) \
                 <= sc["max_abs_diff_surrogate_vs_shared_spectrum_null"]
@@ -239,8 +286,11 @@ def main() -> None:
     report = run(cfg, a.workers)
     checks = evaluate(report, cfg["criteria"])
     result = "PASS" if all(all(c.values()) for c in checks.values()) else "FAIL"
+    if result == "FAIL" and "result_rule" in cfg["criteria"]:  # EXP-007: only the precision check failing
+        if all(v for c in checks.values() for name, v in c.items() if name != "excess_se_ok"):
+            result = "INDETERMINATE"
     out = {"experiment": cfg["experiment"], "result": result, "checks": checks, "report": report,
-           "config": a.config, "runtime_s": round(time.perf_counter() - t, 1),
+           "config": a.config, "config_sha256": hashlib.sha256(Path(a.config).read_bytes()).hexdigest(), "runtime_s": round(time.perf_counter() - t, 1),
            "environment": {"python": platform.python_version(), "numpy": np.__version__, "scipy": scipy.__version__,
                            "machine": platform.platform()}}
     Path(a.out).mkdir(parents=True, exist_ok=True)
