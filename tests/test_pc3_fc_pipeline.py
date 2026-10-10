@@ -71,6 +71,10 @@ def test_pc3_lag_recovery(report, band):
     assert min(r["share_correct_direction"]) >= c["min_share_windows_correct_lag_direction"]
 
 
+@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
+    "EXP-001 recorded FAIL on its surrogate-destruction criterion in theta, alpha and beta (07 EXP-001; 11 LOG-2026-10-10-PC3; artifacts/protocol/pc3/pc3_report.json). "
+    "Kept as history, assertions unchanged; the current PC-3 gate is EXP-007 (tests/test_pc3_exp007.py). "
+    "An XPASS fails the suite: investigate as possible implementation drift."))
 @pytest.mark.parametrize("band", CFG["synthetic_design"]["bands"])
 def test_pc3_surrogates_destroy_coupling(report, band):
     r, c = report[band]["surrogate"], CRIT["surrogate_destruction"]
