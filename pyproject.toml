@@ -1,0 +1,22 @@
+[project]
+name = "dissertation-research"
+version = "0.1.0"
+description = "Dissertation research code: vEpiSet audit, protocol pre-lock checks and (after protocol lock) the CAND-007 evaluation."
+requires-python = ">=3.12"
+# Exact pins: formal experiments must be reproducible from code + config + data version + commit (CLAUDE.md).
+# Add analysis dependencies (e.g. learners, FC tooling) only when the locked protocol needs them, pinned the same way.
+dependencies = [
+    "numpy==2.5.3",
+    "scipy==1.18.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest==9.1.1",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,625 @@
+{
+  "status": "FROZEN at creation. The pilot never returns to the confirmatory cohort (06 issue 10).",
+  "pilot": {
+    "n": 8,
+    "by_group": {
+      "F": 3,
+      "E": 5
+    },
+    "allocation": {
+      "E": {
+        "available": {
+          "sleep": 25,
+          "wake": 7,
+          "wake+sleep": 9
+        },
+        "drawn": {
+          "sleep": 3,
+          "wake": 1,
+          "wake+sleep": 1
+        }
+      },
+      "F": {
+        "available": {
+          "sleep": 4,
+          "wake": 16,
+          "wake+sleep": 10
+        },
+        "drawn": {
+          "wake": 2,
+          "wake+sleep": 1,
+          "sleep": 0
+        }
+      }
+    },
+    "ids": [
+      "DA001008",
+      "DA00100G",
+      "DA00100U",
+      "DA00102U",
+      "DA00103A",
+      "DA00103Q",
+      "DA00103T",
+      "DC11304C"
+    ]
+  },
+  "primary_set": {
+    "n": 69,
+    "E_evaluable": 36,
+    "N_ied_not_evaluable": 6,
+    "F_ied_free": 27,
+    "E_evaluable_wake": 14,
+    "E_evaluable_sleep": 30
+  },
+  "sensitivity_only": [
+    "DA00100F",
+    "DA00100H",
+    "DA001036",
+    "DA001037",
+    "DA00103H",
+    "DA00103K",
+    "DA00103U"
+  ],
+  "folds": {
+    "n_folds": 5,
+    "n_repeats": 10,
+    "repeat_seeds": [
+      2026101001,
+      2026101002,
+      2026101003,
+      2026101004,
+      2026101005,
+      2026101006,
+      2026101007,
+      2026101008,
+      2026101009,
+      2026101010
+    ],
+    "stratified_by": "group (E/N/F) x coverage",
+    "unit": "recording (= patient)",
+    "inner_cv": "not frozen here; derived inside each outer training set with deal_folds()"
+  },
+  "balance": {
+    "1": [
+      {
+        "n": 14,
+        "E": 8,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 7,
+        "ied_epochs": 454,
+        "sensitivity_only_added": 2
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 2,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 292,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 5,
+        "ied_epochs": 384,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 2,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 430,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 13,
+        "E": 7,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 171,
+        "sensitivity_only_added": 2
+      }
+    ],
+    "2": [
+      {
+        "n": 14,
+        "E": 8,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 7,
+        "ied_epochs": 244,
+        "sensitivity_only_added": 2
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 2,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 453,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 5,
+        "ied_epochs": 268,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 2,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 297,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 13,
+        "E": 7,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 469,
+        "sensitivity_only_added": 2
+      }
+    ],
+    "3": [
+      {
+        "n": 14,
+        "E": 8,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 7,
+        "ied_epochs": 423,
+        "sensitivity_only_added": 2
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 2,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 320,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 5,
+        "ied_epochs": 584,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 2,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 159,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 13,
+        "E": 7,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 245,
+        "sensitivity_only_added": 2
+      }
+    ],
+    "4": [
+      {
+        "n": 14,
+        "E": 8,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 7,
+        "ied_epochs": 173,
+        "sensitivity_only_added": 2
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 2,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 452,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 5,
+        "ied_epochs": 359,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 2,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 375,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 13,
+        "E": 7,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 372,
+        "sensitivity_only_added": 2
+      }
+    ],
+    "5": [
+      {
+        "n": 14,
+        "E": 8,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 7,
+        "ied_epochs": 477,
+        "sensitivity_only_added": 2
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 2,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 462,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 5,
+        "ied_epochs": 384,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 2,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 260,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 13,
+        "E": 7,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 148,
+        "sensitivity_only_added": 2
+      }
+    ],
+    "6": [
+      {
+        "n": 14,
+        "E": 8,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 7,
+        "ied_epochs": 388,
+        "sensitivity_only_added": 2
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 2,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 287,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 5,
+        "ied_epochs": 315,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 2,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 390,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 13,
+        "E": 7,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 351,
+        "sensitivity_only_added": 2
+      }
+    ],
+    "7": [
+      {
+        "n": 14,
+        "E": 8,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 7,
+        "ied_epochs": 524,
+        "sensitivity_only_added": 2
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 2,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 311,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 5,
+        "ied_epochs": 138,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 2,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 358,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 13,
+        "E": 7,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 400,
+        "sensitivity_only_added": 2
+      }
+    ],
+    "8": [
+      {
+        "n": 14,
+        "E": 8,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 7,
+        "ied_epochs": 201,
+        "sensitivity_only_added": 2
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 2,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 588,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 5,
+        "ied_epochs": 209,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 2,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 403,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 13,
+        "E": 7,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 330,
+        "sensitivity_only_added": 2
+      }
+    ],
+    "9": [
+      {
+        "n": 14,
+        "E": 8,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 7,
+        "ied_epochs": 170,
+        "sensitivity_only_added": 2
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 2,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 275,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 5,
+        "ied_epochs": 321,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 2,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 444,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 13,
+        "E": 7,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 521,
+        "sensitivity_only_added": 2
+      }
+    ],
+    "10": [
+      {
+        "n": 14,
+        "E": 8,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 7,
+        "ied_epochs": 458,
+        "sensitivity_only_added": 2
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 2,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 507,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 1,
+        "F": 6,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 5,
+        "ied_epochs": 350,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 14,
+        "E": 7,
+        "N": 2,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 204,
+        "sensitivity_only_added": 1
+      },
+      {
+        "n": 13,
+        "E": 7,
+        "N": 1,
+        "F": 5,
+        "E_evaluable_wake": 3,
+        "E_evaluable_sleep": 6,
+        "ied_epochs": 212,
+        "sensitivity_only_added": 2
+      }
+    ]
+  },
+  "definitions": {
+    "E": ">=1 of wake/sleep with >=5 IED and >=5 non-IED epochs",
+    "N": "IED-positive, not E",
+    "F": "IED-free",
+    "coverage": "E: evaluable states; N/F: states with >=5 epochs",
+    "randomness": "SHA-256 order of '<purpose>:<seed>:<eeg_id>'"
+  },
+  "sha256": {
+    "pilot_subset.csv": "4645df56844998a1fb1a81e5c23a4e2bacea7de69671998f73083f40710bec29",
+    "fold_manifest.csv": "7f0f53fe83456386efb4a2ffd16db34ac169b7a7880f36d921bcf46fa2062c5d"
+  },
+  "inputs_sha256": {
+    "artifacts/dataset_audit/channel_qc.csv": "6b45f99737cab8d9076b5b55688e7120108f350675ad263b1b221f0743829d44",
+    "artifacts/dataset_audit/subject_state_matrix.csv": "7f56e6113dfbc8d087ae84fb19593c747b4046cf9eec489affc8830dedfd88b6"
+  },
+  "provenance": {
+    "script": "src/design/f3_pilot_and_folds.py",
+    "git_commit": "5cc00582c090ebd253e337c6c783015a80d31b5f",
+    "pilot_seed": 20261010,
+    "python": "3.13.16"
+  }
+}

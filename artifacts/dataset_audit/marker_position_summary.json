@@ -1,0 +1,88 @@
+{
+  "definition": "OUTER-ONLY = IED epoch whose markers all lie in the outer 1.0 s at either end",
+  "decision": {
+    "quantity": "patient-weighted OUTER-ONLY share, confirmatory evaluable IED-positive patients (primary set, group E)",
+    "value": 0.3614,
+    "threshold": 0.1,
+    "result": "RETURN TO JOSUE (recorded option: whole-epoch anchor, clamped window centre)",
+    "rule_fixed_before_run": true
+  },
+  "confirmatory_E": {
+    "n_recordings": 36,
+    "n_ied_epochs": 1715,
+    "n_central": 1192,
+    "n_outer_only": 511,
+    "n_no_marker": 12,
+    "outer_only_share_epoch_weighted": 0.3001,
+    "outer_only_share_patient_weighted": 0.3614
+  },
+  "all_ied_epochs": {
+    "n_recordings": 52,
+    "n_ied_epochs": 2516,
+    "n_central": 1788,
+    "n_outer_only": 716,
+    "n_no_marker": 12,
+    "outer_only_share_epoch_weighted": 0.2859,
+    "outer_only_share_patient_weighted": 0.3742
+  },
+  "primary_set": {
+    "n_recordings": 42,
+    "n_ied_epochs": 1731,
+    "n_central": 1201,
+    "n_outer_only": 518,
+    "n_no_marker": 12,
+    "outer_only_share_epoch_weighted": 0.3013,
+    "outer_only_share_patient_weighted": 0.3772
+  },
+  "pilot": {
+    "n_recordings": 5,
+    "n_ied_epochs": 509,
+    "n_central": 395,
+    "n_outer_only": 114,
+    "n_no_marker": 0,
+    "outer_only_share_epoch_weighted": 0.224,
+    "outer_only_share_patient_weighted": 0.3916
+  },
+  "sensitivity_only": {
+    "n_recordings": 5,
+    "n_ied_epochs": 276,
+    "n_central": 192,
+    "n_outer_only": 84,
+    "n_no_marker": 0,
+    "outer_only_share_epoch_weighted": 0.3043,
+    "outer_only_share_patient_weighted": 0.3312
+  },
+  "by_state_all": {
+    "wake": {
+      "n_central": 531,
+      "n_outer_only": 223,
+      "outer_only_share": 0.2958
+    },
+    "sleep": {
+      "n_central": 1250,
+      "n_outer_only": 487,
+      "outer_only_share": 0.2804
+    },
+    "mixed": {
+      "n_central": 7,
+      "n_outer_only": 6,
+      "outer_only_share": 0.4615
+    },
+    "unlabelled": {
+      "n_central": 0,
+      "n_outer_only": 0,
+      "outer_only_share": null
+    }
+  },
+  "ied_epochs_overlapping_a_run": 599,
+  "expected_under_uniform_positions": 0.5,
+  "provenance": {
+    "generated_utc": "2026-10-10T14:15:36+00:00",
+    "git_commit": "3ddb389a618df70437cb09e25fc81e50a35bc727",
+    "python": "3.12.4",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "script": "src/data/vepiset_marker_position.py"
+  }
+}

@@ -1,0 +1,9 @@
+eeg_id,group,coverage
+DA001008,F,wake+sleep
+DA00100G,F,wake
+DA00100U,E,wake
+DA00102U,E,sleep
+DA00103A,E,sleep
+DA00103Q,E,sleep
+DA00103T,E,wake+sleep
+DC11304C,F,wake
