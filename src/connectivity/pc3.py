@@ -12,12 +12,16 @@ Design, seeds and pass criteria: experiments/EXP-001-pc3/config.json (committed 
 EXP-005 (experiments/EXP-005-pc3/config.json; 11 LOG-2026-10-10-PC3) re-tests on fresh seeds with the
 surrogate check amended to: lag direction at chance in the surrogates, and surrogate wPLI equal to a
 shared-amplitude-spectrum null (each channel keeps its window amplitude spectrum, phases independent).
+EXP-006 (experiments/EXP-006-pc3/config.json; 11 LOG-2026-10-10-PC3-EXP006) judges surrogate destruction
+against the same-channel surrogate reference: wPLI between the FC_surr surrogate of a channel and a second,
+independent surrogate of the same channel (single-channel properties only, no coupling by construction).
 Engineering check on synthetic data only; no vEpiSet data is read.
 
 Usage (from the repository root):
     python src/connectivity/pc3.py                                                 # EXP-001
     python src/connectivity/pc3.py --config experiments/EXP-005-pc3/config.json   # EXP-005
-Writes artifacts/protocol/pc3/pc3_report.json (EXP-001) or exp005_report.json (EXP-005).
+    python src/connectivity/pc3.py --config experiments/EXP-006-pc3/config.json   # EXP-006
+Writes artifacts/protocol/pc3/pc3_report.json (EXP-001), exp005_report.json or exp006_report.json.
 """
 
 from __future__ import annotations
@@ -42,8 +46,8 @@ import wpli as wp  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = ROOT / "experiments" / "EXP-001-pc3" / "config.json"
 BAND_CENTRE = {"theta": 6.0, "alpha": 10.5, "beta": 21.5}
-ID_PREFIX = {"EXP-001": "SYN", "EXP-005": "SYN5"}  # synthetic eeg_id prefix used in the surrogate seeds
-REPORT_NAME = {"EXP-001": "pc3_report.json", "EXP-005": "exp005_report.json"}
+ID_PREFIX = {"EXP-001": "SYN", "EXP-005": "SYN5", "EXP-006": "SYN6"}  # synthetic eeg_id prefix used in the surrogate seeds
+REPORT_NAME = {"EXP-001": "pc3_report.json", "EXP-005": "exp005_report.json", "EXP-006": "exp006_report.json"}
 
 
 def background(rng: np.random.Generator, n_ch: int, n: int, fs: int) -> np.ndarray:
@@ -97,7 +101,7 @@ def ftnull_seed(eeg_id: str, start: int, realisation: int, channel: int) -> int:
     return int.from_bytes(hashlib.sha256(key.encode()).digest()[:8], "big")
 
 
-def lag_and_surrogate(band: str, design: dict, prefix: str = "SYN") -> dict:
+def lag_and_surrogate(band: str, design: dict, prefix: str = "SYN", same_channel_ref: bool = False) -> dict:
     fs, n_ch, win_n = design["fs"], design["n_channels"], int(design["window_s"] * design["fs"])
     lt, k = design["lag_test"], design["surrogate_realisations"]
     b_idx = design["bands"].index(band)
@@ -130,10 +134,18 @@ def lag_and_surrogate(band: str, design: dict, prefix: str = "SYN") -> dict:
     surr = np.zeros((len(starts), len(ei)))
     hits = np.zeros(len(coupled))
     null = np.zeros((len(starts), len(coupled)))
+    ref = np.zeros((len(starts), len(coupled), 2))  # same-channel reference for channels a and b of each pair
     for w, s in enumerate(starts):
         win = xb[:, s:s + win_n]
         for r in range(k):
             sv, _ = sg.iaaft_rows(win, [sg.surrogate_seed(eeg_id, s, band, r, c) for c in range(n_ch)])
+            if same_channel_ref:
+                chans = sorted({c for p in pairs for c in p})
+                sv2, _ = sg.iaaft_rows(win[chans], [sg.surrogate_seed(f"{eeg_id}-REF", s, band, r, c) for c in chans])
+                row = {c: i for i, c in enumerate(chans)}
+                for q, pair in enumerate(pairs):
+                    for h, c in enumerate(pair):
+                        ref[w, q, h] += wp.wpli(wp.analytic(np.vstack([sv[c], sv2[row[c]]])))[0][0] / k
             zs = wp.analytic(sv)
             surr[w] += wp.wpli(zs)[0] / k
             si = wp.signed_imag(zs)
@@ -148,6 +160,10 @@ def lag_and_surrogate(band: str, design: dict, prefix: str = "SYN") -> dict:
                  "share_injected_direction": (hits / (len(starts) * k)).tolist(),
                  "mean_wpli_shared_spectrum_null": null.mean(axis=0).tolist(),
                  "diff_vs_shared_spectrum_null": (ms[coupled] - null.mean(axis=0)).tolist()}
+    if same_channel_ref:
+        mr = ref.mean(axis=0)
+        surrogate["same_channel_reference"] = mr.tolist()
+        surrogate["excess_over_same_channel_reference"] = (ms[coupled][:, None] - mr).tolist()
     return {"lag": lag, "surrogate": surrogate}
 
 
@@ -168,13 +184,14 @@ def null_match(band: str, design: dict, prefix: str = "SYN") -> dict:
 
 
 def _band(args):
-    band, design, prefix = args
-    return band, {**lag_and_surrogate(band, design, prefix), "null": null_match(band, design, prefix)}
+    band, design, prefix, ref = args
+    return band, {**lag_and_surrogate(band, design, prefix, ref), "null": null_match(band, design, prefix)}
 
 
 def run(cfg: dict, workers: int | None = None) -> dict:
     design = cfg["synthetic_design"]
-    jobs = [(b, design, ID_PREFIX[cfg["experiment"]]) for b in design["bands"]]
+    ref = "max_excess_over_same_channel_reference" in cfg["criteria"]["surrogate_destruction"]
+    jobs = [(b, design, ID_PREFIX[cfg["experiment"]], ref) for b in design["bands"]]
     if workers == 1:
         return dict(map(_band, jobs))
     with ProcessPoolExecutor(max_workers=workers or min(len(jobs), 3)) as ex:
@@ -182,7 +199,7 @@ def run(cfg: dict, workers: int | None = None) -> dict:
 
 
 def evaluate(report: dict, crit: dict) -> dict:
-    """Per band and criterion: True/False. Mirrors tests/test_pc3_fc_pipeline.py, which is the gate."""
+    """Per band and criterion: True/False. Mirrors the gate tests in tests/test_pc3_*.py."""
     out = {}
     for b, r in report.items():
         lc, sc, nc = crit["lag_recovery"], crit["surrogate_destruction"], crit["null_coupling_match"]
@@ -193,9 +210,14 @@ def evaluate(report: dict, crit: dict) -> dict:
             "null_offset": max(abs(v) for v in r["null"]["offset_ci95"]) <= nc["max_abs_offset_ci_bound"],
             "null_ks": r["null"]["ks_distance"] <= nc["max_ks_distance_real_vs_single_realisation"],
         }
-        if "direction_share_range" in sc:  # EXP-005
+        if "direction_share_range" in sc:  # EXP-005, EXP-006
             lo, hi = sc["direction_share_range"]
             out[b]["surr_direction_at_chance"] = all(lo <= v <= hi for v in r["surrogate"]["share_injected_direction"])
+        if "max_excess_over_same_channel_reference" in sc:  # EXP-006
+            out[b]["surr_vs_same_channel_reference"] = max(
+                v for pair in r["surrogate"]["excess_over_same_channel_reference"] for v in pair) \
+                <= sc["max_excess_over_same_channel_reference"]
+        elif "max_abs_diff_surrogate_vs_shared_spectrum_null" in sc:  # EXP-005
             out[b]["surr_vs_shared_spectrum_null"] = max(abs(v) for v in r["surrogate"]["diff_vs_shared_spectrum_null"]) \
                 <= sc["max_abs_diff_surrogate_vs_shared_spectrum_null"]
         else:  # EXP-001
