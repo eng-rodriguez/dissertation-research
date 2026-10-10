@@ -251,11 +251,30 @@ def _out(cfg: dict, a) -> Path:
     return Path(a.out or cfg["output_dir"])
 
 
+def read_results(path: Path, repair: bool = False) -> dict[int, dict]:
+    """Finished datasets by index. Each index has a fixed seed, so a repeat must be identical and counts once.
+    A truncated last line (process killed mid-write) is dropped, and with repair=True cut from the file."""
+    if not path.exists():
+        return {}
+    raw = path.read_bytes()
+    lines = raw.split(b"\n")
+    if lines[-1]:  # no trailing newline: the last write did not finish
+        if repair:
+            path.write_bytes(raw[: len(raw) - len(lines[-1])])
+    out = {}
+    for line in filter(None, lines[:-1]):
+        r = json.loads(line)
+        if r["i"] in out and out[r["i"]] != r:
+            raise RuntimeError(f"{path}: dataset {r['i']} recorded twice with different results")
+        out[r["i"]] = r
+    return out
+
+
 def cmd_run(cfg, a):
     lo, hi = map(int, a.range.split(":"))
     path = _out(cfg, a) / a.mode / f"{a.scenario}.jsonl"
     path.parent.mkdir(parents=True, exist_ok=True)
-    done = {json.loads(line)["i"] for line in path.open()} if path.exists() else set()
+    done = set(read_results(path, repair=True))
     todo = [(cfg, a.scenario, i, a.mode) for i in range(lo, hi) if i not in done]
     with ProcessPoolExecutor(max_workers=a.workers) as ex, path.open("a") as f:
         for res in ex.map(dataset, todo):
@@ -282,8 +301,8 @@ def tuning_check(cfg: dict, base: Path) -> dict | None:
     path = base / "tuned" / f"{scen}.jsonl"
     if not path.exists():
         return None
-    tuned = {r["i"]: r for r in map(json.loads, path.open())}
-    fixed = {r["i"]: r for r in map(json.loads, (base / "fixed" / f"{scen}.jsonl").open())}
+    tuned = read_results(path)
+    fixed = read_results(base / "fixed" / f"{scen}.jsonl")
     both = sorted(set(tuned) & set(fixed))
     hw = lambda r: (r["nb_0.95"][1] - r["nb_0.95"][0]) / 2  # noqa: E731
     d_est = np.array([tuned[i]["estimate"] - fixed[i]["estimate"] for i in both])
@@ -301,7 +320,7 @@ def cmd_summarise(cfg, a):
     rows, verdicts = {}, []
     for scen in cfg["scenarios"]:
         th = json.loads((base / "theta" / f"{scen}.json").read_text())
-        res = [json.loads(line) for line in (base / "fixed" / f"{scen}.jsonl").open()]
+        res = list(read_results(base / "fixed" / f"{scen}.jsonl").values())
         n = len(res)
         row = {"n_datasets": n, "theta": th["theta"], "theta_mc_se": th["theta_mc_se"]}
         for lvl, lim in (("0.95", c["min_coverage_95"]), ("0.90", c["min_coverage_90"])):

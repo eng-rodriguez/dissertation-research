@@ -113,3 +113,16 @@ def test_theta_draw_is_deterministic():
     cfg = small_cfg()
     cfg["truth"]["test_patients_per_set"] = 20
     assert ev.theta_draw((cfg, "null_homog", 3, None)) == ev.theta_draw((cfg, "null_homog", 3, None))
+
+
+def test_resume_drops_truncated_line_and_counts_repeats_once(tmp_path):
+    p = tmp_path / "s.jsonl"
+    r0, r1 = {"i": 0, "estimate": 0.1}, {"i": 1, "estimate": 0.2}
+    p.write_text(json.dumps(r0) + "\n" + json.dumps(r1) + "\n" + json.dumps(r0) + "\n" + '{"i": 2, "esti')
+    assert ev.read_results(p) == {0: r0, 1: r1}
+    assert p.read_text().endswith('{"i": 2, "esti')  # read-only by default
+    ev.read_results(p, repair=True)
+    assert p.read_text().endswith(json.dumps(r0) + "\n")
+    p.write_text(json.dumps(r0) + "\n" + json.dumps({"i": 0, "estimate": 0.3}) + "\n")
+    with pytest.raises(RuntimeError):
+        ev.read_results(p)
