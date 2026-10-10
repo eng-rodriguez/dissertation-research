@@ -232,7 +232,7 @@ def theta_draw(args) -> float:
     prof = design["profiles"]
     s_idx = list(cfg["scenarios"]).index(scen)
     rng = np.random.default_rng([cfg["seeds"]["theta"], s_idx, m])
-    rep, rseed, folds = design["splits"][(m // 5) % len(design["splits"])]
+    _, rseed, folds = design["splits"][(m // 5) % len(design["splits"])]
     k = m % 5
     tr_ids = [r for r in sorted(prof) if folds[r] != k]
     train = [make_patient(rng, prof[r], dgp, sc) for r in tr_ids]
