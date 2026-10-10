@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import os
 import sys
@@ -314,7 +315,8 @@ def cmd_summarise(cfg, a):
         rows[scen] = row
         verdicts.append(row["verdict"])
     overall = "FAIL" if "FAIL" in verdicts else ("INDETERMINATE" if "INDETERMINATE" in verdicts else "PASS")
-    out = {"experiment": cfg["experiment"], "result": overall, "scenarios": rows,
+    out = {"experiment": cfg["experiment"], "result": overall,
+           "config_sha256": hashlib.sha256(Path(a.config).read_bytes()).hexdigest(), "scenarios": rows,
            "tuning_check": tuning_check(cfg, base)}
     (base / "ev1_summary.json").write_text(json.dumps(out, indent=2) + "\n")
     print(json.dumps(out, indent=2))

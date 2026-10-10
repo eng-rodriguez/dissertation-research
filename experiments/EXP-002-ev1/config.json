@@ -1,6 +1,6 @@
 {
   "experiment": "EXP-002",
-  "status": "DRAFT for review; not frozen, not run",
+  "status": "FROZEN 2026-10-10 (Josue approved on the decision card: freeze, pos_hetero gamma 2.5). Changing anything here after the freeze needs a protocol-change RDR.",
   "name": "EV-1 synthetic coverage check of the Nadeau-Bengio interval (06 section 6.1), plan A",
   "code": "src/design/ev1_coverage.py",
   "dgp": {
@@ -52,7 +52,7 @@
     },
     "pos_hetero": {
       "d_F": 24,
-      "gamma": 0.5,
+      "gamma": 2.5,
       "tau": 0.4
     },
     "null_highvar": {
@@ -92,6 +92,6 @@
   "output_dir": "artifacts/protocol/ev1",
   "calibration": {
     "pos_sesoi_gamma": "1.6 chosen before freeze from the theta Monte Carlo only (no coverage computed): theta = +0.0312, MC SE 0.0007, m = 200 (artifacts/protocol/ev1/calibration/pos_sesoi_gamma1.6.json); scan at m = 40 over gamma 1.0-3.0 in the same folder",
-    "pos_hetero_gamma": "OPEN (D-2): 0.5 as ported gives theta ~ -0.016 at m = 40"
+    "pos_hetero_gamma": "2.5 (D-2, Josue 2026-10-10): 0.5 as ported gave theta ~ -0.016 under HGB; 2.5 gave theta ~ +0.097 at m = 40 (artifacts/protocol/ev1/calibration/pos_sesoi_gamma2.5.json, same d_F and tau)"
   }
 }
