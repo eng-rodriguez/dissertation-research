@@ -1,0 +1,564 @@
+{
+  "rule": {
+    "min_e_validation": 5,
+    "n_inner": 4,
+    "fallback": 3
+  },
+  "n_outer_splits": 50,
+  "n_fallback_to_3": 0,
+  "n_failures": 0,
+  "min_e_in_any_inner_validation_fold": 7,
+  "failures": [],
+  "splits": [
+    {
+      "repeat": 1,
+      "outer_fold": 0,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 1,
+      "outer_fold": 1,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 1,
+      "outer_fold": 2,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 1,
+      "outer_fold": 3,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 1,
+      "outer_fold": 4,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 2,
+      "outer_fold": 0,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 2,
+      "outer_fold": 1,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 2,
+      "outer_fold": 2,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 2,
+      "outer_fold": 3,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 2,
+      "outer_fold": 4,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 3,
+      "outer_fold": 0,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 3,
+      "outer_fold": 1,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 3,
+      "outer_fold": 2,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 3,
+      "outer_fold": 3,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 3,
+      "outer_fold": 4,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 4,
+      "outer_fold": 0,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 4,
+      "outer_fold": 1,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 4,
+      "outer_fold": 2,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 4,
+      "outer_fold": 3,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 4,
+      "outer_fold": 4,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 5,
+      "outer_fold": 0,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 5,
+      "outer_fold": 1,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 5,
+      "outer_fold": 2,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 5,
+      "outer_fold": 3,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 5,
+      "outer_fold": 4,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 6,
+      "outer_fold": 0,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 6,
+      "outer_fold": 1,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 6,
+      "outer_fold": 2,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 6,
+      "outer_fold": 3,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 6,
+      "outer_fold": 4,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 7,
+      "outer_fold": 0,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 7,
+      "outer_fold": 1,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 7,
+      "outer_fold": 2,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 7,
+      "outer_fold": 3,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 7,
+      "outer_fold": 4,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 8,
+      "outer_fold": 0,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 8,
+      "outer_fold": 1,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 8,
+      "outer_fold": 2,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 8,
+      "outer_fold": 3,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 8,
+      "outer_fold": 4,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 9,
+      "outer_fold": 0,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 9,
+      "outer_fold": 1,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 9,
+      "outer_fold": 2,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 9,
+      "outer_fold": 3,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 9,
+      "outer_fold": 4,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 10,
+      "outer_fold": 0,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 10,
+      "outer_fold": 1,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 10,
+      "outer_fold": 2,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 10,
+      "outer_fold": 3,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "repeat": 10,
+      "outer_fold": 4,
+      "n_inner": 4,
+      "e_per_inner_validation": [
+        8,
+        7,
+        7,
+        7
+      ]
+    }
+  ]
+}
