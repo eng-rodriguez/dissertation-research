@@ -4,6 +4,7 @@ These test the implementation only; they compute no coverage and say nothing abo
 """
 
 import copy
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -165,3 +166,10 @@ def test_exp002_dataset_reproduces_after_m1_changes():
     assert set(got) == set(ref)
     for k, v in ref.items():
         assert got[k] == pytest.approx(v, rel=1e-12, abs=1e-15) if not isinstance(v, str) else got[k] == v
+
+
+def test_frozen_ev1b_config_is_unchanged():
+    """EXP-008 was frozen 2026-10-12 before any EV-1b coverage existed; any edit needs a protocol-change RDR."""
+    p = ROOT / "experiments" / "EXP-008-ev1b" / "config.json"
+    assert hashlib.sha256(p.read_bytes()).hexdigest() == \
+        "bee4cdf8f55a70a8313b420a75f60895534c246136bc83ae3cd3944f502b23da"

@@ -1,6 +1,6 @@
 {
   "experiment": "EXP-008",
-  "status": "DRAFT for review; not frozen, not run",
+  "status": "FROZEN 2026-10-12 (Josue approved on the decision card: freeze and run, 15:26 UTC). M1 is the only decision-bearing interval; NB is descriptive and cannot replace M1. Changing anything here after the freeze needs a protocol-change RDR.",
   "name": "EV-1b: synthetic coverage check of the candidate M1 interval (post-EV-1 protocol change; 11 LOG-2026-10-12-M1-CANDIDATE)",
   "code": "src/design/ev1_coverage.py",
   "dgp": {
@@ -148,5 +148,6 @@
     },
     "outputs": "artifacts/protocol/ev1b/calibration/",
     "note": "theta used for coverage is recomputed with the theta seed 2026101602 at m = 200, as for every scenario"
-  }
+  },
+  "driver": "experiments/EXP-008-ev1b/run_all.sh"
 }
