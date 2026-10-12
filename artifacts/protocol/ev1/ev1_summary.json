@@ -1,6 +1,6 @@
 {
   "experiment": "EXP-002",
-  "result": "INDETERMINATE",
+  "result": "FAIL",
   "config_sha256": "b327c66b278c5bc28cd22b852d421b500c4a895d9270a2d1e38bce26773937ce",
   "scenarios": {
     "null_homog": {
@@ -28,16 +28,16 @@
       "verdict": "PASS"
     },
     "pos_hetero": {
-      "n_datasets": 1000,
+      "n_datasets": 2000,
       "theta": 0.09712963773539357,
       "theta_mc_se": 0.0008632616423707753,
-      "coverage_0.95": 0.913,
-      "mc_se_0.95": 0.008912407082264588,
+      "coverage_0.95": 0.909,
+      "mc_se_0.95": 0.0064311352030570765,
       "limit_0.95": 0.9,
-      "coverage_0.90": 0.85,
-      "mc_se_0.90": 0.011291589790636216,
+      "coverage_0.90": 0.841,
+      "mc_se_0.90": 0.008176765864325577,
       "limit_0.90": 0.85,
-      "verdict": "INDETERMINATE"
+      "verdict": "FAIL"
     },
     "null_highvar": {
       "n_datasets": 1000,
@@ -52,16 +52,16 @@
       "verdict": "PASS"
     },
     "pos_sesoi": {
-      "n_datasets": 1000,
+      "n_datasets": 2000,
       "theta": 0.03124244584819431,
       "theta_mc_se": 0.000694257561350425,
-      "coverage_0.95": 0.914,
-      "mc_se_0.95": 0.008865889690267975,
+      "coverage_0.95": 0.925,
+      "mc_se_0.95": 0.0058896094946948715,
       "limit_0.95": 0.9,
-      "coverage_0.90": 0.863,
-      "mc_se_0.90": 0.010873407929439602,
+      "coverage_0.90": 0.868,
+      "mc_se_0.90": 0.007568883669339885,
       "limit_0.90": 0.85,
-      "verdict": "INDETERMINATE"
+      "verdict": "PASS"
     }
   },
   "tuning_check": {
