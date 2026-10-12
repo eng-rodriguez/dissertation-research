@@ -5,6 +5,10 @@ the outcome label is fixed in code before any confirmatory result exists.
 
   nadeau_bengio_ci   PRIMARY interval (R7): sigma^2 = (1/J + n_test/n_train) * S^2 over the J = 50
                      repeat x outer-fold means; CI = mean +/- t_{n_E - 1} * sigma.
+  m1_ci              CANDIDATE replacement for R7 after the EV-1 failure (11 LOG-2026-10-12-M1-CANDIDATE;
+                     not adopted until its RDR and EV-1b pass): an augmented conservative variance estimator
+                     that adds explicit patient-sampling variance to the Nadeau-Bengio corrected repeated-CV
+                     variance, sigma^2 = (1/J + n_test/n_train) * S^2 + s^2(Delta_p) / n_E.
   cluster_bootstrap_ci  SENSITIVITY interval (R8): percentile bootstrap over repeat-averaged Delta_p.
   classify           ordered, mutually exclusive taxonomy (R4, Q1); first matching rule applies.
 """
@@ -32,6 +36,18 @@ def nadeau_bengio_ci(delta_hat: float, fold_means, n_patients: int, level: float
     fm = np.asarray(fold_means, float)
     sigma = np.sqrt((1 / fm.size + test_train_ratio) * fm.var(ddof=1))
     q = stats.t.ppf(0.5 + level / 2, n_patients - 1)
+    return delta_hat - q * sigma, delta_hat + q * sigma
+
+
+def m1_ci(delta_hat: float, fold_means, delta_p, level: float,
+          test_train_ratio: float = 0.25) -> tuple[float, float]:
+    """M1: Nadeau-Bengio variance plus the patient-sampling variance s^2(Delta_p)/n_E; t with n_E - 1 df.
+
+    Added after EV-1 (EXP-002) failed. Not a guaranteed bound: it protects against shared training-set
+    variance that the fold-mean variance S^2 represents poorly, and is validated only by EV-1b."""
+    fm, dp = np.asarray(fold_means, float), np.asarray(delta_p, float)
+    sigma = np.sqrt((1 / fm.size + test_train_ratio) * fm.var(ddof=1) + dp.var(ddof=1) / dp.size)
+    q = stats.t.ppf(0.5 + level / 2, dp.size - 1)
     return delta_hat - q * sigma, delta_hat + q * sigma
 
 

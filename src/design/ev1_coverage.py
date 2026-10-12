@@ -63,8 +63,12 @@ def simplicity_key(c: dict) -> tuple:
 
 # ---------------------------------------------------------------- design inputs
 
-def load_design(cfg: dict) -> dict:
-    """Primary-set profiles (group, evaluable states, capped per-state counts) and the frozen outer folds."""
+def load_design(cfg: dict, scen: str | None = None) -> dict:
+    """Primary-set profiles (group, evaluable states, capped per-state counts) and the frozen outer folds.
+
+    A scenario with "demote_e_to_n": k turns the k E patients with the fewest evaluable IED epochs (ties by
+    eeg_id) into training-only N patients, as the protocol does for patients that lose evaluability (R3);
+    their epochs, folds and random draws are unchanged (EV-1b n_E boundary case)."""
     d = cfg["dgp"]
     prof = {}
     for r in csv.DictReader((ROOT / d["recount_csv"]).open()):
@@ -74,6 +78,11 @@ def load_design(cfg: dict) -> dict:
                   for s in STATES}
         prof[r["eeg_id"]] = {"group": r["group_after"], "counts": counts,
                              "evaluable": [s for s in r["evaluable_states_after"].split("+") if s]}
+    k = cfg["scenarios"][scen].get("demote_e_to_n", 0) if scen else 0
+    if k:
+        n_ied = {i: sum(p["counts"][s][0] for s in p["evaluable"]) for i, p in prof.items() if p["group"] == "E"}
+        for i in sorted(n_ied, key=lambda i: (n_ied[i], i))[:k]:
+            prof[i] = dict(prof[i], group="N", evaluable=[])
     splits = {}
     for r in csv.DictReader((ROOT / cfg["design"]["manifest"]).open()):
         if r["analysis_set"] == "primary":
@@ -188,7 +197,7 @@ def procedure(train: list[dict], ids: list[str], cols: slice, mode: str, cfg: di
 def dataset(args) -> dict:
     cfg, scen, i, mode = args
     sc, dgp = cfg["scenarios"][scen], cfg["dgp"]
-    design = load_design(cfg)
+    design = load_design(cfg, scen)
     recs = inner_recs(cfg) if mode == "tuned" else None
     s_idx = list(cfg["scenarios"]).index(scen)
     rng = np.random.default_rng([cfg["seeds"]["datasets"], s_idx, i])
@@ -221,6 +230,8 @@ def dataset(args) -> dict:
            "s2_fold_repeat": float(np.var(fold_means, ddof=1)), "sd_delta_p": float(d_p.std(ddof=1))}
     for lvl in (0.90, 0.95):
         out[f"nb_{lvl:.2f}"] = list(tx.nadeau_bengio_ci(est, fold_means, len(e_ids), lvl))
+        if cfg["inference"].get("decision_interval", "nb") == "m1":
+            out[f"m1_{lvl:.2f}"] = list(tx.m1_ci(est, fold_means, d_p, lvl))
     return out
 
 
@@ -229,7 +240,7 @@ def theta_draw(args) -> float:
     cfg, scen, m, gamma = args
     sc = dict(cfg["scenarios"][scen], **({"gamma": gamma} if gamma is not None else {}))
     dgp, t = cfg["dgp"], cfg["truth"]
-    design = load_design(cfg)
+    design = load_design(cfg, scen)
     prof = design["profiles"]
     s_idx = list(cfg["scenarios"]).index(scen)
     rng = np.random.default_rng([cfg["seeds"]["theta"], s_idx, m])
@@ -297,6 +308,8 @@ def cmd_theta(cfg, a):
 
 def tuning_check(cfg: dict, base: Path) -> dict | None:
     """Descriptive tuned-vs-fixed comparison on the same datasets (plan A); never part of the verdict."""
+    if "tuning_check" not in cfg:
+        return None
     scen = cfg["tuning_check"]["scenario"]
     path = base / "tuned" / f"{scen}.jsonl"
     if not path.exists():
@@ -317,18 +330,26 @@ def tuning_check(cfg: dict, base: Path) -> dict | None:
 def cmd_summarise(cfg, a):
     """Coverage per scenario and the approved decision rule (Josue 2026-10-10; 07 EXP-002)."""
     c, base = cfg["criteria"], _out(cfg, a)
+    key = cfg["inference"].get("decision_interval", "nb")
+    descr = [k for k in ("nb", "m1") if k != key]
     rows, verdicts = {}, []
     for scen in cfg["scenarios"]:
         th = json.loads((base / "theta" / f"{scen}.json").read_text())
         res = list(read_results(base / "fixed" / f"{scen}.jsonl").values())
         n = len(res)
-        row = {"n_datasets": n, "theta": th["theta"], "theta_mc_se": th["theta_mc_se"]}
+        need = c["datasets_per_scenario"]
+        need = need[scen] if isinstance(need, dict) else need
+        row = {"n_datasets": n, "decision_interval": key, "theta": th["theta"], "theta_mc_se": th["theta_mc_se"]}
         for lvl, lim in (("0.95", c["min_coverage_95"]), ("0.90", c["min_coverage_90"])):
-            cov = np.mean([r[f"nb_{lvl}"][0] <= th["theta"] <= r[f"nb_{lvl}"][1] for r in res])
+            cov = np.mean([r[f"{key}_{lvl}"][0] <= th["theta"] <= r[f"{key}_{lvl}"][1] for r in res])
             se = float(np.sqrt(cov * (1 - cov) / n))
             row[f"coverage_{lvl}"], row[f"mc_se_{lvl}"], row[f"limit_{lvl}"] = float(cov), se, lim
+            for d in descr:  # descriptive only; never part of the verdict
+                if all(f"{d}_{lvl}" in r for r in res):
+                    row[f"descriptive_{d}_coverage_{lvl}"] = float(np.mean(
+                        [r[f"{d}_{lvl}"][0] <= th["theta"] <= r[f"{d}_{lvl}"][1] for r in res]))
         fail = row["coverage_0.95"] < c["min_coverage_95"] or row["coverage_0.90"] < c["min_coverage_90"]
-        imprecise = max(row["mc_se_0.95"], row["mc_se_0.90"]) > c["max_mc_se"] or n < c["datasets_per_scenario"] \
+        imprecise = max(row["mc_se_0.95"], row["mc_se_0.90"]) > c["max_mc_se"] or n < need \
             or th["theta_mc_se"] > cfg["truth"]["max_theta_mc_se"]
         row["verdict"] = "FAIL" if fail else ("INDETERMINATE" if imprecise else "PASS")
         rows[scen] = row

@@ -126,3 +126,42 @@ def test_resume_drops_truncated_line_and_counts_repeats_once(tmp_path):
     p.write_text(json.dumps(r0) + "\n" + json.dumps({"i": 0, "estimate": 0.3}) + "\n")
     with pytest.raises(RuntimeError):
         ev.read_results(p)
+
+
+def test_m1_adds_patient_sampling_variance_to_nb():
+    sys.path.insert(0, str(ROOT / "src" / "evaluation"))
+    import taxonomy as tx
+    rng = np.random.default_rng(5)
+    fm, dp = rng.normal(0.01, 0.02, 50), rng.normal(0.01, 0.05, 35)
+    lo, hi = tx.m1_ci(0.01, fm, dp, 0.90)
+    se = np.sqrt((1 / 50 + 0.25) * fm.var(ddof=1) + dp.var(ddof=1) / 35)
+    assert hi - 0.01 == pytest.approx(se * __import__("scipy").stats.t.ppf(0.95, 34), rel=1e-12)
+    nlo, nhi = tx.nadeau_bengio_ci(0.01, fm, 35, 0.90)
+    assert lo < nlo and hi > nhi
+
+
+def test_demotion_gives_boundary_n_e_and_keeps_every_test_fold_evaluable():
+    cfg = copy.deepcopy(CFG)
+    cfg["scenarios"]["boundary"] = {"d_F": 24, "gamma": 2.5, "tau": 0.4, "demote_e_to_n": 2}
+    base, d = ev.load_design(cfg), ev.load_design(cfg, "boundary")
+    e0 = {i for i, p in base["profiles"].items() if p["group"] == "E"}
+    e1 = {i for i, p in d["profiles"].items() if p["group"] == "E"}
+    assert len(e1) == 33 and e1 < e0
+    n_ied = {i: sum(base["profiles"][i]["counts"][s][0] for s in base["profiles"][i]["evaluable"]) for i in e0}
+    assert max(n_ied[i] for i in e0 - e1) <= min(n_ied[i] for i in e1)
+    for i in e0 - e1:
+        assert d["profiles"][i]["counts"] == base["profiles"][i]["counts"] and not d["profiles"][i]["evaluable"]
+    assert all(sum(f[i] == k for i in e1) >= 1 for _, _, f in d["splits"] for k in range(5))
+
+
+def test_exp002_dataset_reproduces_after_m1_changes():
+    """The committed EXP-002 output for null_homog dataset 0 (Josue's Mac) is reproduced: same estimate and
+    fold variance, NB intervals equal up to floating-point rounding across platforms (about 1e-17)."""
+    path = ROOT / "artifacts" / "protocol" / "ev1" / "fixed" / "null_homog.jsonl"
+    if not path.exists():
+        pytest.skip("EXP-002 outputs not present")
+    ref = next(r for r in map(json.loads, path.open()) if r["i"] == 0)
+    got = ev.dataset((CFG, "null_homog", 0, "fixed"))
+    assert set(got) == set(ref)
+    for k, v in ref.items():
+        assert got[k] == pytest.approx(v, rel=1e-12, abs=1e-15) if not isinstance(v, str) else got[k] == v
