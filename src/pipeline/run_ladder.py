@@ -10,8 +10,10 @@ Commands (from the repository root, on the Mac; inputs are the per-recording cac
          configuration (the inner-fold validity rule cannot be met on 8 recordings). Writes aggregate,
          pilot-only outputs to artifacts/pilot/: per evaluable pilot patient and model, the within-patient
          same-state AUROC; the B2 level (ceiling check); the window-validity share (diagnostic only).
-  confirmatory  EXP-004. Refuses to start unless artifacts/protocol/unblinding_gate.json records PC-3 PASS,
-         the pre-confirmatory coverage check PASS, the adopted primary interval, and Josue's written approval.
+  timing Fit time per ladder model on synthetic data of the real primary-set size (no real data read).
+  confirmatory, confirmatory-summary  EXP-004 (src/pipeline/confirmatory.py). Refuse to start unless
+         artifacts/protocol/unblinding_gate.json records PC-3 PASS, the pre-confirmatory coverage check PASS,
+         the adopted primary interval ("nb" or "m1"), and Josue's written approval (approved_by, approved_on).
 """
 
 from __future__ import annotations
@@ -130,21 +132,79 @@ def cmd_pilot(a) -> None:
     print(json.dumps(summary, indent=2))
 
 
-def cmd_confirmatory(a) -> None:
+def check_gate() -> dict:
     need = ("pc3", "coverage_check", "primary_interval", "approved_by", "approved_on")
     gate = json.loads(GATE.read_text()) if GATE.exists() else {}
     missing = [k for k in need if not gate.get(k)]
-    if missing or gate.get("pc3") != "PASS" or gate.get("coverage_check") != "PASS":
+    if missing or gate.get("pc3") != "PASS" or gate.get("coverage_check") != "PASS" \
+            or gate.get("primary_interval") not in ("nb", "m1"):
         raise SystemExit(f"EXP-004 is blinded: gate file incomplete or not passed ({missing or gate})")
-    raise SystemExit("EXP-004 runner not implemented yet")
+    return gate
+
+
+def cmd_confirmatory(a) -> None:
+    check_gate()
+    import confirmatory as cf
+
+    z_star = json.loads((OUT / "zstar.json").read_text())["z_star"]
+    cf.run(a.cache, ROOT / "artifacts/exp004", ROOT / "data/processed/exp004/scores", a.models, a.learner, z_star,
+           a.workers)
+
+
+def cmd_confirmatory_summary(a) -> None:
+    gate = check_gate()
+    import confirmatory as cf
+
+    res = cf.summarise(ROOT / "artifacts/exp004", a.learner, gate["primary_interval"], gate["pc3"] == "PASS")
+    res["gate"] = gate
+    res["provenance"] = provenance()
+    out = ROOT / "artifacts/exp004" / f"summary_{a.learner}.json"
+    out.write_text(json.dumps(res, indent=2) + "\n")
+    print(json.dumps(res, indent=2))
+
+
+def cmd_timing(a) -> None:
+    """Fit time per ladder model on SYNTHETIC data with the real primary-set size (no real data read)."""
+    import confirmatory as cf
+
+    d = cf.design()
+    counts = {r["eeg_id"]: sum(int(r[f"n_{c}_{s}"]) for c in ("ied", "nonied") for s in ("wake", "sleep"))
+              for r in csv.DictReader(RECOUNT_CSV.open()) if r["analysis_set"] == "primary"}
+    (rep, seed), folds = next(iter(d["splits"].items()))
+    train_ids = [i for i in sorted(folds) if folds[i] != 0]
+    rng = np.random.default_rng(0)
+    dims = {"b1": (19, 24), "b2_topo": (17,), "adj": (912,), "fc": (513,), "fc_surr": (513,)}
+    pats = []
+    for i in train_ids:
+        n = max(counts.get(i, 0), 10)
+        y = (rng.random(n) < 0.1).astype(int)
+        F = {k: rng.standard_normal((n, *v)) for k, v in dims.items()}
+        F["b2_count"] = rng.integers(0, 19, (n, 1)).astype(float)
+        pats.append({"id": i, "y": y, "s": np.where(rng.random(n) < 0.6, "sleep", "wake"), "evaluable": [], "F": F})
+    n_fits = 50 * (len(L.HGB_GRID) * 4 + 1)
+    rows = {}
+    for m in a.models:
+        t0 = time.time()
+        L.fit(pats, m, "hgb", PLAN_A, 1)
+        sec = time.time() - t0
+        rows[m] = {"seconds_per_outer_fit": round(sec, 1), "hours_for_model": round(sec * n_fits * 0.85 / 3600, 1)}
+        print(m, rows[m], flush=True)
+    total = sum(r["hours_for_model"] for r in rows.values())
+    print(json.dumps({"n_train_epochs": int(sum(len(p["y"]) for p in pats)), "per_model": rows,
+                      "approx_total_hours_single_stream": round(total, 1),
+                      "note": "inner fits use about 3/4 of the outer training set (factor 0.85 applied)"}, indent=2))
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("command", choices=["zstar", "pilot", "confirmatory"])
+    ap.add_argument("command", choices=["zstar", "pilot", "timing", "confirmatory", "confirmatory-summary"])
     ap.add_argument("--cache", type=Path, default=ROOT / "data/interim/features/salience2s")
+    ap.add_argument("--models", nargs="+", default=HGB_MODELS)
+    ap.add_argument("--learner", default="hgb", choices=["hgb", "lr"])
+    ap.add_argument("--workers", type=int, default=1)
     a = ap.parse_args()
-    {"zstar": cmd_zstar, "pilot": cmd_pilot, "confirmatory": cmd_confirmatory}[a.command](a)
+    {"zstar": cmd_zstar, "pilot": cmd_pilot, "timing": cmd_timing, "confirmatory": cmd_confirmatory,
+     "confirmatory-summary": cmd_confirmatory_summary}[a.command](a)
 
 
 if __name__ == "__main__":
