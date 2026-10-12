@@ -1,0 +1,31 @@
+{
+  "z_star": 62.932850082760744,
+  "z_star_repr": "62.932850082760744",
+  "rule": "per pilot recording, the 95th percentile of all per-channel window-peak salience z over its kept windows (labels unused); z* = median of the 8 recording-level values; not rounded (spec \u00a73, amended 2026-10-12)",
+  "per_recording_p95": {
+    "DA001008": 24.645649483825398,
+    "DA00100G": 46.67336702675654,
+    "DA00100U": 79.19233313876495,
+    "DA00102U": 29.141956902362658,
+    "DA00103A": 352.8557967844193,
+    "DA00103Q": 106.61913683245365,
+    "DA00103T": 164.3756439601782,
+    "DC11304C": 34.58051604619244
+  },
+  "n_windows": {
+    "DA001008": 293,
+    "DA00100G": 301,
+    "DA00100U": 264,
+    "DA00102U": 276,
+    "DA00103A": 252,
+    "DA00103Q": 241,
+    "DA00103T": 229,
+    "DC11304C": 304
+  },
+  "provenance": {
+    "git_commit": "5076b664e13d128a35bbc9e115b41559f7c4048d",
+    "python": "3.12.4",
+    "numpy": "2.5.3",
+    "sklearn": "1.9.1"
+  }
+}
