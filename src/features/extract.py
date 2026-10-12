@@ -88,7 +88,7 @@ def _one(args) -> tuple[str, float]:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--root", required=True, type=Path)
-    ap.add_argument("--interim", default=ROOT / "data" / "interim", type=Path)
+    ap.add_argument("--interim", default=ROOT / "data" / "interim" / "vepiset", type=Path)
     ap.add_argument("--ids-from", required=True, type=Path, help="CSV with an eeg_id column")
     ap.add_argument("--out", required=True, type=Path)
     ap.add_argument("--mode", default="salience2s", choices=list(K_SURR))
