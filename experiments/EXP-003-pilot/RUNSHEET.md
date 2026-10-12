@@ -1,6 +1,6 @@
 # EXP-003 run sheet: pilot-only pipeline debugging, baseline ceiling check and window-validity diagnostic
 
-**Status:** DRAFT. It runs only after Josue approves the implementation defaults in `protocol/2026-10-12-pipeline-implementation-spec.md` §3. Registered in `07` as exploratory/debug: never a scientific result, and never evidence about H-1.
+**Status:** APPROVED 2026-10-12 (implementation defaults approved by Josue before any pilot model output; `11` LOG-2026-10-12-PIPELINE-SPEC). Runs on the Mac on 2 cores beside EV-1b. Registered in `07` as exploratory/debug: never a scientific result, and never evidence about H-1.
 
 ## Scope
 - **Recordings:** the 8 frozen pilot recordings only (`artifacts/protocol/f3/pilot_subset.csv`, SHA-256 `4645df56…0bec29`). Four are evaluable after F-6: DA00100U (wake), DA00102U (sleep), DA00103A (sleep), DA00103T (wake and sleep).
