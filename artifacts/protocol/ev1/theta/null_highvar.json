@@ -1,0 +1,8 @@
+{
+  "scenario": "null_highvar",
+  "gamma_override": null,
+  "m": 200,
+  "theta": -0.01875160198632954,
+  "theta_mc_se": 0.0005299593794243235,
+  "sd_over_training_sets": 0.007494757418887074
+}

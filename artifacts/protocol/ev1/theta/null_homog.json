@@ -1,0 +1,8 @@
+{
+  "scenario": "null_homog",
+  "gamma_override": null,
+  "m": 200,
+  "theta": -0.012602645449692352,
+  "theta_mc_se": 0.0004669806811179101,
+  "sd_over_training_sets": 0.00660410412603174
+}
