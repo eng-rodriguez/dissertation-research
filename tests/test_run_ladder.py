@@ -47,3 +47,12 @@ def test_confirmatory_refuses_without_gate(tmp_path, monkeypatch):
     (tmp_path / "gate.json").write_text(json.dumps({"pc3": "PASS", "coverage_check": "FAIL"}))
     with pytest.raises(SystemExit, match="blinded"):
         rl.cmd_confirmatory(argparse.Namespace(cache=tmp_path))
+
+
+def test_z_star_is_median_of_recording_p95_unrounded():
+    rng = np.random.default_rng(5)
+    peaks = {f"R{i}": rng.gamma(2, 3, (int(rng.integers(20, 200)), 19)) for i in range(8)}
+    z, per = rl.z_star_from(peaks)
+    assert per["R3"] == np.percentile(peaks["R3"].ravel(), 95)
+    assert z == np.median([np.percentile(v.ravel(), 95) for v in peaks.values()])
+    assert z != round(z, 1)

@@ -2,8 +2,9 @@
 behind its gate.
 
 Commands (from the repository root, on the Mac; inputs are the per-recording caches of src/features/extract.py):
-  zstar  Fix the B2 salience threshold z* from the pilot, label-blind (spec §3): the 95th percentile of every
-         per-channel window-peak salience z over all kept pilot windows, labels never read; rounded to 0.1.
+  zstar  Fix the B2 salience threshold z* from the pilot, label-blind (spec §3, amended by Josue 2026-10-12):
+         per pilot recording, the 95th percentile of all per-channel window-peak salience z over its kept
+         windows; z* = the median of the 8 recording-level values, unrounded. Labels are never read.
          Writes artifacts/pilot/zstar.json. Refuses to overwrite an existing value.
   pilot  EXP-003: leave-one-recording-out over the 8 frozen pilot recordings with the plan-A fixed HGB
          configuration (the inner-fold validity rule cannot be met on 8 recordings). Writes aggregate,
@@ -67,21 +68,30 @@ def provenance() -> dict:
             "sklearn": sklearn.__version__}
 
 
+def z_star_from(peaks_by_recording: dict[str, np.ndarray]) -> tuple[float, dict[str, float]]:
+    """Median over recordings of each recording's 95th percentile of window-peak salience z (unrounded)."""
+    per = {i: float(np.percentile(np.asarray(z).ravel(), 95)) for i, z in sorted(peaks_by_recording.items())}
+    return float(np.median(list(per.values()))), per
+
+
 def cmd_zstar(a) -> None:
     out = OUT / "zstar.json"
     if out.exists():
         raise SystemExit(f"{out} exists; z* is fixed once (spec §3)")
-    peaks = []
+    peaks = {}
     for i in pilot_ids():
         with np.load(a.cache / f"{i}.npz") as z:
-            peaks.append(z["peak_z"].ravel())  # labels are never loaded here
-    allz = np.concatenate(peaks)
-    z_star = round(float(np.percentile(allz, 95)), 1)
+            peaks[i] = z["peak_z"]  # labels are never loaded here
+    z_star, per = z_star_from(peaks)
     OUT.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps({"z_star": z_star, "rule": "95th percentile of per-channel window-peak salience z "
-                               "over all kept pilot windows, labels unused, rounded to 0.1 (spec §3)",
-                               "n_windows": int(allz.size // 19), "provenance": provenance()}, indent=2) + "\n")
-    print(z_star)
+    out.write_text(json.dumps({"z_star": z_star, "z_star_repr": repr(z_star),
+                               "rule": "per pilot recording, the 95th percentile of all per-channel window-peak "
+                                       "salience z over its kept windows (labels unused); z* = median of the 8 "
+                                       "recording-level values; not rounded (spec §3, amended 2026-10-12)",
+                               "per_recording_p95": per,
+                               "n_windows": {i: int(np.asarray(z).shape[0]) for i, z in peaks.items()},
+                               "provenance": provenance()}, indent=2) + "\n")
+    print(repr(z_star))
 
 
 def cmd_pilot(a) -> None:

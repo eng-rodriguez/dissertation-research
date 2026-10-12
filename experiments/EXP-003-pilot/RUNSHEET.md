@@ -11,8 +11,8 @@
    - It writes a per-recording cache under `data/interim/`, which is never committed.
    - The cache holds B1, B2 topography, ADJ, FC and FC_surr (k = 5), plus each window's peak salience and marker diagnostic.
 2. **z\*.** Run `uv run python src/pipeline/run_ladder.py zstar`.
-   - It sets the B2 salience threshold once, label-blind: the 95th percentile of the window-peak z values (spec §3).
-   - It is written to `artifacts/pilot/zstar.json` and committed before step 3.
+   - It sets the B2 salience threshold once, label-blind. For each pilot recording it takes the 95th percentile of the window-peak z values over that recording's kept windows. z\* is the median of the 8 values, unrounded (spec §3, as amended by Josue on 2026-10-12).
+   - The exact value goes to `artifacts/pilot/zstar.json`, which is committed before step 3.
 3. **Pilot ladder.** Run `uv run python src/pipeline/run_ladder.py pilot`.
 
 ## Fixed in advance
