@@ -71,13 +71,13 @@
     },
     "pos_mid_hetero": {
       "d_F": 24,
-      "gamma": null,
+      "gamma": 1.95,
       "tau": 0.4,
       "target": "theta ~ +0.05 to +0.06 (stress 1)"
     },
     "pos_highvar_hetero": {
       "d_F": 96,
-      "gamma": null,
+      "gamma": 2.9,
       "tau": 0.6,
       "target": "theta ~ +0.05 to +0.06 (stress 2; tau as null_highvar)"
     },
@@ -117,5 +117,36 @@
     "calibration": 2026101603,
     "learner": "repeat seed + outer fold (locked)"
   },
-  "output_dir": "artifacts/protocol/ev1b"
+  "output_dir": "artifacts/protocol/ev1b",
+  "calibration": {
+    "seed": 2026101603,
+    "method": "theta only (training sets + fresh test patients; no intervals, no coverage), src/design/ev1_coverage.py theta --gamma",
+    "scan_m40": {
+      "pos_mid_hetero": {
+        "1.8": 0.043,
+        "1.9": 0.0505,
+        "2.0": 0.0578,
+        "2.1": 0.0652
+      },
+      "pos_highvar_hetero": {
+        "2.0": 0.0044,
+        "3.0": 0.0611,
+        "4.0": 0.1197
+      }
+    },
+    "confirm_m200": {
+      "pos_mid_hetero": {
+        "gamma": 1.95,
+        "theta": 0.0563,
+        "mc_se": 0.0008
+      },
+      "pos_highvar_hetero": {
+        "gamma": 2.9,
+        "theta": 0.054,
+        "mc_se": 0.0009
+      }
+    },
+    "outputs": "artifacts/protocol/ev1b/calibration/",
+    "note": "theta used for coverage is recomputed with the theta seed 2026101602 at m = 200, as for every scenario"
+  }
 }

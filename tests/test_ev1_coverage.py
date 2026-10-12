@@ -92,7 +92,7 @@ def test_patients_follow_profiles():
 def test_dataset_end_to_end_is_deterministic(monkeypatch):
     cfg = small_cfg()
     full = ev.load_design(cfg)
-    monkeypatch.setattr(ev, "load_design", lambda c: dict(full, splits=full["splits"][:1]))
+    monkeypatch.setattr(ev, "load_design", lambda c, scen=None: dict(full, splits=full["splits"][:1]))
     a, b = ev.dataset((cfg, "pos_sesoi", 7, "fixed")), ev.dataset((cfg, "pos_sesoi", 7, "fixed"))
     assert a == b and a["n_e"] == 35
     lo, hi = a["nb_0.95"]
@@ -103,7 +103,7 @@ def test_dataset_end_to_end_is_deterministic(monkeypatch):
 def test_tuned_mode_runs(monkeypatch):
     cfg = small_cfg()
     full = ev.load_design(cfg)
-    monkeypatch.setattr(ev, "load_design", lambda c: dict(full, splits=full["splits"][:1]))
+    monkeypatch.setattr(ev, "load_design", lambda c, scen=None: dict(full, splits=full["splits"][:1]))
     monkeypatch.setattr(ev, "GRID", ev.GRID[:2])
     r = ev.dataset((cfg, "null_hetero", 0, "tuned"))
     assert r["mode"] == "tuned" and np.isfinite(r["estimate"])
