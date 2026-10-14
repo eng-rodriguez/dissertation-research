@@ -34,6 +34,7 @@ for p in ("models", "evaluation", "features"):
     sys.path.insert(0, str(ROOT / "src" / p))
 import b2 as fb2  # noqa: E402
 import ladder as L  # noqa: E402
+import taxonomy as tx  # noqa: E402
 
 PILOT_CSV = ROOT / "artifacts/protocol/f3/pilot_subset.csv"
 RECOUNT_CSV = ROOT / "artifacts/dataset_audit/evaluable_recount.csv"
@@ -137,7 +138,7 @@ def check_gate() -> dict:
     gate = json.loads(GATE.read_text()) if GATE.exists() else {}
     missing = [k for k in need if not gate.get(k)]
     if missing or gate.get("pc3") != "PASS" or gate.get("coverage_check") != "PASS" \
-            or gate.get("primary_interval") not in ("nb", "m1"):
+            or gate.get("primary_interval") != tx.PRIMARY_INTERVAL:
         raise SystemExit(f"EXP-004 is blinded: gate file incomplete or not passed ({missing or gate})")
     return gate
 

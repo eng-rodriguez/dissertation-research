@@ -56,3 +56,25 @@ def test_z_star_is_median_of_recording_p95_unrounded():
     assert per["R3"] == np.percentile(peaks["R3"].ravel(), 95)
     assert z == np.median([np.percentile(v.ravel(), 95) for v in peaks.values()])
     assert z != round(z, 1)
+
+
+def test_gate_requires_the_adopted_m1_interval(tmp_path, monkeypatch):
+    """RDR-014 (06 v1.1): M1 is the primary interval; a gate naming NB (the v1.0 primary) is refused."""
+    monkeypatch.setattr(rl, "GATE", tmp_path / "gate.json")
+    gate = {"pc3": "PASS", "coverage_check": "PASS", "approved_by": "x", "approved_on": "2026-10-14"}
+    (tmp_path / "gate.json").write_text(json.dumps({**gate, "primary_interval": "nb"}))
+    with pytest.raises(SystemExit, match="blinded"):
+        rl.check_gate()
+    (tmp_path / "gate.json").write_text(json.dumps({**gate, "primary_interval": "m1"}))
+    assert rl.check_gate()["primary_interval"] == "m1"
+
+
+def test_protocol_versions_match_their_hashes():
+    """06 v1.0 (RDR-013) stays unchanged beside v1.1 (RDR-014); both are pinned in SHA256SUMS."""
+    import hashlib
+
+    d = rl.ROOT / "experiments/protocol"
+    sums = dict(line.split()[::-1] for line in (d / "SHA256SUMS").read_text().splitlines())
+    assert sums["06-EXPERIMENTAL-PROTOCOL-v1.0.md"].startswith("007506f1")
+    for name, h in sums.items():
+        assert hashlib.sha256((d / name).read_bytes()).hexdigest() == h
