@@ -78,3 +78,22 @@ def test_protocol_versions_match_their_hashes():
     assert sums["06-EXPERIMENTAL-PROTOCOL-v1.0.md"].startswith("007506f1")
     for name, h in sums.items():
         assert hashlib.sha256((d / name).read_bytes()).hexdigest() == h
+
+
+def test_cache_check_matches_recount_and_flags_mismatch(tmp_path):
+    rng = np.random.default_rng(3)
+    rec = tmp_path / "recount.csv"
+    rec.write_text("eeg_id,analysis_set,n_ied_wake,n_nonied_wake,n_ied_sleep,n_nonied_sleep\n"
+                   "A,primary,3,5,2,4\nB,primary,0,6,1,1\nC,sensitivity_only,9,9,9,9\n")
+    counts = {"A": (3, 5, 2, 4), "B": (0, 6, 1, 1)}
+    for i, (iw, nw, is_, ns) in counts.items():
+        y = np.array([1] * iw + [0] * nw + [1] * is_ + [0] * ns)
+        s = np.array(["wake"] * (iw + nw) + ["sleep"] * (is_ + ns))
+        n = len(y)
+        np.savez_compressed(tmp_path / f"{i}.npz", label=y, state=s, peak_z=rng.random((n, 19)),
+                            fc_zero_denominator=0, **{k: rng.random((n, *v)) for k, v in rl.SHAPES.items()})
+    res = rl.cache_check(tmp_path, rec)
+    assert res["result"] == "PASS" and res["n_recordings"] == 2 and set(res["cache_sha256"]) == {"A", "B"}
+    rec.write_text(rec.read_text().replace("A,primary,3,5", "A,primary,4,5"))
+    res = rl.cache_check(tmp_path, rec)
+    assert res["result"] == "FAIL" and "A" in res["problems"] and "B" not in res["problems"]

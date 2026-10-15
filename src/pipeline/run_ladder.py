@@ -11,9 +11,13 @@ Commands (from the repository root, on the Mac; inputs are the per-recording cac
          pilot-only outputs to artifacts/pilot/: per evaluable pilot patient and model, the within-patient
          same-state AUROC; the B2 level (ceiling check); the window-validity share (diagnostic only).
   timing Fit time per ladder model on synthetic data of the real primary-set size (no real data read).
+  cache-check  Before EXP-004, no model fitted: for every primary recording, the cached kept-epoch counts per
+         class and state must equal the F-6 recount, every block must have its locked shape, and B1/B2/ADJ must
+         be finite. Writes aggregate artifacts/exp004/cache_check.json with each cache file's SHA-256.
   confirmatory, confirmatory-summary  EXP-004 (src/pipeline/confirmatory.py). Refuse to start unless
          artifacts/protocol/unblinding_gate.json records PC-3 PASS, the pre-confirmatory coverage check PASS,
-         the adopted primary interval ("nb" or "m1"), and Josue's written approval (approved_by, approved_on).
+         the adopted primary interval ("m1", RDR-014) and Josue's written approval (approved_by, approved_on),
+         and the cache check passed.
 """
 
 from __future__ import annotations
@@ -40,6 +44,8 @@ PILOT_CSV = ROOT / "artifacts/protocol/f3/pilot_subset.csv"
 RECOUNT_CSV = ROOT / "artifacts/dataset_audit/evaluable_recount.csv"
 OUT = ROOT / "artifacts/pilot"
 GATE = ROOT / "artifacts/protocol/unblinding_gate.json"
+CACHE_CHECK = ROOT / "artifacts/exp004/cache_check.json"
+SHAPES = {"b1": (19, 24), "b2_topo": (17,), "adj": (912,), "fc": (513,), "fc_surr": (513,)}
 PLAN_A = dict(learning_rate=0.05, max_leaf_nodes=15, min_samples_leaf=100, l2_regularization=1)
 PILOT_SEED = 20261010
 HGB_MODELS = ["b0", "b1", "b2", "b2_adj", "b2_fcsurr", "b2_fc", "pc1_fc_only"]
@@ -143,8 +149,57 @@ def check_gate() -> dict:
     return gate
 
 
+def cache_check(cache: Path, recount_csv: Path = RECOUNT_CSV) -> dict:
+    import hashlib
+
+    rows = [r for r in csv.DictReader(recount_csv.open()) if r["analysis_set"] == "primary"]
+    problems, files, nonfinite_fc, zero_den = {}, {}, 0, 0
+    for r in rows:
+        i, path = r["eeg_id"], cache / f"{r['eeg_id']}.npz"
+        if not path.exists():
+            problems[i] = ["missing"]
+            continue
+        files[i] = hashlib.sha256(path.read_bytes()).hexdigest()
+        bad = []
+        with np.load(path) as z:
+            n = len(z["label"])
+            for c, lab in (("ied", 1), ("nonied", 0)):
+                for s in ("wake", "sleep"):
+                    got = int(((z["label"] == lab) & (z["state"] == s)).sum())
+                    if got != int(r[f"n_{c}_{s}"]):
+                        bad.append(f"n_{c}_{s} {got} != {r[f'n_{c}_{s}']}")
+            if n != int(sum(int(r[f"n_{c}_{s}"]) for c in ("ied", "nonied") for s in ("wake", "sleep"))):
+                bad.append(f"{n} epochs, some outside wake/sleep")
+            for k, shape in SHAPES.items():
+                if k not in z.files or z[k].shape != (n, *shape):
+                    bad.append(f"{k} shape {z[k].shape if k in z.files else 'absent'}")
+                elif k in ("b1", "b2_topo", "adj") and not np.isfinite(z[k]).all():
+                    bad.append(f"{k} non-finite")
+                elif k in ("fc", "fc_surr"):
+                    nonfinite_fc += int((~np.isfinite(z[k])).sum())
+            if z["peak_z"].shape != (n, 19):
+                bad.append(f"peak_z shape {z['peak_z'].shape}")
+            zero_den += int(z["fc_zero_denominator"])
+        if bad:
+            problems[i] = bad
+    return {"result": "FAIL" if problems or len(files) != len(rows) else "PASS", "n_recordings": len(rows),
+            "problems": problems, "fc_nonfinite_values": nonfinite_fc, "fc_zero_denominator": zero_den,
+            "cache_sha256": files}
+
+
+def cmd_cache_check(a) -> None:
+    res = cache_check(a.cache)
+    res["cache"] = str(a.cache.relative_to(ROOT)) if a.cache.is_relative_to(ROOT) else str(a.cache)
+    res["provenance"] = provenance()
+    CACHE_CHECK.parent.mkdir(parents=True, exist_ok=True)
+    CACHE_CHECK.write_text(json.dumps(res, indent=2) + "\n")
+    print(json.dumps({k: v for k, v in res.items() if k not in ("cache_sha256", "provenance")}, indent=2))
+
+
 def cmd_confirmatory(a) -> None:
     check_gate()
+    if not CACHE_CHECK.exists() or json.loads(CACHE_CHECK.read_text())["result"] != "PASS":
+        raise SystemExit("EXP-004 needs a passing cache check first (run_ladder.py cache-check)")
     import confirmatory as cf
 
     z_star = json.loads((OUT / "zstar.json").read_text())["z_star"]
@@ -198,13 +253,14 @@ def cmd_timing(a) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("command", choices=["zstar", "pilot", "timing", "confirmatory", "confirmatory-summary"])
+    ap.add_argument("command", choices=["zstar", "pilot", "timing", "cache-check", "confirmatory", "confirmatory-summary"])
     ap.add_argument("--cache", type=Path, default=ROOT / "data/interim/features/salience2s")
     ap.add_argument("--models", nargs="+", default=HGB_MODELS)
     ap.add_argument("--learner", default="hgb", choices=["hgb", "lr"])
     ap.add_argument("--workers", type=int, default=1)
     a = ap.parse_args()
-    {"zstar": cmd_zstar, "pilot": cmd_pilot, "timing": cmd_timing, "confirmatory": cmd_confirmatory,
+    {"zstar": cmd_zstar, "pilot": cmd_pilot, "timing": cmd_timing, "cache-check": cmd_cache_check,
+     "confirmatory": cmd_confirmatory,
      "confirmatory-summary": cmd_confirmatory_summary}[a.command](a)
 
 
