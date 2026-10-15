@@ -1,0 +1,35 @@
+{
+  "experiment": "EXP-004",
+  "pc3": "PASS",
+  "pc3_evidence": {
+    "experiment": "EXP-007",
+    "report": "artifacts/protocol/pc3/exp007_report.json",
+    "sha256": "c2ab735b97c637933c4e8e476e812c5f6ff0bc3224fc0ec618328c5739a6d42c"
+  },
+  "coverage_check": "PASS",
+  "coverage_evidence": {
+    "experiment": "EXP-008 (EV-1b)",
+    "summary": "artifacts/protocol/ev1b/ev1_summary.json",
+    "sha256": "49a1c0c5312fdd327a00317e8b52d0a9606c43098787cb8fbc0193ced03a528a"
+  },
+  "primary_interval": "m1",
+  "protocol": {
+    "version": "06 v1.1 (RDR-014)",
+    "file": "experiments/protocol/06-EXPERIMENTAL-PROTOCOL-v1.1.md",
+    "sha256": "39fdc48799160a675eb27084392a9d6cca35d6abae300d0121a4156fbea74654"
+  },
+  "fold_manifest_sha256": "7f0f53fe83456386efb4a2ffd16db34ac169b7a7880f36d921bcf46fa2062c5d",
+  "z_star_file": "artifacts/pilot/zstar.json",
+  "learners": [
+    "hgb (primary)",
+    "lr (secondary)"
+  ],
+  "runs_once": true,
+  "approved_by": "Josue Rodriguez",
+  "approved_on": "2026-10-15",
+  "approval_record": "Decision card in the Workstream 03 thread, 'Approve unblinding EXP-004 so the confirmatory run executes once?', option 'Approve', 2026-10-15 21:29 UTC",
+  "open_items_not_blocking_the_run": [
+    "human statistician review (required before submission; preferred before final interpretation)",
+    "full F-5 citing-works recheck (before submission)"
+  ]
+}
