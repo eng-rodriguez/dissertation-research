@@ -7,7 +7,8 @@ aggregate numbers to artifacts/exp004/descriptive/descriptive.json.
   check            the primary Delta-hat recomputed from the score files must equal summary_{learner}.json
                    (aborts otherwise: the scores and the unit results would disagree)
   per_state        every ladder contrast restricted to wake, then to sleep, over patients evaluable in that state
-                   (06 issue 3, item 6; wake is flagged as underpowered); M1 and bootstrap intervals
+                   (06 issue 3, item 6; wake is flagged as underpowered); M1 and bootstrap intervals. Also B0 vs
+                   B2 + FC and B0 vs B2 (not pre-specified; the B0 engineering finding's paired error analysis)
   thresholds       the primary contrast with evaluability at >= 3 and >= 10 IED and non-IED epochs per state instead
                    of >= 5 (06 §5); evaluability recomputed from the cached labels and states
   epoch_weighted   the primary Delta weighted by each patient's evaluable IED epochs instead of equally (06 §5)
@@ -47,6 +48,7 @@ import taxonomy as tx  # noqa: E402
 import wpli as wp  # noqa: E402
 
 STATES = ("wake", "sleep")
+ENGINEERING = [("b0", "b2_fc"), ("b0", "b2")]  # Josue 2026-10-16: B0 as a secondary engineering finding
 N_EDGES = 19 * 18 // 2
 
 
@@ -97,7 +99,7 @@ def per_state(L: dict, base: dict) -> dict:
     out = {}
     for st in STATES:
         ev = {i: [st] for i, s in base.items() if st in s}
-        out[st] = {f"{a}_vs_{b}": contrast(L, a, b, ev) for a, b in [cf.PRIMARY] + cf.SECONDARY}
+        out[st] = {f"{a}_vs_{b}": contrast(L, a, b, ev) for a, b in [cf.PRIMARY] + cf.SECONDARY + ENGINEERING}
     out["note"] = "wake is underpowered (06 issue 3, item 6)"
     return out
 

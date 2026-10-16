@@ -72,7 +72,8 @@ def _esc(s: str) -> str:
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def forest_svg(deltas: dict, counts: dict, delta_hat: float, ci90, ci95, title: str) -> str:
+def forest_svg(deltas: dict, counts: dict, delta_hat: float, ci90, ci95, title: str,
+               axis: str = "Δ within-patient AUROC (B2 + FC − B2)") -> str:
     rows = sorted(deltas, key=lambda p: (counts[p], p))
     lo = min(v[1] for v in deltas.values())
     hi = max(v[2] for v in deltas.values())
@@ -132,7 +133,7 @@ def forest_svg(deltas: dict, counts: dict, delta_hat: float, ci90, ci95, title: 
              f'rx="2" fill="{INK}"/>')
     s.append(f'<circle cx="{x(delta_hat):.1f}" cy="{y:.1f}" r="5" fill="#ffffff" stroke="{INK}" stroke-width="2"/>')
     s.append(f'<text x="{left + plot_w / 2:.1f}" y="{summary_y + 46}" font-size="11" fill="{INK2}" '
-             f'text-anchor="middle">Δ within-patient AUROC (B2 + FC − B2)</text>')
+             f'text-anchor="middle">{_esc(axis)}</text>')
     s.append(f'<text x="{left}" y="{summary_y + 66}" font-size="11" fill="{INK2}">Overall Δ = {delta_hat:+.4f}; bar: M1 '
              f'90% [{ci90[0]:+.4f}, {ci90[1]:+.4f}]; line: M1 95% [{ci95[0]:+.4f}, {ci95[1]:+.4f}].</text>')
     s.append("</svg>")
@@ -167,6 +168,22 @@ def write_tables(out: Path = OUT) -> None:
                     w.writerow([kind, m, float(np.mean([np.mean(v) for v in by[m].values()])), len(by[m])])
 
 
+ENGINEERING = [("b0", "b2_fc"), ("b0", "b2")]
+
+
+def engineering_contrasts(kind: str, out: Path = OUT) -> dict:
+    """B0 vs the multichannel models, paired within patient (Josue 2026-10-16: a secondary engineering finding
+    that needs paired uncertainty before interpretation). Not pre-specified as a contrast: M1 and bootstrap
+    intervals and R6 heterogeneity are reported; no taxonomy label is assigned."""
+    auroc, folds = per_repeat(load_units(kind, out))
+    res = {}
+    for a, b in ENGINEERING:
+        d = est.delta_summary(auroc, a, b, folds)
+        res[f"{a}_vs_{b}"] = {"delta_hat": d["delta_hat"], "n_e": d["n_e"], "intervals": cf.intervals(d, "m1"),
+                              "heterogeneity": cf.heterogeneity(d)}
+    return res
+
+
 def main() -> None:
     counts = ied_counts()
     (OUT / "figures").mkdir(parents=True, exist_ok=True)
@@ -184,6 +201,22 @@ def main() -> None:
             for p in sorted(deltas, key=lambda q: (counts[q], q)):
                 w.writerow([p, counts[p], *deltas[p]])
     write_tables()
+    with (OUT / "tables" / "b0_paired.csv").open("w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["learner", "contrast", "status", "delta_hat", "n_e", "m1_90_lo", "m1_90_hi", "m1_95_lo",
+                    "m1_95_hi", "boot_95_lo", "boot_95_hi", "sd_delta_p", "n_above_0.03", "n_below_-0.03"])
+        for kind in ("hgb", "lr"):
+            for c, v in engineering_contrasts(kind).items():
+                iv, h = v["intervals"], v["heterogeneity"]
+                w.writerow([kind, c, "secondary engineering finding, not pre-specified; no label", v["delta_hat"],
+                            v["n_e"], *iv["0.90"], *iv["0.95"], *iv["bootstrap_0.95"], h["sd_delta_p"],
+                            h["n_above_sesoi"], h["n_below_minus_sesoi"]])
+    e = engineering_contrasts("hgb")["b0_vs_b2_fc"]
+    deltas = patient_deltas(load_units("hgb"), "b0", "b2_fc")
+    (OUT / "figures" / "forest_b0_vs_b2fc_hgb.svg").write_text(
+        forest_svg(deltas, counts, e["delta_hat"], e["intervals"]["0.90"], e["intervals"]["0.95"],
+                   "Per-patient difference, single-channel B0 vs B2 + FC (HGB; engineering finding)",
+                   axis="Δ within-patient AUROC (B0 − (B2 + FC))"))
     print("wrote", *sorted(str(q.relative_to(ROOT)) for q in OUT.glob("*/*") if q.suffix in (".svg", ".csv")))
 
 
