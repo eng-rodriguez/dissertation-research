@@ -21,6 +21,14 @@ def test_descriptive_reproduces_primary_and_reports_all_parts(tmp_path, monkeypa
     cache.mkdir()
     scores.mkdir()
     fake_cache(cache, gain=0.3)  # FC (wPLI-like) columns shifted up in IED windows
+    rows = ["eeg_id,start,label"]
+    for f in cache.glob("*.npz"):
+        z = dict(np.load(f))
+        z["epoch_start"] = np.arange(len(z["label"])) * 1000
+        np.savez_compressed(f, **z)
+        rows += [f"{f.stem},{s0},{(1 + j % 5) if y else 0}" for j, (s0, y) in enumerate(zip(z["epoch_start"], z["label"]))]
+    epochs = tmp_path / "epochs.csv"
+    epochs.write_text("\n".join(rows) + "\n")
     rng = np.random.default_rng(1)
     for m in cf.L.MODELS:
         gain = 1.2 if m == "b2_fc" else 1.0
@@ -35,7 +43,7 @@ def test_descriptive_reproduces_primary_and_reports_all_parts(tmp_path, monkeypa
     L = dx.load(cache, scores, "hgb", ["b2", "b2_fc"])
     base = {i: r["evaluable_states"] for i, r in L["recs"].items() if r.get("evaluable_states") and i in L["data"]}
     want = dx.est.delta_summary(dx.aurocs(L, cf.PRIMARY, base), *cf.PRIMARY, L["folds"])["delta_hat"]
-    res = dx.run(cache, scores, "hgb", {"contrasts": {"b2_fc_vs_b2": {"delta_hat": want}}})
+    res = dx.run(cache, scores, "hgb", {"contrasts": {"b2_fc_vs_b2": {"delta_hat": want}}}, epochs)
     assert res["check"]["matches_summary"]
     assert set(res["per_state"]) == {"wake", "sleep", "note"}
     assert res["per_state"]["sleep"]["b2_fc_vs_b2"]["n_e"] > res["per_state"]["wake"]["b2_fc_vs_b2"]["n_e"]
@@ -45,3 +53,6 @@ def test_descriptive_reproduces_primary_and_reports_all_parts(tmp_path, monkeypa
     assert all(res["pc2"][b]["median_diff"] > 0 for b in ("theta", "alpha", "beta"))
     ps = [res["pc2"][b]["p_wilcoxon_holm"] for b in ("theta", "alpha", "beta")]
     assert all(0 <= p <= 1 for p in ps)
+    sd = res["sleep_depth_restricted"]
+    assert 0 < sd["share_negatives_kept"] <= 1 and sd["b2_fc_vs_b2"]["n_e"] <= res["thresholds"][">=3"]["n_e"]
+    assert set(res["by_ied_type"]) == {"generalized", "focal"}

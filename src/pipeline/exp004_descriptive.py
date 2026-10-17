@@ -21,8 +21,11 @@ aggregate numbers to artifacts/exp004/descriptive/descriptive.json.
 
 Not here (they need training-fold thresholds or calibration, i.e. refits): sensitivity at a fixed false-positive
 rate per minute, Delta log-loss after calibration, false positives in IED-free patients at an operating point.
-IED-type error analysis is also not here: mapping the vEpiSet IED labels to generalized/focal is an open
-scientific decision.
+
+  sleep_depth      06 issue 3 item 8: negatives restricted to the relative-delta-power range of the patient's IED
+                   windows in the same state (primary contrast and B0)
+  by_ied_type      06 §5: positives restricted to generalized (label 1) or focal (labels 2-5, per 05) IED epochs
+                   (primary contrast and B0); reads data/interim/vepiset/epochs.csv for the per-epoch label
 
     python src/pipeline/exp004_descriptive.py --learner hgb
 """
@@ -30,6 +33,7 @@ scientific decision.
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 from collections import defaultdict
@@ -49,6 +53,8 @@ import wpli as wp  # noqa: E402
 
 STATES = ("wake", "sleep")
 ENGINEERING = [("b0", "b2_fc"), ("b0", "b2")]  # Josue 2026-10-16: B0 as a secondary engineering finding
+REL_DELTA = 18  # b1.NAMES index of relative delta power
+IED_TYPES = {"generalized": {1}, "focal": {2, 3, 4, 5}}  # 05: 1 generalized; 2-5 frontal/temporal/centro-parietal/occipital
 N_EDGES = 19 * 18 // 2
 
 
@@ -63,7 +69,8 @@ def load(cache: Path, scores_dir: Path, kind: str, models: list[str]) -> dict:
     data = {}
     for i in ids:
         with np.load(cache / f"{i}.npz") as z:
-            data[i] = {"y": z["label"], "s": z["state"], "fc": z["fc"]}
+            data[i] = {"y": z["label"], "s": z["state"], "fc": z["fc"], "start": z["epoch_start"],
+                       "rel_delta": z["b1"][:, :, REL_DELTA].mean(axis=1)}
     sc = defaultdict(dict)
     for m in models:
         for (rep, seed), fs in d["splits"].items():
@@ -93,6 +100,61 @@ def contrast(L: dict, a: str, b: str, evaluable: dict) -> dict:
     ci = cf.intervals(d, tx.PRIMARY_INTERVAL)
     return {"delta_hat": d["delta_hat"], "n_e": d["n_e"], "intervals": ci,
             "descriptive_label_m1": tx.classify(tuple(ci["0.95"]), tuple(ci["0.90"]))}
+
+
+def contrast_selected(L: dict, a: str, b: str, select, min_n: int = 5) -> dict:
+    """A contrast where each patient's epochs are first reduced by select(eeg_id, data) -> (keep mask, labels);
+    evaluability (>= min_n IED and non-IED per state) is recomputed on what is kept."""
+    au = {}
+    for m in (a, b):
+        for (rep, i), score in L["scores"][m].items():
+            keep, y = select(i, L["data"][i])
+            s = L["data"][i]["s"][keep]
+            ev = evaluable_states(y[keep], s, min_n)
+            if ev:
+                au[(m, rep, i)] = est.patient_auroc(score[keep], y[keep], s, ev)
+    n = len({i for (_, _, i) in au})
+    if n < 3:
+        return {"delta_hat": None, "n_e": n, "note": "fewer than 3 patients"}
+    d = est.delta_summary(au, a, b, L["folds"])
+    ci = cf.intervals(d, tx.PRIMARY_INTERVAL)
+    return {"delta_hat": d["delta_hat"], "n_e": d["n_e"], "intervals": ci,
+            "descriptive_label_m1": tx.classify(tuple(ci["0.95"]), tuple(ci["0.90"]))}
+
+
+def sleep_depth_restricted(L: dict, base: dict) -> dict:
+    """06 issue 3 item 8: within each patient and state, keep only negatives whose window relative delta power
+    (mean over the 19 channels) lies within [min, max] of that patient's IED windows in the same state."""
+    def select(i, x):
+        keep = np.zeros(len(x["y"]), bool)
+        if i not in base:
+            return keep, x["y"]
+        for st in base[i]:
+            ied, non = (x["y"] == 1) & (x["s"] == st), (x["y"] == 0) & (x["s"] == st)
+            lo, hi = x["rel_delta"][ied].min(), x["rel_delta"][ied].max()
+            keep |= ied | (non & (x["rel_delta"] >= lo) & (x["rel_delta"] <= hi))
+        return keep, x["y"]
+    res = {f"{a}_vs_{b}": contrast_selected(L, a, b, select) for a, b in [cf.PRIMARY] + ENGINEERING}
+    kept = [select(i, L["data"][i])[0] for i in base]
+    res["share_negatives_kept"] = float(np.mean(np.concatenate(
+        [k[(L["data"][i]["y"] == 0) & np.isin(L["data"][i]["s"], base[i])] for i, k in zip(base, kept)])))
+    res["note"] = "proxy: relative delta power of the analysis window, channel mean; range = min-max of IED windows"
+    return res
+
+
+def by_ied_type(L: dict, epochs_csv: Path) -> dict:
+    """06 §5 error analysis by IED type (05: label 1 generalized, 2-5 focal): positives restricted to one type,
+    all same-state non-IED epochs kept as negatives."""
+    lab = {}
+    for r in csv.DictReader(epochs_csv.open()):
+        lab[(r["eeg_id"], int(r["start"]))] = int(r["label"])
+    res = {}
+    for name, codes in IED_TYPES.items():
+        def select(i, x, codes=codes):
+            t = np.array([lab[(i, int(s0))] for s0 in x["start"]])
+            return (x["y"] == 0) | np.isin(t, list(codes)), x["y"]
+        res[name] = {f"{a}_vs_{b}": contrast_selected(L, a, b, select) for a, b in [cf.PRIMARY] + ENGINEERING}
+    return res
 
 
 def per_state(L: dict, base: dict) -> dict:
@@ -165,7 +227,7 @@ def pc2(L: dict, base: dict) -> dict:
     return out
 
 
-def run(cache: Path, scores_dir: Path, kind: str, summary: dict) -> dict:
+def run(cache: Path, scores_dir: Path, kind: str, summary: dict, epochs_csv: Path | None = None) -> dict:
     L = load(cache, scores_dir, kind, list(cf.L.MODELS))
     base = {i: r["evaluable_states"] for i, r in L["recs"].items() if r.get("evaluable_states") and i in L["data"]}
     a, b = cf.PRIMARY
@@ -180,6 +242,9 @@ def run(cache: Path, scores_dir: Path, kind: str, summary: dict) -> dict:
     for n in (3, 10):
         ev = {i: evaluable_states(x["y"], x["s"], n) for i, x in L["data"].items()}
         out["thresholds"][f">={n}"] = contrast(L, a, b, ev)
+    out["sleep_depth_restricted"] = sleep_depth_restricted(L, base)
+    if epochs_csv is not None:
+        out["by_ied_type"] = by_ied_type(L, epochs_csv)
     return out
 
 
@@ -188,9 +253,10 @@ def main() -> None:
     ap.add_argument("--learner", default="hgb", choices=["hgb", "lr"])
     ap.add_argument("--cache", type=Path, default=ROOT / "data/interim/features/salience2s")
     ap.add_argument("--scores", type=Path, default=ROOT / "data/processed/exp004/scores")
+    ap.add_argument("--epochs", type=Path, default=ROOT / "data/interim/vepiset/epochs.csv")
     a = ap.parse_args()
     summary = json.loads((ROOT / f"artifacts/exp004/summary_{a.learner}.json").read_text())
-    res = run(a.cache, a.scores, a.learner, summary)
+    res = run(a.cache, a.scores, a.learner, summary, a.epochs)
     sys.path.insert(0, str(ROOT / "src" / "pipeline"))
     import run_ladder as rl
 
