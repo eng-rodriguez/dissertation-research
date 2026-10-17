@@ -1,0 +1,8 @@
+{
+  "scenario": "pos_highvar_hetero",
+  "gamma_override": 3.0,
+  "m": 40,
+  "theta": 0.06110052700796691,
+  "theta_mc_se": 0.00213443350678039,
+  "sd_over_training_sets": 0.013499342791212962
+}

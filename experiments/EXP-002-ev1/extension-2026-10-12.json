@@ -1,0 +1,12 @@
+{
+  "experiment": "EXP-002",
+  "record": "Pre-registered replicate extension after the INDETERMINATE first pass (11 LOG-2026-10-12-EV1-RESULT1). Fixed before any extension dataset was run.",
+  "approved": "Josue, 2026-10-12 (decision card: 2,000 each)",
+  "frozen_config": {"path": "experiments/EXP-002-ev1/config.json", "sha256": "b327c66b278c5bc28cd22b852d421b500c4a895d9270a2d1e38bce26773937ce", "unchanged": true},
+  "scenarios": ["pos_hetero", "pos_sesoi"],
+  "datasets": "indices 1000-1999 added to the existing 0-999, giving 2,000 per scenario; seeds default_rng([2026101501, scenario index, i]) as frozen",
+  "other_scenarios": "null_homog, null_hetero, null_highvar keep their first-pass 1,000 datasets and PASS verdicts",
+  "theta": "unchanged (first-pass m = 200 values)",
+  "rule": "the approved rule, unchanged. At n = 2,000 the MC SE is <= 0.008 for any coverage >= 0.85, so each extended scenario resolves to PASS or FAIL. No further extension.",
+  "first_pass_summary": "artifacts/protocol/ev1/ev1_summary_pass1.json"
+}

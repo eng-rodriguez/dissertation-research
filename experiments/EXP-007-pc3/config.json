@@ -1,0 +1,112 @@
+{
+  "experiment": "EXP-007",
+  "name": "PC-3 re-test: EXP-006 criteria and same-channel reference unchanged, plus a Monte Carlo precision rule (decides the PC-3 gate; EXP-001, EXP-005, EXP-006 stay FAIL)",
+  "decision": "Josue 2026-10-10, decision card 'EXP-007 with precision'; 11 LOG-2026-10-10-PC3-EXP007",
+  "status_of_criteria": "EXP-006 criteria unchanged; only the precision rule and the number of windows are new (the EXP-006 failure was Monte Carlo noise above the margin); fresh seeds; frozen and pushed before the run",
+  "protocol": "06-EXPERIMENTAL-PROTOCOL.md v1.0 (RDR-013), configs/protocol_v1/fc_wpli.json",
+  "synthetic_design": {
+    "fs": 500,
+    "n_channels": 19,
+    "background": "independent per channel, Gaussian with 1/f power spectrum (exponent 1), no inter-channel coupling",
+    "reference": "CAR over the 19 channels, as in the real pipeline",
+    "window_s": 2.0,
+    "window_starts_s": "6 + 3k (k = 0..n_windows-1); the first and last 4 s of each recording are never used",
+    "bands": [
+      "theta",
+      "alpha",
+      "beta"
+    ],
+    "lag_test": {
+      "duration_s": 100,
+      "n_windows": 30,
+      "coupled_pairs": [
+        [
+          0,
+          5
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          7,
+          14
+        ],
+        [
+          11,
+          18
+        ]
+      ],
+      "lag_sign": [
+        1,
+        -1,
+        1,
+        -1
+      ],
+      "lag_sign_meaning": "+1: channel j lags channel i (expected sign of sum Im(z_i conj z_j) > 0); -1: i lags j",
+      "lag": "integer-sample delay nearest to a quarter period at the band centre (theta 6, alpha 10.5, beta 21.5 Hz)",
+      "burst": "band-limited Gaussian noise (same Butterworth order-4 band-pass) times a 1.6-s Hann taper centred in each window; the delayed copy is added to the lagging channel",
+      "snr": 3.0,
+      "snr_meaning": "burst RMS over the taper's non-zero span = snr x the source channel's in-band background RMS",
+      "blocks": {
+        "meaning": "each block is a fresh synthetic recording with the lag-test design (100 s, 30 windows); windows pool across blocks",
+        "initial": 40,
+        "increment": 10,
+        "max": 120,
+        "stopping_rule": "after the initial blocks and after each increment, stop when every excess comparison's Monte Carlo SE <= 0.005; the rule looks only at SEs, never at the excess values"
+      }
+    },
+    "null_test": {
+      "duration_s": 190,
+      "n_windows": 60
+    },
+    "surrogate_realisations": 5,
+    "seeds": {
+      "background_lag": 2026101401,
+      "background_null": 2026101402,
+      "bursts": 2026101403,
+      "block_seeding": "numpy default_rng([seed, band index, block index])",
+      "surrogates": "06 section 4.3 step 8 rule with eeg_id 'SYN7-LAG-<band>-B<block, 3 digits>' or 'SYN7-NULL-<band>'",
+      "same_channel_reference": "same rule with eeg_id 'SYN7-LAG-<band>-B<block>-REF'"
+    }
+  },
+  "same_channel_reference": {
+    "definition": "per window, realisation r and channel c of a coupled pair: wPLI between the FC_surr IAAFT surrogate of c (seed rule, eeg_id 'SYN7-LAG-<band>-B<block>') and a second, independent IAAFT surrogate of c (eeg_id 'SYN7-LAG-<band>-B<block>-REF'); window Hilbert; averaged over realisations and windows",
+    "meaning": "wPLI produced by single-channel properties alone (spectrum and amplitude distribution), with no coupling by construction",
+    "realisations": 5
+  },
+  "criteria": {
+    "lag_recovery": {
+      "min_mean_wpli_coupled_edge": 0.6,
+      "coupled_edges_are_the_top_edges": true,
+      "min_share_windows_correct_lag_direction": 0.95
+    },
+    "surrogate_destruction": {
+      "direction_share_range": [
+        0.35,
+        0.65
+      ],
+      "lag_direction_at_chance": "per coupled edge, the share of windows x realisations whose surrogate sum Im(z_i conj z_j) has the injected sign lies in [0.35, 0.65] (chance 0.5; 150 draws, SE 0.041)",
+      "max_excess_over_same_channel_reference": 0.02,
+      "excess_definition": "per coupled edge (a, b) and for each of its channels c in {a, b}: mean over windows of k-averaged FC_surr wPLI on (a, b) minus the same-channel reference of c; every value must be <= 0.02",
+      "precision": {
+        "max_se_per_excess": 0.005,
+        "se_definition": "SD over windows of the per-window excess (k-averaged FC_surr wPLI on the coupled edge minus the k-averaged same-channel reference of channel c), divided by sqrt(number of windows)"
+      }
+    },
+    "null_coupling_match": {
+      "offset": "per window: mean over 171 edges of real wPLI minus mean of k-averaged surrogate wPLI; 95% t-interval over windows",
+      "max_abs_offset_ci_bound": 0.02,
+      "max_ks_distance_real_vs_single_realisation": 0.1
+    },
+    "reported_not_criteria": [
+      "EXP-001 checks (coupled vs all uncoupled edges)",
+      "EXP-005 check (vs Gaussian random-phase null)"
+    ],
+    "result_rule": {
+      "PASS": "every criterion holds in every primary band and every excess SE <= 0.005",
+      "FAIL": "any criterion fails at the stopping point (for the excess: any point estimate > 0.02)",
+      "INDETERMINATE": "all point estimates meet the criteria but some excess SE > 0.005 at the maximum of 120 blocks; returned to Josue"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "scenario": "pos_sesoi",
+  "gamma_override": 2.0,
+  "m": 40,
+  "theta": 0.059682452454126844,
+  "theta_mc_se": 0.0018912215010527843,
+  "sd_over_training_sets": 0.011961135006418658
+}

@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="664" height="705" viewBox="0 0 664 705" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Per-patient gain from functional connectivity (L2 logistic regression, secondary learner)">
+<rect width="664" height="705" fill="#ffffff"/>
+<text x="120" y="22" font-size="14" font-weight="600" fill="#0b0b0b">Per-patient gain from functional connectivity (L2 logistic regression, secondary learner)</text>
+<text x="120" y="40" font-size="11" fill="#52514e">One row per evaluable IED-positive patient (n = 35), ordered by evaluable IED epochs.</text>
+<text x="120" y="54" font-size="11" fill="#52514e">Dot: mean over 10 repeats; line: repeat minimum to maximum.</text>
+<line x1="120.0" x2="120.0" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="120.0" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">−0.20</text>
+<line x1="140.8" x2="140.8" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="161.6" x2="161.6" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="161.6" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">−0.16</text>
+<line x1="182.4" x2="182.4" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="203.2" x2="203.2" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="203.2" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">−0.12</text>
+<line x1="224.0" x2="224.0" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="244.8" x2="244.8" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="244.8" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">−0.08</text>
+<line x1="265.6" x2="265.6" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="286.4" x2="286.4" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="286.4" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">−0.04</text>
+<line x1="307.2" x2="307.2" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="328.0" x2="328.0" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="328.0" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">0</text>
+<line x1="348.8" x2="348.8" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="369.6" x2="369.6" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="369.6" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">+0.04</text>
+<line x1="390.4" x2="390.4" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="411.2" x2="411.2" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="411.2" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">+0.08</text>
+<line x1="432.0" x2="432.0" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="452.8" x2="452.8" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="452.8" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">+0.12</text>
+<line x1="473.6" x2="473.6" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="494.4" x2="494.4" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="494.4" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">+0.16</text>
+<line x1="515.2" x2="515.2" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="536.0" x2="536.0" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="536.0" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">+0.20</text>
+<line x1="556.8" x2="556.8" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="577.6" x2="577.6" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="577.6" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">+0.24</text>
+<line x1="598.4" x2="598.4" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="619.2" x2="619.2" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<text x="619.2" y="655.0" font-size="11" fill="#52514e" text-anchor="middle">+0.28</text>
+<line x1="640.0" x2="640.0" y1="78" y2="639.0" stroke="#e1e0d9" stroke-width="1"/>
+<line x1="296.8" x2="296.8" y1="78" y2="639.0" stroke="#52514e" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="359.2" x2="359.2" y1="78" y2="639.0" stroke="#52514e" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="363.2" y="74" font-size="11" fill="#52514e">SESOI ±0.03</text>
+<line x1="328.0" x2="328.0" y1="78" y2="639.0" stroke="#0b0b0b" stroke-width="1"/>
+<text x="112" y="74" font-size="11" fill="#52514e" text-anchor="end">IED epochs</text>
+<text x="112" y="95.5" font-size="11" fill="#52514e" text-anchor="end">5</text>
+<line x1="142.2" x2="381.1" y1="91.5" y2="91.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="271.0" cy="91.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>5 IED epochs: Δp -0.0548 (repeats -0.1786 to +0.0510)</title></circle>
+<text x="112" y="110.5" font-size="11" fill="#52514e" text-anchor="end">5</text>
+<line x1="130.0" x2="400.9" y1="106.5" y2="106.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="249.9" cy="106.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>5 IED epochs: Δp -0.0751 (repeats -0.1904 to +0.0701)</title></circle>
+<text x="112" y="125.5" font-size="11" fill="#52514e" text-anchor="end">8</text>
+<line x1="351.8" x2="628.7" y1="121.5" y2="121.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="459.8" cy="121.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>8 IED epochs: Δp +0.1268 (repeats +0.0229 to +0.2891)</title></circle>
+<text x="112" y="140.5" font-size="11" fill="#52514e" text-anchor="end">9</text>
+<line x1="298.0" x2="356.4" y1="136.5" y2="136.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="334.6" cy="136.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>9 IED epochs: Δp +0.0064 (repeats -0.0288 to +0.0273)</title></circle>
+<text x="112" y="155.5" font-size="11" fill="#52514e" text-anchor="end">9</text>
+<line x1="161.7" x2="488.5" y1="151.5" y2="151.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="264.6" cy="151.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>9 IED epochs: Δp -0.0609 (repeats -0.1599 to +0.1544)</title></circle>
+<text x="112" y="170.5" font-size="11" fill="#52514e" text-anchor="end">11</text>
+<line x1="154.2" x2="380.6" y1="166.5" y2="166.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="249.1" cy="166.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>11 IED epochs: Δp -0.0759 (repeats -0.1671 to +0.0506)</title></circle>
+<text x="112" y="185.5" font-size="11" fill="#52514e" text-anchor="end">11</text>
+<line x1="285.2" x2="378.4" y1="181.5" y2="181.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="336.0" cy="181.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>11 IED epochs: Δp +0.0077 (repeats -0.0411 to +0.0484)</title></circle>
+<text x="112" y="200.5" font-size="11" fill="#52514e" text-anchor="end">11</text>
+<line x1="275.1" x2="602.1" y1="196.5" y2="196.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="479.8" cy="196.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>11 IED epochs: Δp +0.1460 (repeats -0.0509 to +0.2636)</title></circle>
+<text x="112" y="215.5" font-size="11" fill="#52514e" text-anchor="end">12</text>
+<line x1="286.2" x2="421.0" y1="211.5" y2="211.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="343.1" cy="211.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>12 IED epochs: Δp +0.0145 (repeats -0.0402 to +0.0894)</title></circle>
+<text x="112" y="230.5" font-size="11" fill="#52514e" text-anchor="end">13</text>
+<line x1="330.7" x2="364.2" y1="226.5" y2="226.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="345.0" cy="226.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>13 IED epochs: Δp +0.0163 (repeats +0.0026 to +0.0348)</title></circle>
+<text x="112" y="245.5" font-size="11" fill="#52514e" text-anchor="end">14</text>
+<line x1="189.6" x2="405.7" y1="241.5" y2="241.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="277.0" cy="241.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>14 IED epochs: Δp -0.0490 (repeats -0.1331 to +0.0747)</title></circle>
+<text x="112" y="260.5" font-size="11" fill="#52514e" text-anchor="end">17</text>
+<line x1="262.8" x2="354.4" y1="256.5" y2="256.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="310.9" cy="256.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>17 IED epochs: Δp -0.0164 (repeats -0.0627 to +0.0254)</title></circle>
+<text x="112" y="275.5" font-size="11" fill="#52514e" text-anchor="end">18</text>
+<line x1="285.2" x2="425.2" y1="271.5" y2="271.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="365.4" cy="271.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>18 IED epochs: Δp +0.0360 (repeats -0.0412 to +0.0935)</title></circle>
+<text x="112" y="290.5" font-size="11" fill="#52514e" text-anchor="end">19</text>
+<line x1="173.6" x2="348.2" y1="286.5" y2="286.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="260.8" cy="286.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>19 IED epochs: Δp -0.0646 (repeats -0.1485 to +0.0194)</title></circle>
+<text x="112" y="305.5" font-size="11" fill="#52514e" text-anchor="end">20</text>
+<line x1="246.3" x2="395.4" y1="301.5" y2="301.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="334.4" cy="301.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>20 IED epochs: Δp +0.0062 (repeats -0.0786 to +0.0648)</title></circle>
+<text x="112" y="320.5" font-size="11" fill="#52514e" text-anchor="end">20</text>
+<line x1="258.9" x2="401.3" y1="316.5" y2="316.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="340.2" cy="316.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>20 IED epochs: Δp +0.0117 (repeats -0.0665 to +0.0705)</title></circle>
+<text x="112" y="335.5" font-size="11" fill="#52514e" text-anchor="end">21</text>
+<line x1="273.3" x2="487.8" y1="331.5" y2="331.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="357.8" cy="331.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>21 IED epochs: Δp +0.0287 (repeats -0.0526 to +0.1537)</title></circle>
+<text x="112" y="350.5" font-size="11" fill="#52514e" text-anchor="end">27</text>
+<line x1="226.0" x2="358.0" y1="346.5" y2="346.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="316.1" cy="346.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>27 IED epochs: Δp -0.0115 (repeats -0.0981 to +0.0288)</title></circle>
+<text x="112" y="365.5" font-size="11" fill="#52514e" text-anchor="end">29</text>
+<line x1="193.6" x2="383.4" y1="361.5" y2="361.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="332.0" cy="361.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>29 IED epochs: Δp +0.0038 (repeats -0.1292 to +0.0533)</title></circle>
+<text x="112" y="380.5" font-size="11" fill="#52514e" text-anchor="end">30</text>
+<line x1="243.9" x2="400.9" y1="376.5" y2="376.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="311.0" cy="376.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>30 IED epochs: Δp -0.0164 (repeats -0.0809 to +0.0701)</title></circle>
+<text x="112" y="395.5" font-size="11" fill="#52514e" text-anchor="end">31</text>
+<line x1="296.5" x2="343.4" y1="391.5" y2="391.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="319.0" cy="391.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>31 IED epochs: Δp -0.0087 (repeats -0.0303 to +0.0148)</title></circle>
+<text x="112" y="410.5" font-size="11" fill="#52514e" text-anchor="end">34</text>
+<line x1="348.4" x2="557.3" y1="406.5" y2="406.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="460.1" cy="406.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>34 IED epochs: Δp +0.1271 (repeats +0.0197 to +0.2205)</title></circle>
+<text x="112" y="425.5" font-size="11" fill="#52514e" text-anchor="end">36</text>
+<line x1="299.3" x2="435.9" y1="421.5" y2="421.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="372.2" cy="421.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>36 IED epochs: Δp +0.0425 (repeats -0.0276 to +0.1037)</title></circle>
+<text x="112" y="440.5" font-size="11" fill="#52514e" text-anchor="end">37</text>
+<line x1="209.0" x2="452.0" y1="436.5" y2="436.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="371.0" cy="436.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>37 IED epochs: Δp +0.0413 (repeats -0.1145 to +0.1192)</title></circle>
+<text x="112" y="455.5" font-size="11" fill="#52514e" text-anchor="end">39</text>
+<line x1="175.4" x2="503.7" y1="451.5" y2="451.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="265.8" cy="451.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>39 IED epochs: Δp -0.0598 (repeats -0.1468 to +0.1689)</title></circle>
+<text x="112" y="470.5" font-size="11" fill="#52514e" text-anchor="end">43</text>
+<line x1="223.6" x2="409.1" y1="466.5" y2="466.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="345.2" cy="466.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>43 IED epochs: Δp +0.0166 (repeats -0.1004 to +0.0780)</title></circle>
+<text x="112" y="485.5" font-size="11" fill="#52514e" text-anchor="end">44</text>
+<line x1="346.9" x2="412.7" y1="481.5" y2="481.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="376.4" cy="481.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>44 IED epochs: Δp +0.0465 (repeats +0.0181 to +0.0814)</title></circle>
+<text x="112" y="500.5" font-size="11" fill="#52514e" text-anchor="end">45</text>
+<line x1="212.6" x2="399.9" y1="496.5" y2="496.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="306.8" cy="496.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>45 IED epochs: Δp -0.0204 (repeats -0.1110 to +0.0692)</title></circle>
+<text x="112" y="515.5" font-size="11" fill="#52514e" text-anchor="end">62</text>
+<line x1="371.6" x2="456.0" y1="511.5" y2="511.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="410.7" cy="511.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>62 IED epochs: Δp +0.0795 (repeats +0.0419 to +0.1231)</title></circle>
+<text x="112" y="530.5" font-size="11" fill="#52514e" text-anchor="end">65</text>
+<line x1="285.8" x2="472.1" y1="526.5" y2="526.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="375.2" cy="526.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>65 IED epochs: Δp +0.0454 (repeats -0.0405 to +0.1386)</title></circle>
+<text x="112" y="545.5" font-size="11" fill="#52514e" text-anchor="end">77</text>
+<line x1="128.3" x2="246.6" y1="541.5" y2="541.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="192.2" cy="541.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>77 IED epochs: Δp -0.1306 (repeats -0.1920 to -0.0782)</title></circle>
+<text x="112" y="560.5" font-size="11" fill="#52514e" text-anchor="end">79</text>
+<line x1="246.4" x2="408.6" y1="556.5" y2="556.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="309.0" cy="556.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>79 IED epochs: Δp -0.0183 (repeats -0.0784 to +0.0775)</title></circle>
+<text x="112" y="575.5" font-size="11" fill="#52514e" text-anchor="end">100</text>
+<line x1="240.7" x2="379.5" y1="571.5" y2="571.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="325.3" cy="571.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>100 IED epochs: Δp -0.0026 (repeats -0.0839 to +0.0495)</title></circle>
+<text x="112" y="590.5" font-size="11" fill="#52514e" text-anchor="end">100</text>
+<line x1="301.8" x2="340.2" y1="586.5" y2="586.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="320.8" cy="586.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>100 IED epochs: Δp -0.0069 (repeats -0.0252 to +0.0118)</title></circle>
+<text x="112" y="605.5" font-size="11" fill="#52514e" text-anchor="end">199</text>
+<line x1="392.5" x2="583.7" y1="601.5" y2="601.5" stroke="#2a78d6" stroke-width="2" stroke-linecap="round" stroke-opacity="0.45"/>
+<circle cx="491.3" cy="601.5" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"><title>199 IED epochs: Δp +0.1571 (repeats +0.0620 to +0.2458)</title></circle>
+<text x="112" y="631.0" font-size="11" font-weight="600" fill="#0b0b0b" text-anchor="end">Overall (M1)</text>
+<line x1="291.5" x2="381.6" y1="627.0" y2="627.0" stroke="#0b0b0b" stroke-width="2"/>
+<rect x="299.1" y="623.0" width="74.9" height="8" rx="2" fill="#0b0b0b"/>
+<circle cx="336.6" cy="627.0" r="5" fill="#ffffff" stroke="#0b0b0b" stroke-width="2"/>
+<text x="380.0" y="673.0" font-size="11" fill="#52514e" text-anchor="middle">Δ within-patient AUROC (B2 + FC − B2)</text>
+<text x="120" y="693.0" font-size="11" fill="#52514e">Overall Δ = +0.0082; bar: M1 90% [-0.0278, +0.0443]; line: M1 95% [-0.0351, +0.0515].</text>
+</svg>

@@ -1,0 +1,42 @@
+b0 {'seconds_per_outer_fit': 3.0, 'hours_for_model': 2.3}
+b1 {'seconds_per_outer_fit': 3.5, 'hours_for_model': 2.7}
+b2 {'seconds_per_outer_fit': 3.6, 'hours_for_model': 2.8}
+b2_adj {'seconds_per_outer_fit': 6.8, 'hours_for_model': 5.2}
+b2_fcsurr {'seconds_per_outer_fit': 5.4, 'hours_for_model': 4.2}
+b2_fc {'seconds_per_outer_fit': 5.5, 'hours_for_model': 4.2}
+pc1_fc_only {'seconds_per_outer_fit': 3.6, 'hours_for_model': 2.8}
+{
+  "n_train_epochs": 15154,
+  "per_model": {
+    "b0": {
+      "seconds_per_outer_fit": 3.0,
+      "hours_for_model": 2.3
+    },
+    "b1": {
+      "seconds_per_outer_fit": 3.5,
+      "hours_for_model": 2.7
+    },
+    "b2": {
+      "seconds_per_outer_fit": 3.6,
+      "hours_for_model": 2.8
+    },
+    "b2_adj": {
+      "seconds_per_outer_fit": 6.8,
+      "hours_for_model": 5.2
+    },
+    "b2_fcsurr": {
+      "seconds_per_outer_fit": 5.4,
+      "hours_for_model": 4.2
+    },
+    "b2_fc": {
+      "seconds_per_outer_fit": 5.5,
+      "hours_for_model": 4.2
+    },
+    "pc1_fc_only": {
+      "seconds_per_outer_fit": 3.6,
+      "hours_for_model": 2.8
+    }
+  },
+  "approx_total_hours_single_stream": 24.2,
+  "note": "inner fits use about 3/4 of the outer training set (factor 0.85 applied)"
+}

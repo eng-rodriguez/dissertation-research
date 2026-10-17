@@ -1,0 +1,16 @@
+EXP-001 diagnostics after the FAIL (2026-10-10). Not PC-3 criteria; run after the result was known.
+
+$ python experiments/EXP-001-pc3/diagnostics/edge_classes.py theta   (and beta)
+theta coupled 4 real 0.947 surr mean 0.534 range [0.517, 0.569]
+theta burst-burst 24 real 0.520 surr mean 0.466 range [0.417, 0.527]
+theta burst-bg 88 real 0.456 surr mean 0.425 range [0.368, 0.484]
+theta bg-bg 55 real 0.384 surr mean 0.374 range [0.318, 0.427]
+beta coupled 4 real 0.950 surr mean 0.321 range [0.287, 0.360]
+beta burst-burst 24 real 0.298 surr mean 0.257 range [0.219, 0.278]
+beta burst-bg 88 real 0.302 surr mean 0.227 range [0.193, 0.252]
+beta bg-bg 55 real 0.195 surr mean 0.198 range [0.169, 0.225]
+
+$ python experiments/EXP-001-pc3/diagnostics/shared_spectrum_mechanism.py
+independent random phases, SAME amplitude spectrum: mean wPLI 0.474
+independent random phases, DIFFERENT amplitude spectra: mean wPLI 0.393
+IAAFT surrogates, share of windows x realisations with the injected lag direction (real: 1.00): {'(0, 5)': 0.58, '(2, 9)': 0.4, '(7, 14)': 0.55, '(11, 18)': 0.53}
