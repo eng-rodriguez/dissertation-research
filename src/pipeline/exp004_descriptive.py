@@ -56,6 +56,7 @@ ENGINEERING = [("b0", "b2_fc"), ("b0", "b2")]  # Josue 2026-10-16: B0 as a secon
 REL_DELTA = 18  # b1.NAMES index of relative delta power
 IED_TYPES = {"generalized": {1}, "focal": {2, 3, 4, 5}}  # 05: 1 generalized; 2-5 frontal/temporal/centro-parietal/occipital
 N_EDGES = 19 * 18 // 2
+EXP004_MODELS = [m for m in cf.L.MODELS if m != "b2_fc_delta"]  # b2_fc_delta exists only in EXP-010 (4-s)
 
 
 def evaluable_states(y: np.ndarray, s: np.ndarray, min_n: int) -> list[str]:
@@ -238,7 +239,7 @@ def pc2(L: dict, base: dict) -> dict:
 
 
 def run(cache: Path, scores_dir: Path, kind: str, summary: dict, epochs_csv: Path | None = None) -> dict:
-    L = load(cache, scores_dir, kind, list(cf.L.MODELS))
+    L = load(cache, scores_dir, kind, EXP004_MODELS)
     base = {i: r["evaluable_states"] for i, r in L["recs"].items() if r.get("evaluable_states") and i in L["data"]}
     a, b = cf.PRIMARY
     chk = est.delta_summary(aurocs(L, (a, b), base), a, b, L["folds"])["delta_hat"]

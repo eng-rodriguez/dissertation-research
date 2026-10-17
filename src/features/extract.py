@@ -3,7 +3,9 @@
 For one recording: the kept epochs (locked exclusions), their analysis windows, and every representation:
 B1 (n x 19 x 24), the 17 threshold-free B2 additions (n x 17; the salience count is added at model
 assembly from peak_z and the pilot-fixed z*), ADJ (n x 912), FC = wPLI theta/alpha/beta (n x 513) and
-FC_surr (n x 513, k IAAFT realisations per band). Optional exploratory FC bands are not computed here.
+FC_surr (n x 513, k IAAFT realisations per band). Exploratory FC bands per mode (EXTRA_FC_BANDS): none on the
+2-s window; delta on the native 4-s epoch (06 issue 1 item 8, §4.3), stored as fc_delta (n x 171, real signal
+only), never part of the fc block.
 
 CLI (on the Mac only; raw data never leave it; the cache under data/interim/ is never committed):
     python src/features/extract.py --root data/raw/vepiset/extracted/opensource-dataset \
@@ -34,6 +36,7 @@ import windows as wn  # noqa: E402
 import wpli as wp  # noqa: E402
 
 K_SURR = {"salience2s": 5, "epoch4s": 3}
+EXTRA_FC_BANDS = {"salience2s": (), "epoch4s": ("delta",)}
 
 
 def features(x_scalp: np.ndarray, eeg_id: str, epochs: list[dict], mode: str = "salience2s",
@@ -54,6 +57,10 @@ def features(x_scalp: np.ndarray, eeg_id: str, epochs: list[dict], mode: str = "
     fc = wp.real_fc(x_scalp, w["starts"], n)
     out["fc"] = np.hstack([fc[b]["wpli"] for b in wp.PRIMARY_BANDS]) if len(epochs) else np.empty((0, 513))
     out["fc_zero_denominator"] = sum(fc[b]["n_zero_denominator"] for b in wp.PRIMARY_BANDS)
+    for b in EXTRA_FC_BANDS[mode]:
+        x = wp.real_fc(x_scalp, w["starts"], n, bands=(b,))[b] if len(epochs) else {"wpli": np.empty((0, 171)),
+                                                                                    "n_zero_denominator": 0}
+        out[f"fc_{b}"], out[f"fc_{b}_zero_denominator"] = x["wpli"], x["n_zero_denominator"]
     if with_surrogates:
         sf = sg.surrogate_fc(x_scalp, eeg_id, w["starts"], n, K_SURR[mode], epoch_starts=out["epoch_start"])
         out["fc_surr"] = np.hstack([sf[b]["wpli"] for b in wp.PRIMARY_BANDS]) if len(epochs) else np.empty((0, 513))

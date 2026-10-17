@@ -54,9 +54,10 @@ def test_r9_weights_equal_the_ev1_implementation():
 
 def test_design_matrix_dimensions():
     p = synthetic_patients(1)[0]
+    p["F"]["fc_delta"] = np.zeros((len(p["y"]), 171))  # 4-s sensitivity cache only (EXP-010)
     dims = {m: L.design_matrix(p, m).shape[1:] for m in L.MODELS}
     assert dims == {"b0": (19, 24), "b1": (456,), "b2": (474,), "b2_adj": (1386,), "b2_fcsurr": (987,),
-                    "b2_fc": (987,), "pc1_fc_only": (513,)}
+                    "b2_fc": (987,), "pc1_fc_only": (513,), "b2_fc_delta": (1158,)}
 
 
 def test_patient_auroc_matches_sklearn_per_state_and_ied_weights():

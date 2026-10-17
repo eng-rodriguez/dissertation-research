@@ -149,7 +149,7 @@ def check_gate() -> dict:
     return gate
 
 
-def cache_check(cache: Path, recount_csv: Path = RECOUNT_CSV) -> dict:
+def cache_check(cache: Path, recount_csv: Path = RECOUNT_CSV, shapes: dict = SHAPES) -> dict:
     import hashlib
 
     rows = [r for r in csv.DictReader(recount_csv.open()) if r["analysis_set"] == "primary"]
@@ -170,12 +170,12 @@ def cache_check(cache: Path, recount_csv: Path = RECOUNT_CSV) -> dict:
                         bad.append(f"n_{c}_{s} {got} != {r[f'n_{c}_{s}']}")
             if n != int(sum(int(r[f"n_{c}_{s}"]) for c in ("ied", "nonied") for s in ("wake", "sleep"))):
                 bad.append(f"{n} epochs, some outside wake/sleep")
-            for k, shape in SHAPES.items():
+            for k, shape in shapes.items():
                 if k not in z.files or z[k].shape != (n, *shape):
                     bad.append(f"{k} shape {z[k].shape if k in z.files else 'absent'}")
                 elif k in ("b1", "b2_topo", "adj") and not np.isfinite(z[k]).all():
                     bad.append(f"{k} non-finite")
-                elif k in ("fc", "fc_surr"):
+                elif k.startswith("fc"):
                     nonfinite_fc += int((~np.isfinite(z[k])).sum())
             if z["peak_z"].shape != (n, 19):
                 bad.append(f"peak_z shape {z['peak_z'].shape}")

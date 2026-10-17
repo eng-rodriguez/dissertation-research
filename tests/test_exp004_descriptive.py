@@ -30,7 +30,7 @@ def test_descriptive_reproduces_primary_and_reports_all_parts(tmp_path, monkeypa
     epochs = tmp_path / "epochs.csv"
     epochs.write_text("\n".join(rows) + "\n")
     rng = np.random.default_rng(1)
-    for m in cf.L.MODELS:
+    for m in dx.EXP004_MODELS:  # EXP-004 never scored b2_fc_delta
         gain = 1.2 if m == "b2_fc" else 1.0
         for (rep, _), fs in two.items():
             for k in range(5):

@@ -37,6 +37,7 @@ MODELS = {
     "b2_adj": ["b1", "b2_count", "b2_topo", "adj"],
     "b2_fcsurr": ["b1", "b2_count", "b2_topo", "fc_surr"],
     "b2_fc": ["b1", "b2_count", "b2_topo", "fc"],
+    "b2_fc_delta": ["b1", "b2_count", "b2_topo", "fc", "fc_delta"],  # 4-s sensitivity only: exploratory delta rung
     "pc1_fc_only": ["fc"],
 }
 
