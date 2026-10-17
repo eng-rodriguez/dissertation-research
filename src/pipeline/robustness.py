@@ -6,7 +6,7 @@ descriptive reading only, and concordance with RESULT-001 by the rule fixed in t
 The summary pieces are shared with EXP-010 (src/pipeline/exp010_epoch4s.py).
 
 Commands (from the repository root, on the Mac; raw data and epoch scores never leave it):
-    python src/pipeline/robustness.py cache-check --exp EXP-011
+    python src/pipeline/robustness.py cache-check --exp EXP-011     (EXP-012: interpolated recordings added)
     python src/pipeline/robustness.py run --exp EXP-011 --workers 6
     python src/pipeline/robustness.py summary --exp EXP-011
 """
@@ -29,8 +29,10 @@ import exp010_epoch4s as e10  # noqa: E402
 import run_ladder as rl  # noqa: E402
 import taxonomy as tx  # noqa: E402
 
-CONFIGS = {"EXP-011": ROOT / "experiments/EXP-011-bipolar/config.json"}
-FROZEN_SHA256 = {"EXP-011": "800175f87391ead8684861beb6bf97dd2631e64f968de385fa5954f7b6000463"}  # frozen 2026-10-17
+CONFIGS = {"EXP-011": ROOT / "experiments/EXP-011-bipolar/config.json",
+           "EXP-012": ROOT / "experiments/EXP-012-interpolation/config.json"}
+FROZEN_SHA256 = {"EXP-011": "800175f87391ead8684861beb6bf97dd2631e64f968de385fa5954f7b6000463",  # frozen 2026-10-17
+                 "EXP-012": "f6150ab790948da824a2feaf02db7e1647ff8d4c065e517d0afd28198c464347"}  # frozen 2026-10-17
 KIND = "hgb"
 
 
@@ -48,10 +50,14 @@ def shapes(c: dict) -> dict:
     return {k: tuple(v) for k, v in c["shapes"].items()}
 
 
+def sets(c: dict) -> tuple:
+    return tuple(c.get("analysis_sets", ["primary"]))
+
+
 def cmd_cache_check(a) -> None:
     c, _ = load_config(a.exp)
     out = ROOT / c["out"]
-    res = rl.cache_check(ROOT / c["cache"], shapes=shapes(c))
+    res = rl.cache_check(ROOT / c["cache"], shapes=shapes(c), sets=sets(c))
     res["cache"] = c["cache"]
     res["provenance"] = rl.provenance()
     out.mkdir(parents=True, exist_ok=True)
@@ -72,7 +78,7 @@ def cmd_run(a) -> None:
     z_star = json.loads((ROOT / zs["file"]).read_text())["z_star"]
     if z_star != zs["value"]:
         raise SystemExit("pilot z* differs from the frozen value")
-    cf.run(ROOT / c["cache"], out, ROOT / c["scores"], c["models"], KIND, z_star, a.workers)
+    cf.run(ROOT / c["cache"], out, ROOT / c["scores"], c["models"], KIND, z_star, a.workers, sets=sets(c))
 
 
 def summary(c: dict, sha: str, with_states: bool = True) -> dict:
@@ -93,6 +99,10 @@ def summary(c: dict, sha: str, with_states: bool = True) -> dict:
            "extra": {f"{x}_vs_{y}": e10.contrast(auroc, folds, x, y) for x, y in c["extra_contrasts"]},
            "other": {f"{x}_vs_{y}": e10.contrast(auroc, folds, x, y) for x, y in cf.SECONDARY},
            "mean_auroc": {m: e10.mean_auroc(auroc, m) for m in sorted(models)}}
+    if c.get("restrict_to_primary_patients"):
+        prim = set(next(iter(cf.design()["splits"].values())))  # the 69 primary recordings
+        sub = {k: v for k, v in auroc.items() if k[2] in prim}
+        res["primary_patients_only"] = {f"{a}_vs_{b}": e10.contrast(sub, folds, a, b, c["reading"]["concordance"])}
     if "pc1_fc_only" in models:
         for (m, r, p) in list(auroc):
             if m == "pc1_fc_only":
@@ -108,7 +118,7 @@ def summary(c: dict, sha: str, with_states: bool = True) -> dict:
     if with_states:
         import exp004_descriptive as dx
 
-        L = dx.load(ROOT / c["cache"], ROOT / c["scores"], KIND, [a, b])
+        L = dx.load(ROOT / c["cache"], ROOT / c["scores"], KIND, [a, b], sets=sets(c))
         base = {i: r["evaluable_states"] for i, r in L["recs"].items() if r.get("evaluable_states") and i in L["data"]}
         res["per_state"] = {st: {f"{a}_vs_{b}": dx.contrast(L, a, b, {i: [st] for i, s in base.items() if st in s},
                                                             labelled=False)} for st in dx.STATES}

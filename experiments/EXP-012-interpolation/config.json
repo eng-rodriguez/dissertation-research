@@ -1,0 +1,116 @@
+{
+  "experiment": "EXP-012",
+  "description": "Interpolated-recordings sensitivity analysis (06 v1.1 issue 12, §5); run plan D approved by Josue 2026-10-17. Pre-specified; descriptive (06 §4.4); never assigns or revises the RESULT-001 label.",
+  "protocol": {
+    "document": "experiments/protocol/06-EXPERIMENTAL-PROTOCOL-v1.1.md",
+    "sha256": "39fdc48799160a675eb27084392a9d6cca35d6abae300d0121a4156fbea74654"
+  },
+  "factors_changed": {
+    "recordings_added": "the 7 QC-ineligible recordings with <= 2 non-adjacent bad channels (manifest analysis_set sensitivity_only: DA00100F, DA00100H, DA001036, DA001037, DA00103H, DA00103K, DA00103U; 5 E, 2 F), added to the 69 primary recordings",
+    "folds_for_added": "their outer folds as already frozen in the F-3 manifest (sensitivity_only rows, seeded by F-3 at 5cc0058); no new assignment is drawn and the 69 keep their folds",
+    "interpolation": "spherical spline of each added recording's QC-bad channels on the stored rows before every representation (src/preprocessing/interpolate.py: stiffness 4, 50 Legendre terms, lambda 1e-5, positions = 2-D 10-20 read as azimuthal equidistant projection on the unit sphere)",
+    "primary_recordings": "identical to EXP-004 (no bad channels, nothing interpolated); their cache files are the EXP-004 files"
+  },
+  "unchanged_from_exp004": {
+    "epochs_and_exclusions": "06 §4.2 locked exclusions (same kept epochs as EXP-004); the cache check must reproduce the F-6 recount",
+    "evaluability": ">= 5 IED and >= 5 non-IED epochs in a common state, from the F-6 recount (artifacts/dataset_audit/evaluable_recount.csv, which covers the sensitivity_only recordings)",
+    "cohort_and_folds": {
+      "manifest": "artifacts/protocol/f3/fold_manifest.csv",
+      "manifest_sha256": "7f0f53fe83456386efb4a2ffd16db34ac169b7a7880f36d921bcf46fa2062c5d",
+      "repeats": 10,
+      "outer_folds": 5,
+      "inner": "src/design/inner_folds.derive (seed = repeat_seed * 10 + outer_fold)"
+    },
+    "fc": "wPLI theta/alpha/beta on CAR, §4.3; IAAFT k = 5 per band (D1)",
+    "z_star": {
+      "file": "artifacts/pilot/zstar.json",
+      "sha256": "ebd03d4666a8dc7254277f51b9a58b1861032dc851aa3db1df1c91a4c2d06229",
+      "value": 62.932850082760744,
+      "note": "reused unchanged"
+    },
+    "learner": "HistGradientBoostingClassifier, locked grid (16 points), max_iter 300, no early stopping; random_state = repeat seed + outer fold",
+    "tuning": "nested inner CV, mean within-patient same-state AUROC; ties -> simpler",
+    "training_weights": "R9",
+    "estimand": "procedure-level within-patient same-state DeltaAUROC, equal patient weight, per-repeat Delta averaged over repeats",
+    "sesoi": 0.03,
+    "window": "label-blind salience-selected 2-s window on CAR (06 issue 1), as EXP-004"
+  },
+  "learners": [
+    "hgb"
+  ],
+  "learner_note": "primary learner only; the LR learner is its own robustness factor (06 §5) and is not crossed",
+  "models": [
+    "b0",
+    "b1",
+    "b2",
+    "b2_adj",
+    "b2_fcsurr",
+    "b2_fc",
+    "pc1_fc_only"
+  ],
+  "shapes": {
+    "b1": [
+      19,
+      24
+    ],
+    "b2_topo": [
+      17
+    ],
+    "adj": [
+      912
+    ],
+    "fc": [
+      513
+    ],
+    "fc_surr": [
+      513
+    ]
+  },
+  "analysis_sets": [
+    "primary",
+    "sensitivity_only"
+  ],
+  "main_contrast": [
+    "b2_fc",
+    "b2"
+  ],
+  "extra_contrasts": [],
+  "restrict_to_primary_patients": true,
+  "restrict_note": "also reported: the same contrast over the original 35 evaluable primary patients only, separating the effect of the added training recordings from the added test patients (descriptive)",
+  "inference": {
+    "interval": "M1 (06 v1.1 §4.4; RDR-014), 90% and 95%; patient-cluster percentile bootstrap 90%/95% alongside",
+    "heterogeneity": "R6: SD of Delta_p, 95% prediction interval, range, counts beyond +/- SESOI",
+    "state_strata": "estimate + 95% percentile bootstrap CI, no outcome label (R10)",
+    "pc1": "FC-only with the added recordings, M1 95% lower bound of mean AUROC; reported, not a gate here"
+  },
+  "reading": {
+    "rule": "the seven-rule taxonomy (src/evaluation/taxonomy.classify) applied to the M1 intervals is reported as a descriptive reading of this sensitivity analysis only, never as a label for H-1",
+    "reference": {
+      "result": "RESULT-001",
+      "file": "artifacts/exp004/summary_hgb.json",
+      "sha256": "8fab191f21c41d94d8054dfd4d549befcfb250b75815d8bff8a00b58c42dd194",
+      "delta_hat": 0.00022666800647101133,
+      "reading": "equivalent / bounded null"
+    },
+    "concordance": {
+      "equivalent / bounded null": "consistent",
+      "positive, below SESOI": "amplified (positive, within SESOI)",
+      "positive, meaningful magnitude not established": "amplified (positive, magnitude not established)",
+      "negative, within SESOI": "attenuated (negative, within SESOI)",
+      "meaningfully superior": "discordant (positive beyond SESOI)",
+      "inferior": "discordant (negative beyond SESOI)",
+      "inconclusive": "inconclusive (too imprecise to agree or disagree)"
+    }
+  },
+  "extract": {
+    "mode": "salience2s",
+    "montage": "car",
+    "interpolate": true,
+    "analysis_set": "sensitivity_only",
+    "primary_files": "linked from data/interim/features/salience2s"
+  },
+  "runs_once": true,
+  "cache": "data/interim/features/interp",
+  "scores": "data/processed/exp012/scores",
+  "out": "artifacts/exp012"
+}

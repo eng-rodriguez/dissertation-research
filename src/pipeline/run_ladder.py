@@ -149,10 +149,11 @@ def check_gate() -> dict:
     return gate
 
 
-def cache_check(cache: Path, recount_csv: Path = RECOUNT_CSV, shapes: dict = SHAPES) -> dict:
+def cache_check(cache: Path, recount_csv: Path = RECOUNT_CSV, shapes: dict = SHAPES,
+                sets: tuple = ("primary",)) -> dict:
     import hashlib
 
-    rows = [r for r in csv.DictReader(recount_csv.open()) if r["analysis_set"] == "primary"]
+    rows = [r for r in csv.DictReader(recount_csv.open()) if r["analysis_set"] in sets]
     problems, files, nonfinite_fc, zero_den = {}, {}, 0, 0
     for r in rows:
         i, path = r["eeg_id"], cache / f"{r['eeg_id']}.npz"

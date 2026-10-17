@@ -43,8 +43,8 @@ def test_frozen_exp010_config_is_unchanged():
     assert set(c["models"]) <= set(cf.L.MODELS) and "b2_fc_delta" in c["models"]
 
 
-def fake_units(out: Path, models, shift: float) -> None:
-    d = cf.design()
+def fake_units(out: Path, models, shift: float, sets=("primary",)) -> None:
+    d = cf.design(sets=sets)
     rng = np.random.default_rng(1)
     base = {i: 0.8 + 0.1 * rng.random() for i in d["recs"]}
     lines = []

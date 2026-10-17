@@ -68,3 +68,39 @@ def test_summary_reading_and_concordance(tmp_path, shift, want):
     assert res["pc1"]["mean_auroc"] > 0.5
     rb.write_figures(c, res)
     assert (tmp_path / "figures" / "forest_b2_fc_vs_b2.svg").exists()
+
+
+def test_spline_interpolation_reconstructs_smooth_fields_and_passes_the_reference():
+    import interpolate as ip
+
+    pos = ip.positions3d()
+    assert np.allclose(np.linalg.norm(pos, axis=1), 1)
+    f = pos @ np.array([0.3, -0.5, 0.8])
+    x = np.tile(f[:, None], (1, 4))
+    y = ip.interpolate(x, ["Cz", "O1"])
+    assert np.abs(y - x).max() < 0.01  # a smooth (linear) scalp field is recovered
+    assert np.allclose(ip.interpolate(x + 7.0, ["Fp2"]) - 7.0, ip.interpolate(x, ["Fp2"]))  # shared reference
+    assert np.allclose(ip.matrix(["T3"]).sum(axis=1), 1)
+    assert np.array_equal(ip.interpolate(x, []), x)
+    good = [i for i in range(19) if ip.NAMES[i] not in ("Cz", "O1")]
+    assert np.array_equal(y[good], x[good])  # good rows untouched
+
+
+def test_design_adds_the_frozen_sensitivity_folds_only():
+    import confirmatory as cf
+
+    p, s = cf.design(), cf.design(sets=("primary", "sensitivity_only"))
+    for key, folds in s["splits"].items():
+        assert len(folds) == 76
+        assert all(folds[i] == k for i, k in p["splits"][key].items())  # the 69 keep their frozen folds
+
+
+def test_frozen_exp012_config_and_primary_patient_restriction(tmp_path):
+    c, sha = rb.load_config("EXP-012")
+    assert rb.FROZEN_SHA256["EXP-012"] == sha and rb.sets(c) == ("primary", "sensitivity_only")
+    assert c["protocol"]["sha256"] == hashlib.sha256((ROOT / c["protocol"]["document"]).read_bytes()).hexdigest()
+    c = {**c, "out": str(tmp_path)}
+    fake_units(tmp_path, c["models"], 0.0, sets=rb.sets(c))
+    res = rb.summary(c, sha, with_states=False)
+    assert res["main"]["b2_fc_vs_b2"]["n_e"] == 40
+    assert res["primary_patients_only"]["b2_fc_vs_b2"]["n_e"] == 35

@@ -63,8 +63,8 @@ def evaluable_states(y: np.ndarray, s: np.ndarray, min_n: int) -> list[str]:
     return [st for st in STATES if ((y == 1) & (s == st)).sum() >= min_n and ((y == 0) & (s == st)).sum() >= min_n]
 
 
-def load(cache: Path, scores_dir: Path, kind: str, models: list[str]) -> dict:
-    d = cf.design()
+def load(cache: Path, scores_dir: Path, kind: str, models: list[str], sets: tuple = ("primary",)) -> dict:
+    d = cf.design(sets=sets)
     folds = {(rep, i): k for (rep, _), fs in d["splits"].items() for i, k in fs.items()}
     ids = sorted({i for (_, i) in folds})
     data = {}

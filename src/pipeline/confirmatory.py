@@ -45,13 +45,14 @@ SECONDARY = [("b2_fc", "b2_adj"), ("b2_fc", "b2_fcsurr"), ("b2_fcsurr", "b2"), (
 BASE_KEYS = ("label", "state", "peak_z")
 
 
-def design(manifest: Path = MANIFEST) -> dict:
-    """Post-recount recording table and the primary-set outer splits: {(repeat, seed): {eeg_id: fold}}."""
+def design(manifest: Path = MANIFEST, sets: tuple = ("primary",)) -> dict:
+    """Post-recount recording table and the outer splits of the given manifest analysis sets (primary; the
+    issue-12 sensitivity run adds "sensitivity_only"): {(repeat, seed): {eeg_id: fold}}."""
     recs = f3.load_recordings(QC_CSV, STATE_MATRIX)
     inf.apply_recount(recs, RECOUNT_CSV)
     splits = defaultdict(dict)
     for r in csv.DictReader(manifest.open()):
-        if r["analysis_set"] == "primary":
+        if r["analysis_set"] in sets:
             splits[(int(r["repeat"]), int(r["seed"]))][r["eeg_id"]] = int(r["outer_fold"])
     return {"recs": recs, "splits": dict(sorted(splits.items()))}
 
@@ -100,8 +101,9 @@ def run_unit(args) -> dict:
             "config": cfg, "auroc": auroc, "seconds": round(time.time() - t0, 1)}
 
 
-def run(cache: Path, out: Path, scores_dir: Path, models: list, kind: str, z_star: float, workers: int) -> None:
-    d = design()
+def run(cache: Path, out: Path, scores_dir: Path, models: list, kind: str, z_star: float, workers: int,
+        sets: tuple = ("primary",)) -> None:
+    d = design(sets=sets)
     path = out / "units" / f"{kind}.jsonl"
     path.parent.mkdir(parents=True, exist_ok=True)
     done = set()

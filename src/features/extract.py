@@ -28,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
 for p in ("features", "preprocessing", "connectivity", "data"):
     sys.path.insert(0, str(ROOT / "src" / p))
 import adj as fadj  # noqa: E402
+import interpolate as ip  # noqa: E402
 import montage as mt  # noqa: E402
 import b1 as fb1  # noqa: E402
 import b2 as fb2  # noqa: E402
@@ -98,14 +99,19 @@ def window_has_marker(window_starts, n_samples: int, points, runs) -> np.ndarray
 
 
 def _one(args) -> tuple[str, float]:
-    root, eeg_id, eps, out, mode, montage = args
+    root, eeg_id, eps, out, mode, montage, bad = args
     t0 = time.time()
     import vepiset_evaluable_recount as rc
 
     flags = rc.signal_epoch_flags(root)(eeg_id, sorted(eps, key=lambda e: e["start"]))
     kept = wn.kept_epochs(eps, flags)
     mat = root / "MAT_Files" / f"{eeg_id}.mat"
-    f = features(wn.load_scalp(mat), eeg_id, kept, mode, montage=montage)
+    x = wn.load_scalp(mat)
+    if bad:  # issue-12 sensitivity only: spline-interpolate the QC-bad rows before every representation
+        x = ip.interpolate(x, bad)
+    f = features(x, eeg_id, kept, mode, montage=montage)
+    if bad:
+        f["interpolated_channels"] = np.array(bad, dtype=str)
     points, runs, _ = va.ied_intervals(va.read_mat_events(mat)[1])
     f["window_has_marker"] = window_has_marker(f["window_start"], wn.WIN if mode == "salience2s" else wn.EPOCH,
                                                points, runs)
@@ -121,11 +127,22 @@ def main() -> None:
     ap.add_argument("--out", required=True, type=Path)
     ap.add_argument("--mode", default="salience2s", choices=list(K_SURR))
     ap.add_argument("--montage", default="car", choices=["car", "bipolar"])
+    ap.add_argument("--interpolate", action="store_true",
+                    help="spline-interpolate each recording's QC-bad channels (issue-12 sensitivity, EXP-012 only)")
+    ap.add_argument("--analysis-set", default=None, help="keep only rows of this analysis_set in --ids-from")
     ap.add_argument("--workers", type=int, default=None)
     ap.add_argument("--allow-non-pilot", action="store_true",
                     help="extract features for recordings outside the frozen pilot (EXP-004 preparation only)")
     a = ap.parse_args()
-    ids = sorted({r["eeg_id"] for r in csv.DictReader(a.ids_from.open())})
+    ids = sorted({r["eeg_id"] for r in csv.DictReader(a.ids_from.open())
+                  if a.analysis_set is None or r.get("analysis_set") == a.analysis_set})
+    bad = {}
+    if a.interpolate:
+        qc = {r["eeg_id"]: r for r in csv.DictReader((ROOT / "artifacts/dataset_audit/channel_qc.csv").open())}
+        for i in ids:
+            bad[i] = [c for c in qc[i]["bad_channels"].split(";") if c]
+            if qc[i]["sensitivity_eligible"] != "True" or len(bad[i]) > 2:
+                raise SystemExit(f"{i} is not interpolation-sensitivity eligible")
     pilot = {r["eeg_id"] for r in csv.DictReader((ROOT / "artifacts/protocol/f3/pilot_subset.csv").open())}
     if not a.allow_non_pilot and set(ids) - pilot:
         raise SystemExit(f"{len(set(ids) - pilot)} recordings are outside the frozen pilot; pass --allow-non-pilot")
@@ -135,7 +152,7 @@ def main() -> None:
             by[e["eeg_id"]].append({"start": int(e["start"]), "end": int(e["end"]), "label": int(e["label"]),
                                     "state": e["state"], "has_ied_event": int(e["has_ied_event"])})
     a.out.mkdir(parents=True, exist_ok=True)
-    todo = [(a.root, i, by[i], a.out, a.mode, a.montage) for i in ids if not (a.out / f"{i}.npz").exists()]
+    todo = [(a.root, i, by[i], a.out, a.mode, a.montage, bad.get(i, [])) for i in ids if not (a.out / f"{i}.npz").exists()]
     with ProcessPoolExecutor(max_workers=a.workers) as ex:
         for eeg_id, sec in ex.map(_one, todo):
             print(f"{eeg_id} {sec:.0f}s", flush=True)

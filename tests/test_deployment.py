@@ -26,7 +26,7 @@ def test_threshold_respects_fp_budget_and_ties():
 def test_run_reproduces_exp004_scores_and_summarises(tmp_path, monkeypatch):
     d = cf.design()
     one = dict(list(d["splits"].items())[:1])
-    monkeypatch.setattr(cf, "design", lambda manifest=None: {"recs": d["recs"], "splits": one})
+    monkeypatch.setattr(cf, "design", lambda manifest=None, sets=("primary",): {"recs": d["recs"], "splits": one})
     cache, saved, probs, out, units = (tmp_path / n for n in ("cache", "saved", "probs", "out", "units"))
     for x in (cache, saved, units):
         x.mkdir()

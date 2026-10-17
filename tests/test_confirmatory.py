@@ -36,7 +36,7 @@ def fake_cache(path: Path, gain: float) -> None:
 def small_design(monkeypatch):
     d = cf.design()
     two = dict(list(d["splits"].items())[:2])
-    monkeypatch.setattr(cf, "design", lambda manifest=None: {"recs": d["recs"], "splits": two})
+    monkeypatch.setattr(cf, "design", lambda manifest=None, sets=("primary",): {"recs": d["recs"], "splits": two})
     monkeypatch.setattr(cf.L, "HGB_GRID", FAST)
     return d
 

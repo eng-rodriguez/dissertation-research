@@ -16,7 +16,7 @@ from test_confirmatory import fake_cache  # noqa: E402
 def test_descriptive_reproduces_primary_and_reports_all_parts(tmp_path, monkeypatch):
     d = cf.design()
     two = dict(list(d["splits"].items())[:2])
-    monkeypatch.setattr(cf, "design", lambda manifest=None: {"recs": d["recs"], "splits": two})
+    monkeypatch.setattr(cf, "design", lambda manifest=None, sets=("primary",): {"recs": d["recs"], "splits": two})
     cache, scores = tmp_path / "cache", tmp_path / "scores"
     cache.mkdir()
     scores.mkdir()
