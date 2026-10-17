@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-for p in ("features", "preprocessing", "pipeline"):
+for p in ("features", "preprocessing", "pipeline", "data"):
     sys.path.insert(0, str(ROOT / "src" / p))
 sys.path.insert(0, str(ROOT / "tests"))
 import extract as ex  # noqa: E402
@@ -104,3 +104,62 @@ def test_frozen_exp012_config_and_primary_patient_restriction(tmp_path):
     res = rb.summary(c, sha, with_states=False)
     assert res["main"]["b2_fc_vs_b2"]["n_e"] == 40
     assert res["primary_patients_only"]["b2_fc_vs_b2"]["n_e"] == 35
+
+
+def test_lift_restores_exactly_the_three_06_exclusions():
+    import vepiset_evaluable_recount as rc
+    import windows as wn
+
+    # epochs 0..13: 5 IED with marker; 9 IED without marker; 11 non-IED with marker; 3 mixed state; 7 QC-flagged
+    eps = [{"start": i * 2000, "end": (i + 1) * 2000, "label": int(i in (5, 9)), "state": "sleep",
+            "has_ied_event": int(i in (5, 11))} for i in range(14)]
+    eps[3]["state"] = "mixed"
+    flags = [i == 7 for i in range(14)]
+    locked = rc.classify(eps, flags)
+    assert [locked[i] for i in (0, 3, 4, 6, 7, 8, 9, 10, 11, 13)] == \
+        ["edge", "state", "adjacent", "adjacent", "epoch_qc", "adjacent", "ied_no_marker", "adjacent",
+         "nonied_marker", "edge"]
+    lifted = rc.classify(eps, flags, frozenset(rc.LIFTABLE))
+    assert [i for i, r in enumerate(lifted) if r is None] == [1, 2, 4, 5, 6, 8, 9, 10, 11, 12]
+    assert lifted[3] == "state" and lifted[7] == "epoch_qc" and lifted[0] == lifted[13] == "edge"
+    with pytest.raises(ValueError):
+        rc.classify(eps, flags, frozenset({"epoch_qc"}))
+    kept = wn.kept_epochs(eps, flags, frozenset(rc.LIFTABLE))
+    assert {e["start"] // 2000: e["locked_reason"] for e in kept if e["locked_reason"]} == \
+        {4: "adjacent", 6: "adjacent", 8: "adjacent", 9: "ied_no_marker", 10: "adjacent", 11: "nonied_marker"}
+    assert [e["start"] for e in wn.kept_epochs(eps, flags)] == [e["start"] for e in kept if not e["locked_reason"]]
+
+
+def test_cache_check_with_lifted_epochs(tmp_path):
+    import run_ladder as rl
+
+    rng = np.random.default_rng(3)
+    rec = tmp_path / "recount.csv"
+    rec.write_text("eeg_id,analysis_set,n_ied_wake,n_nonied_wake,n_ied_sleep,n_nonied_sleep\nA,primary,3,5,2,4\n")
+    y = np.array([1] * 3 + [0] * 5 + [1] * 2 + [0] * 4 + [0, 0, 1])
+    s = np.array(["wake"] * 8 + ["sleep"] * 6 + ["sleep"] * 3)
+    reason = np.array([""] * 14 + ["adjacent", "nonied_marker", "ied_no_marker"])
+    n = len(y)
+    arrays = dict(label=y, state=s, peak_z=rng.random((n, 19)), fc_zero_denominator=0,
+                  **{k: rng.random((n, *v)) for k, v in rl.SHAPES.items()})
+    np.savez_compressed(tmp_path / "A.npz", locked_reason=reason, **arrays)
+    res = rl.cache_check(tmp_path, rec, lifted=("ied_no_marker", "nonied_marker", "adjacent"))
+    assert res["result"] == "PASS" and res["lifted_epochs"] == {"adjacent_nonied": 1, "ied_no_marker_ied": 1,
+                                                                "nonied_marker_nonied": 1}
+    np.savez_compressed(tmp_path / "A.npz", locked_reason=np.where(reason == "adjacent", "epoch_qc", reason), **arrays)
+    assert rl.cache_check(tmp_path, rec, lifted=("ied_no_marker", "nonied_marker", "adjacent"))["result"] == "FAIL"
+
+
+def test_frozen_exp013_config_and_recount_override(tmp_path):
+    import confirmatory as cf
+
+    c, sha = rb.load_config("EXP-013")
+    assert rb.FROZEN_SHA256["EXP-013"] == sha and tuple(c["lift"]) == ("ied_no_marker", "nonied_marker", "adjacent")
+    assert c["protocol"]["sha256"] == hashlib.sha256((ROOT / c["protocol"]["document"]).read_bytes()).hexdigest()
+    d = cf.design()
+    ids = sorted(next(iter(d["splits"].values())))
+    for j, i in enumerate(ids):  # every recording gets 6 IED + 6 non-IED sleep epochs: all become evaluable
+        np.savez_compressed(tmp_path / f"{i}.npz", label=np.array([1] * 6 + [0] * 6), state=np.array(["sleep"] * 12))
+    ov = rb.recount_override({**c, "cache": str(tmp_path)})
+    assert len(ov) == 69 and all(v["evaluable_states"] == ["sleep"] and v["group"] == "E" for v in ov.values())
+    assert rb.recount_override({**c, "lift": []}) is None

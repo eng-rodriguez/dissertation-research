@@ -66,10 +66,16 @@ def window_start(s_max: np.ndarray, epoch_start: int) -> tuple[int, int]:
     return epoch_start + t_center - HALF, t_raw
 
 
-def kept_epochs(epochs: list[dict], qc_flags: list[bool]) -> list[dict]:
-    """Epochs that pass every locked exclusion, in start order (classify expects start order)."""
+def kept_epochs(epochs: list[dict], qc_flags: list[bool], lift: frozenset = frozenset()) -> list[dict]:
+    """Epochs that pass every locked exclusion, in start order (classify expects start order). With lift
+    (excluded-epochs sensitivity only), epochs excluded only by a lifted rule are kept too, each carrying its
+    locked exclusion reason under "locked_reason" ("" for epochs the primary analysis keeps)."""
     eps = sorted(epochs, key=lambda e: e["start"])
-    return [e for e, r in zip(eps, rc.classify(eps, qc_flags)) if r is None]
+    if not lift:
+        return [e for e, r in zip(eps, rc.classify(eps, qc_flags)) if r is None]
+    locked = rc.classify(eps, qc_flags)
+    return [{**e, "locked_reason": r0 or ""} for e, r0, r in zip(eps, locked, rc.classify(eps, qc_flags, lift))
+            if r is None]
 
 
 def windows(x_scalp: np.ndarray, epochs: list[dict], mode: str = "salience2s") -> dict:

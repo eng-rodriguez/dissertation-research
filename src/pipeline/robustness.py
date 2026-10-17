@@ -30,9 +30,11 @@ import run_ladder as rl  # noqa: E402
 import taxonomy as tx  # noqa: E402
 
 CONFIGS = {"EXP-011": ROOT / "experiments/EXP-011-bipolar/config.json",
-           "EXP-012": ROOT / "experiments/EXP-012-interpolation/config.json"}
+           "EXP-012": ROOT / "experiments/EXP-012-interpolation/config.json",
+           "EXP-013": ROOT / "experiments/EXP-013-excluded-epochs/config.json"}
 FROZEN_SHA256 = {"EXP-011": "800175f87391ead8684861beb6bf97dd2631e64f968de385fa5954f7b6000463",  # frozen 2026-10-17
-                 "EXP-012": "f6150ab790948da824a2feaf02db7e1647ff8d4c065e517d0afd28198c464347"}  # frozen 2026-10-17
+                 "EXP-012": "f6150ab790948da824a2feaf02db7e1647ff8d4c065e517d0afd28198c464347",  # frozen 2026-10-17
+                 "EXP-013": "21790284fb7cf6e238be5cbb77959314adb65a5408e4dd5b95129c382f52ad14"}  # frozen 2026-10-17
 KIND = "hgb"
 
 
@@ -54,10 +56,31 @@ def sets(c: dict) -> tuple:
     return tuple(c.get("analysis_sets", ["primary"]))
 
 
+def recount_override(c: dict) -> dict | None:
+    """R3 on this analysis's own epoch set (excluded-epochs sensitivity): evaluable states (>= 5 IED and >= 5
+    non-IED in a state), group and coverage recounted from the cached labels and states; labels and counts only."""
+    if not c.get("lift"):
+        return None
+    import numpy as np
+    import exp004_descriptive as dx
+
+    d = cf.design(sets=sets(c))
+    ids = sorted(next(iter(d["splits"].values())))
+    out = {}
+    for i in ids:
+        with np.load(ROOT / c["cache"] / f"{i}.npz") as z:
+            y, s = z["label"], z["state"]
+        st = dx.evaluable_states(y, s, 5)
+        r = d["recs"][i]
+        group = "E" if st else (r["group"] if r["group"] != "E" else ("N" if y.any() else "F"))
+        out[i] = {"evaluable_states": st, "group": group, "coverage": "+".join(st) if st else r["coverage"]}
+    return out
+
+
 def cmd_cache_check(a) -> None:
     c, _ = load_config(a.exp)
     out = ROOT / c["out"]
-    res = rl.cache_check(ROOT / c["cache"], shapes=shapes(c), sets=sets(c))
+    res = rl.cache_check(ROOT / c["cache"], shapes=shapes(c), sets=sets(c), lifted=tuple(c.get("lift", ())))
     res["cache"] = c["cache"]
     res["provenance"] = rl.provenance()
     out.mkdir(parents=True, exist_ok=True)
@@ -78,7 +101,11 @@ def cmd_run(a) -> None:
     z_star = json.loads((ROOT / zs["file"]).read_text())["z_star"]
     if z_star != zs["value"]:
         raise SystemExit("pilot z* differs from the frozen value")
-    cf.run(ROOT / c["cache"], out, ROOT / c["scores"], c["models"], KIND, z_star, a.workers, sets=sets(c))
+    ov = recount_override(c)
+    if ov is not None:
+        (out / "recount_override.json").write_text(json.dumps(ov, indent=2, sort_keys=True) + "\n")
+    cf.run(ROOT / c["cache"], out, ROOT / c["scores"], c["models"], KIND, z_star, a.workers, sets=sets(c),
+           recs_override=ov)
 
 
 def summary(c: dict, sha: str, with_states: bool = True) -> dict:
@@ -103,6 +130,11 @@ def summary(c: dict, sha: str, with_states: bool = True) -> dict:
         prim = set(next(iter(cf.design()["splits"].values())))  # the 69 primary recordings
         sub = {k: v for k, v in auroc.items() if k[2] in prim}
         res["primary_patients_only"] = {f"{a}_vs_{b}": e10.contrast(sub, folds, a, b, c["reading"]["concordance"])}
+    if c.get("restrict_to_exp004_evaluable"):
+        d0 = cf.design()
+        ev = {i for i in next(iter(d0["splits"].values())) if d0["recs"][i]["evaluable_states"]}  # the 35
+        sub = {k: v for k, v in auroc.items() if k[2] in ev}
+        res["exp004_evaluable_only"] = {f"{a}_vs_{b}": e10.contrast(sub, folds, a, b, c["reading"]["concordance"])}
     if "pc1_fc_only" in models:
         for (m, r, p) in list(auroc):
             if m == "pc1_fc_only":
@@ -119,6 +151,8 @@ def summary(c: dict, sha: str, with_states: bool = True) -> dict:
         import exp004_descriptive as dx
 
         L = dx.load(ROOT / c["cache"], ROOT / c["scores"], KIND, [a, b], sets=sets(c))
+        for i, v in (recount_override(c) or {}).items():
+            L["recs"][i].update(v)
         base = {i: r["evaluable_states"] for i, r in L["recs"].items() if r.get("evaluable_states") and i in L["data"]}
         res["per_state"] = {st: {f"{a}_vs_{b}": dx.contrast(L, a, b, {i: [st] for i, s in base.items() if st in s},
                                                             labelled=False)} for st in dx.STATES}

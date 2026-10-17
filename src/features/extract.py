@@ -99,12 +99,12 @@ def window_has_marker(window_starts, n_samples: int, points, runs) -> np.ndarray
 
 
 def _one(args) -> tuple[str, float]:
-    root, eeg_id, eps, out, mode, montage, bad = args
+    root, eeg_id, eps, out, mode, montage, bad, lift = args
     t0 = time.time()
     import vepiset_evaluable_recount as rc
 
     flags = rc.signal_epoch_flags(root)(eeg_id, sorted(eps, key=lambda e: e["start"]))
-    kept = wn.kept_epochs(eps, flags)
+    kept = wn.kept_epochs(eps, flags, lift)
     mat = root / "MAT_Files" / f"{eeg_id}.mat"
     x = wn.load_scalp(mat)
     if bad:  # issue-12 sensitivity only: spline-interpolate the QC-bad rows before every representation
@@ -112,6 +112,8 @@ def _one(args) -> tuple[str, float]:
     f = features(x, eeg_id, kept, mode, montage=montage)
     if bad:
         f["interpolated_channels"] = np.array(bad, dtype=str)
+    if lift:  # excluded-epochs sensitivity: the locked reason of every kept epoch ("" = kept by the primary rules)
+        f["locked_reason"] = np.array([e["locked_reason"] for e in kept], dtype=str)
     points, runs, _ = va.ied_intervals(va.read_mat_events(mat)[1])
     f["window_has_marker"] = window_has_marker(f["window_start"], wn.WIN if mode == "salience2s" else wn.EPOCH,
                                                points, runs)
@@ -130,6 +132,7 @@ def main() -> None:
     ap.add_argument("--interpolate", action="store_true",
                     help="spline-interpolate each recording's QC-bad channels (issue-12 sensitivity, EXP-012 only)")
     ap.add_argument("--analysis-set", default=None, help="keep only rows of this analysis_set in --ids-from")
+    ap.add_argument("--lift", default="", help="comma-separated 06 §4.2 exclusions to lift (EXP-013 only)")
     ap.add_argument("--workers", type=int, default=None)
     ap.add_argument("--allow-non-pilot", action="store_true",
                     help="extract features for recordings outside the frozen pilot (EXP-004 preparation only)")
@@ -152,7 +155,8 @@ def main() -> None:
             by[e["eeg_id"]].append({"start": int(e["start"]), "end": int(e["end"]), "label": int(e["label"]),
                                     "state": e["state"], "has_ied_event": int(e["has_ied_event"])})
     a.out.mkdir(parents=True, exist_ok=True)
-    todo = [(a.root, i, by[i], a.out, a.mode, a.montage, bad.get(i, [])) for i in ids if not (a.out / f"{i}.npz").exists()]
+    lift = frozenset(x for x in a.lift.split(",") if x)
+    todo = [(a.root, i, by[i], a.out, a.mode, a.montage, bad.get(i, []), lift) for i in ids if not (a.out / f"{i}.npz").exists()]
     with ProcessPoolExecutor(max_workers=a.workers) as ex:
         for eeg_id, sec in ex.map(_one, todo):
             print(f"{eeg_id} {sec:.0f}s", flush=True)

@@ -150,8 +150,13 @@ def check_gate() -> dict:
 
 
 def cache_check(cache: Path, recount_csv: Path = RECOUNT_CSV, shapes: dict = SHAPES,
-                sets: tuple = ("primary",)) -> dict:
+                sets: tuple = ("primary",), lifted: tuple = ()) -> dict:
+    """lifted (excluded-epochs sensitivity only): the epochs whose locked_reason is "" must reproduce the
+    recount exactly, and every other kept epoch must carry one of the lifted reasons."""
     import hashlib
+    from collections import Counter
+
+    lifted_counts: Counter = Counter()
 
     rows = [r for r in csv.DictReader(recount_csv.open()) if r["analysis_set"] in sets]
     problems, files, nonfinite_fc, zero_den = {}, {}, 0, 0
@@ -164,12 +169,19 @@ def cache_check(cache: Path, recount_csv: Path = RECOUNT_CSV, shapes: dict = SHA
         bad = []
         with np.load(path) as z:
             n = len(z["label"])
+            base = np.ones(n, bool)
+            if lifted:
+                reason = z["locked_reason"] if "locked_reason" in z.files else np.full(n, "?")
+                base = reason == ""
+                if set(reason[~base]) - set(lifted):
+                    bad.append(f"unexpected locked reasons {sorted(set(reason[~base]) - set(lifted))}")
+                lifted_counts.update(f"{x}_{'ied' if lab else 'nonied'}" for x, lab in zip(reason[~base], z["label"][~base]))
             for c, lab in (("ied", 1), ("nonied", 0)):
                 for s in ("wake", "sleep"):
-                    got = int(((z["label"] == lab) & (z["state"] == s)).sum())
+                    got = int((base & (z["label"] == lab) & (z["state"] == s)).sum())
                     if got != int(r[f"n_{c}_{s}"]):
                         bad.append(f"n_{c}_{s} {got} != {r[f'n_{c}_{s}']}")
-            if n != int(sum(int(r[f"n_{c}_{s}"]) for c in ("ied", "nonied") for s in ("wake", "sleep"))):
+            if int(base.sum()) != int(sum(int(r[f"n_{c}_{s}"]) for c in ("ied", "nonied") for s in ("wake", "sleep"))):
                 bad.append(f"{n} epochs, some outside wake/sleep")
             for k, shape in shapes.items():
                 if k not in z.files or z[k].shape != (n, *shape):
@@ -185,7 +197,7 @@ def cache_check(cache: Path, recount_csv: Path = RECOUNT_CSV, shapes: dict = SHA
             problems[i] = bad
     return {"result": "FAIL" if problems or len(files) != len(rows) else "PASS", "n_recordings": len(rows),
             "problems": problems, "fc_nonfinite_values": nonfinite_fc, "fc_zero_denominator": zero_den,
-            "cache_sha256": files}
+            **({"lifted_epochs": dict(sorted(lifted_counts.items()))} if lifted else {}), "cache_sha256": files}
 
 
 def cmd_cache_check(a) -> None:

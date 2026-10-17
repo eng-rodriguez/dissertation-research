@@ -102,8 +102,12 @@ def run_unit(args) -> dict:
 
 
 def run(cache: Path, out: Path, scores_dir: Path, models: list, kind: str, z_star: float, workers: int,
-        sets: tuple = ("primary",)) -> None:
+        sets: tuple = ("primary",), recs_override: dict | None = None) -> None:
+    """recs_override (excluded-epochs sensitivity only): per recording, group / coverage / evaluable states
+    recounted on that analysis's epoch set, replacing the F-6 recount (R3 applied to the sensitivity set)."""
     d = design(sets=sets)
+    for i, v in (recs_override or {}).items():
+        d["recs"][i].update(v)
     path = out / "units" / f"{kind}.jsonl"
     path.parent.mkdir(parents=True, exist_ok=True)
     done = set()
