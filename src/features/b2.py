@@ -46,15 +46,17 @@ def salience_count(peak_z: np.ndarray, z_star: float | None = None) -> np.ndarra
     return (np.asarray(peak_z) > z_star).sum(axis=-1).astype(float)
 
 
-def topography(f1: np.ndarray) -> np.ndarray:
-    """The 17 B2 additions that need no threshold, for one window's B1 matrix (19 x 24)."""
+def topography(f1: np.ndarray, xy: np.ndarray = XY) -> np.ndarray:
+    """The 17 B2 additions that need no threshold, for one window's B1 matrix (channels x 24). xy: channel
+    positions (10-20 electrodes; derivation midpoints for the bipolar sensitivity montage)."""
+    left, right, anterior, posterior = xy[:, 0] < 0, xy[:, 0] > 0, xy[:, 1] > 0, xy[:, 1] < 0
     ptp = f1[:, I_PTP]
     w = ptp / ptp.sum() if ptp.sum() > 0 else np.full(len(ptp), 1 / len(ptp))
-    c = w @ XY
-    spread = float(np.sqrt(w @ ((XY - c) ** 2).sum(axis=1)))
+    c = w @ xy
+    spread = float(np.sqrt(w @ ((xy - c) ** 2).sum(axis=1)))
     powers = f1[:, I_ABS]
-    lr = [_asym(powers[LEFT, k].sum(), powers[RIGHT, k].sum()) for k in range(len(I_ABS))]
-    ap = [_asym(powers[ANTERIOR, k].sum(), powers[POSTERIOR, k].sum()) for k in range(len(I_ABS))]
+    lr = [_asym(powers[left, k].sum(), powers[right, k].sum()) for k in range(len(I_ABS))]
+    ap = [_asym(powers[anterior, k].sum(), powers[posterior, k].sum()) for k in range(len(I_ABS))]
     return np.array([_ratio(ptp), _ratio(f1[:, I_TE]), c[0], c[1], spread] + lr + ap)
 
 

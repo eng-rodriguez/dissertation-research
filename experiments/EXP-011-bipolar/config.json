@@ -1,0 +1,58 @@
+{
+  "experiment": "EXP-011",
+  "description": "Longitudinal bipolar montage sensitivity analysis (06 v1.1 issue 11, §5); run plan C approved by Josue 2026-10-17. Pre-specified; descriptive (06 §4.4); never assigns or revises the RESULT-001 label.",
+  "protocol": {"document": "experiments/protocol/06-EXPERIMENTAL-PROTOCOL-v1.1.md",
+               "sha256": "39fdc48799160a675eb27084392a9d6cca35d6abae300d0121a4156fbea74654"},
+  "factors_changed": {
+    "montage": "double banana, 18 derivations (Fp1-F7, F7-T3, T3-T5, T5-O1, Fp2-F8, F8-T4, T4-T6, T6-O2, Fp1-F3, F3-C3, C3-P3, P3-O1, Fp2-F4, F4-C4, C4-P4, P4-O2, Fz-Cz, Cz-Pz) from the 19 stored rows, no further re-referencing (src/preprocessing/montage.py)",
+    "per_channel_representations": "B0/B1 (18 x 24), per-derivation peak salience for the B2 count (robust z per derivation, recording-wide), topography and ADJ graph on derivation midpoints (06 issue 11), FC and FC_surr on 153 edges per band (459)"
+  },
+  "unchanged_from_exp004": {
+    "window": "label-blind salience-selected 2-s window chosen on the CAR salience exactly as in EXP-004 (06 issue 1), so the montage is the only factor that changes",
+    "epochs_and_exclusions": "06 §4.2 locked exclusions (same kept epochs as EXP-004); the cache check must reproduce the F-6 recount",
+    "evaluability": ">= 5 IED and >= 5 non-IED epochs in a common state (artifacts/dataset_audit/evaluable_recount.csv)",
+    "cohort_and_folds": {"manifest": "artifacts/protocol/f3/fold_manifest.csv",
+                         "manifest_sha256": "7f0f53fe83456386efb4a2ffd16db34ac169b7a7880f36d921bcf46fa2062c5d",
+                         "repeats": 10, "outer_folds": 5, "inner": "src/design/inner_folds.derive (seed = repeat_seed * 10 + outer_fold)"},
+    "fc": "wPLI theta/alpha/beta, §4.3 steps 2-8 (filter on the continuous derivation, Hilbert, window, wPLI); IAAFT k = 5 per band (D1, 2-s window)",
+    "z_star": {"file": "artifacts/pilot/zstar.json", "sha256": "ebd03d4666a8dc7254277f51b9a58b1861032dc851aa3db1df1c91a4c2d06229",
+               "value": 62.932850082760744, "note": "reused unchanged (same default as EXP-010); applied to per-derivation peak salience"},
+    "learner": "HistGradientBoostingClassifier, locked grid (16 points), max_iter 300, no early stopping; random_state = repeat seed + outer fold",
+    "tuning": "nested inner CV, mean within-patient same-state AUROC; ties -> simpler",
+    "training_weights": "R9",
+    "estimand": "procedure-level within-patient same-state DeltaAUROC, equal patient weight, per-repeat Delta averaged over repeats",
+    "sesoi": 0.03
+  },
+  "learners": ["hgb"],
+  "learner_note": "primary learner only; the LR learner is its own robustness factor (06 §5) and is not crossed with the montage",
+  "models": ["b0", "b1", "b2", "b2_adj", "b2_fcsurr", "b2_fc", "pc1_fc_only"],
+  "shapes": {"b1": [18, 24], "b2_topo": [17], "adj": [864], "fc": [459], "fc_surr": [459]},
+  "main_contrast": ["b2_fc", "b2"],
+  "extra_contrasts": [],
+  "inference": {
+    "interval": "M1 (06 v1.1 §4.4; RDR-014), 90% and 95%; patient-cluster percentile bootstrap 90%/95% alongside",
+    "heterogeneity": "R6: SD of Delta_p, 95% prediction interval, range, counts beyond +/- SESOI",
+    "state_strata": "estimate + 95% percentile bootstrap CI, no outcome label (R10)",
+    "pc1": "FC-only on the bipolar montage, M1 95% lower bound of mean AUROC; reported, not a gate here"
+  },
+  "reading": {
+    "rule": "the seven-rule taxonomy (src/evaluation/taxonomy.classify) applied to the M1 intervals is reported as a descriptive reading of this sensitivity analysis only, never as a label for H-1",
+    "reference": {"result": "RESULT-001", "file": "artifacts/exp004/summary_hgb.json",
+                  "sha256": "8fab191f21c41d94d8054dfd4d549befcfb250b75815d8bff8a00b58c42dd194",
+                  "delta_hat": 0.00022666800647101133, "reading": "equivalent / bounded null"},
+    "concordance": {
+      "equivalent / bounded null": "consistent",
+      "positive, below SESOI": "amplified (positive, within SESOI)",
+      "positive, meaningful magnitude not established": "amplified (positive, magnitude not established)",
+      "negative, within SESOI": "attenuated (negative, within SESOI)",
+      "meaningfully superior": "discordant (positive beyond SESOI)",
+      "inferior": "discordant (negative beyond SESOI)",
+      "inconclusive": "inconclusive (too imprecise to agree or disagree)"
+    }
+  },
+  "extract": {"mode": "salience2s", "montage": "bipolar"},
+  "runs_once": true,
+  "cache": "data/interim/features/bipolar",
+  "scores": "data/processed/exp011/scores",
+  "out": "artifacts/exp011"
+}

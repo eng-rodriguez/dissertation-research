@@ -12,14 +12,19 @@ import numpy as np
 
 from b2 import XY
 
-_D = np.linalg.norm(XY[:, None] - XY[None], axis=-1)
-SIGMA = float(np.median(np.where(np.eye(len(XY), dtype=bool), np.inf, _D).min(axis=1)))
-W = np.exp(-(_D ** 2) / SIGMA ** 2)
-np.fill_diagonal(W, 0.0)
-W /= W.sum(axis=1, keepdims=True)
+def weights(xy: np.ndarray) -> np.ndarray:
+    """Row-normalised Gaussian adjacency over the given 2-D positions (self excluded)."""
+    d = np.linalg.norm(xy[:, None] - xy[None], axis=-1)
+    sigma = float(np.median(np.where(np.eye(len(xy), dtype=bool), np.inf, d).min(axis=1)))
+    w = np.exp(-(d ** 2) / sigma ** 2)
+    np.fill_diagonal(w, 0.0)
+    return w / w.sum(axis=1, keepdims=True)
 
 
-def adj(f1: np.ndarray) -> np.ndarray:
-    """ADJ features for one window from its B1 matrix (19 x 24): 19 x 24 means then 19 x 24 contrasts, flattened."""
-    nb = W @ f1
+W = weights(XY)
+
+
+def adj(f1: np.ndarray, w: np.ndarray = W) -> np.ndarray:
+    """ADJ features for one window from its B1 matrix (channels x 24): means then contrasts, flattened."""
+    nb = w @ f1
     return np.concatenate([nb.ravel(), (f1 - nb).ravel()])

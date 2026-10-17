@@ -177,7 +177,7 @@ def cache_check(cache: Path, recount_csv: Path = RECOUNT_CSV, shapes: dict = SHA
                     bad.append(f"{k} non-finite")
                 elif k.startswith("fc"):
                     nonfinite_fc += int((~np.isfinite(z[k])).sum())
-            if z["peak_z"].shape != (n, 19):
+            if z["peak_z"].shape != (n, shapes["b1"][0]):
                 bad.append(f"peak_z shape {z['peak_z'].shape}")
             zero_den += int(z["fc_zero_denominator"])
         if bad:

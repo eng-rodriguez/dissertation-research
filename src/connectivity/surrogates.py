@@ -71,13 +71,14 @@ def surrogate_wpli(band_window: np.ndarray, eeg_id: str, start: int, band: str, 
 
 
 def surrogate_fc(x_cont: np.ndarray, eeg_id: str, window_starts, n_samples: int, k: int,
-                 bands=wp.PRIMARY_BANDS, fs: int = wp.FS, epoch_starts=None, keep_realisations: bool = False) -> dict:
+                 bands=wp.PRIMARY_BANDS, fs: int = wp.FS, epoch_starts=None, keep_realisations: bool = False,
+                 reference: str = "car") -> dict:
     """FC_surr for one recording: dict band -> (n_windows x n_edges) mean wPLI over k realisations.
 
     epoch_starts: the 4-s epoch start sample of each window, used in the seed (defaults to window_starts).
     With keep_realisations, also returns the per-realisation array (n_windows x k x n_edges) under "realisations".
     """
-    xc = wp.car(x_cont)
+    xc = wp.car(x_cont) if reference == "car" else np.asarray(x_cont, dtype=np.float64)
     seed_starts = list(window_starts if epoch_starts is None else epoch_starts)
     out = {}
     for b in bands:

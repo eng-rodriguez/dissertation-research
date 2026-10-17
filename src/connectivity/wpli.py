@@ -62,12 +62,14 @@ def signed_imag(z: np.ndarray) -> np.ndarray:
     return _cross_imag(z).sum(axis=1)
 
 
-def real_fc(x_cont: np.ndarray, window_starts, n_samples: int, bands=PRIMARY_BANDS, fs: int = FS) -> dict:
+def real_fc(x_cont: np.ndarray, window_starts, n_samples: int, bands=PRIMARY_BANDS, fs: int = FS,
+            reference: str = "car") -> dict:
     """Real-signal FC for one recording: dict band -> (n_windows x n_edges) wPLI and zero-denominator count.
 
     x_cont: continuous recording, channels x samples (the 19 scalp rows). window_starts: sample indices.
+    reference "car" (primary) or "none" (rows already re-referenced, e.g. the bipolar sensitivity montage).
     """
-    xc = car(x_cont)
+    xc = car(x_cont) if reference == "car" else np.asarray(x_cont, dtype=np.float64)
     out = {}
     for b in bands:
         z = analytic(bandpass(xc, b, fs))
