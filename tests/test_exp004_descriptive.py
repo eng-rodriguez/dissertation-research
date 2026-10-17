@@ -56,3 +56,9 @@ def test_descriptive_reproduces_primary_and_reports_all_parts(tmp_path, monkeypa
     sd = res["sleep_depth_restricted"]
     assert 0 < sd["share_negatives_kept"] <= 1 and sd["b2_fc_vs_b2"]["n_e"] <= res["thresholds"][">=3"]["n_e"]
     assert set(res["by_ied_type"]) == {"generalized", "focal"}
+    # 06 §4.4 R10: subgroups carry estimate + percentile-bootstrap CI and no outcome label
+    for row in [res["per_state"][s]["b2_fc_vs_b2"] for s in ("wake", "sleep")] + \
+            [res["by_ied_type"][t]["b2_fc_vs_b2"] for t in ("generalized", "focal")]:
+        if row["delta_hat"] is not None:
+            assert "descriptive_label_m1" not in row and "bootstrap_0.95" in row["intervals"]
+    assert "descriptive_label_m1" in res["thresholds"][">=3"]

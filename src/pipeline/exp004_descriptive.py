@@ -92,17 +92,26 @@ def aurocs(L: dict, models, evaluable: dict) -> dict:
     return out
 
 
-def contrast(L: dict, a: str, b: str, evaluable: dict) -> dict:
+def _report(d: dict, ci: dict, labelled: bool) -> dict:
+    """Subgroups (state strata, 06 §4.4 R10; IED type likewise) report estimate + percentile-bootstrap CI and no
+    outcome label; the other robustness rows keep a descriptive M1 label."""
+    if not labelled:
+        return {"delta_hat": d["delta_hat"], "n_e": d["n_e"], "reported_interval": "bootstrap (06 §4.4 R10)",
+                "intervals": ci}
+    return {"delta_hat": d["delta_hat"], "n_e": d["n_e"], "intervals": ci,
+            "descriptive_label_m1": tx.classify(tuple(ci["0.95"]), tuple(ci["0.90"]))}
+
+
+def contrast(L: dict, a: str, b: str, evaluable: dict, labelled: bool = True) -> dict:
     au = aurocs(L, (a, b), evaluable)
     if len({i for (_, _, i) in au}) < 3:
         return {"delta_hat": None, "n_e": len({i for (_, _, i) in au}), "note": "fewer than 3 patients"}
     d = est.delta_summary(au, a, b, L["folds"])
     ci = cf.intervals(d, tx.PRIMARY_INTERVAL)
-    return {"delta_hat": d["delta_hat"], "n_e": d["n_e"], "intervals": ci,
-            "descriptive_label_m1": tx.classify(tuple(ci["0.95"]), tuple(ci["0.90"]))}
+    return _report(d, ci, labelled)
 
 
-def contrast_selected(L: dict, a: str, b: str, select, min_n: int = 5) -> dict:
+def contrast_selected(L: dict, a: str, b: str, select, min_n: int = 5, labelled: bool = True) -> dict:
     """A contrast where each patient's epochs are first reduced by select(eeg_id, data) -> (keep mask, labels);
     evaluability (>= min_n IED and non-IED per state) is recomputed on what is kept."""
     au = {}
@@ -118,8 +127,7 @@ def contrast_selected(L: dict, a: str, b: str, select, min_n: int = 5) -> dict:
         return {"delta_hat": None, "n_e": n, "note": "fewer than 3 patients"}
     d = est.delta_summary(au, a, b, L["folds"])
     ci = cf.intervals(d, tx.PRIMARY_INTERVAL)
-    return {"delta_hat": d["delta_hat"], "n_e": d["n_e"], "intervals": ci,
-            "descriptive_label_m1": tx.classify(tuple(ci["0.95"]), tuple(ci["0.90"]))}
+    return _report(d, ci, labelled)
 
 
 def sleep_depth_restricted(L: dict, base: dict) -> dict:
@@ -153,7 +161,8 @@ def by_ied_type(L: dict, epochs_csv: Path) -> dict:
         def select(i, x, codes=codes):
             t = np.array([lab[(i, int(s0))] for s0 in x["start"]])
             return (x["y"] == 0) | np.isin(t, list(codes)), x["y"]
-        res[name] = {f"{a}_vs_{b}": contrast_selected(L, a, b, select) for a, b in [cf.PRIMARY] + ENGINEERING}
+        res[name] = {f"{a}_vs_{b}": contrast_selected(L, a, b, select, labelled=False)
+                     for a, b in [cf.PRIMARY] + ENGINEERING}
     return res
 
 
@@ -161,7 +170,8 @@ def per_state(L: dict, base: dict) -> dict:
     out = {}
     for st in STATES:
         ev = {i: [st] for i, s in base.items() if st in s}
-        out[st] = {f"{a}_vs_{b}": contrast(L, a, b, ev) for a, b in [cf.PRIMARY] + cf.SECONDARY + ENGINEERING}
+        out[st] = {f"{a}_vs_{b}": contrast(L, a, b, ev, labelled=False)
+                   for a, b in [cf.PRIMARY] + cf.SECONDARY + ENGINEERING}
     out["note"] = "wake is underpowered (06 issue 3, item 6)"
     return out
 
