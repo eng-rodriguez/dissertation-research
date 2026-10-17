@@ -1,0 +1,22 @@
+{
+  "experiment": "EXP-009",
+  "description": "Key secondary deployment metrics for EXP-004 (06 issue 2); run plan A approved by Josue 2026-10-17",
+  "models": ["b2", "b2_fc"],
+  "learners": ["hgb", "lr"],
+  "configurations": "as selected by EXP-004 (artifacts/exp004/units/{learner}.jsonl); no re-tuning",
+  "seeds": "as EXP-004: learner random_state = repeat seed + outer fold; inner folds from src/design/inner_folds.py",
+  "training_fold_scores": "out-of-fold predictions over the EXP-004 inner folds at the selected configuration",
+  "fp_per_min_targets": [0.5, 1, 2],
+  "primary_operating_point_fp_per_min": 1,
+  "threshold_rule": "one threshold per outer unit, both states pooled, from the training fold's IED-free (group F) recordings; at most the target false positives per minute of analysed EEG",
+  "epoch_seconds": 4,
+  "sensitivity": "per evaluable E patient, share of IED epochs in its evaluable states at or above the threshold; equal patient weight; M1 interval",
+  "fp_rate": "per held-out IED-free recording, detections per minute, all epochs and per state",
+  "calibration": "Platt scaling, unweighted logistic regression of training out-of-fold labels on scores",
+  "log_loss": "per evaluable E patient over its evaluable-state epochs (M1 interval); also pooled over all held-out recordings",
+  "calibration_summary": "slope and intercept of held-out epochs pooled within a repeat (mean over repeats); 10-bin reliability table",
+  "refit_check": "outer refit must reproduce the saved EXP-004 held-out scores (max abs diff <= 1e-9), else abort",
+  "cache": "data/interim/features/salience2s",
+  "exp004_scores": "data/processed/exp004/scores",
+  "calibrated_probs": "data/processed/exp009/calibrated"
+}
