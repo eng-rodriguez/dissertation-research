@@ -1,6 +1,6 @@
 {
   "experiment": "EXP-015",
-  "description": "RQ-2 epoch-level-split inflation (06 v1.1 §2 RQ-2, §6 item 3; RDR-015). Specified after RESULT-001 was unblinded; descriptive; B2 only; does not involve the FC contrast and cannot change any label. Josue chose to specify it on 2026-10-20 (\"Draft RDR and config\").",
+  "description": "RQ-2 epoch-level-split inflation (06 v1.1 §2 RQ-2, §6 item 3; RDR-015). Specified after RESULT-001 was unblinded; descriptive; B2 only; does not involve the FC contrast and cannot change any label. Josue chose to specify it on 2026-10-20 (\"Draft RDR and config\") and approved the design with the reading below on 2026-10-20 22:22 UTC.",
   "protocol": {"document": "experiments/protocol/06-EXPERIMENTAL-PROTOCOL-v1.1.md",
                "sha256": "39fdc48799160a675eb27084392a9d6cca35d6abae300d0121a4156fbea74654"},
   "factor_changed": {
@@ -19,10 +19,10 @@
   "patient_grouped_arm": "the EXP-004 HGB B2 outer-fold scores on the frozen manifest, reused without refitting; the summary checks that they reproduce the EXP-004 units exactly",
   "metrics": {
     "pooled_auroc": "per repeat and arm, AUROC over all held-out kept epochs of the 69 recordings (each epoch scored once per repeat)",
-    "within_patient_auroc": "per repeat and arm, the 06 R2 within-patient same-state AUROC of each of the 35 evaluable patients on its out-of-fold scores; mean over patients (equal weight)"
+    "within_patient_auroc": "per repeat and arm, the 06 R2 within-patient same-state AUROC formula applied to each of the 35 evaluable patients' out-of-fold scores; mean over patients (equal weight). In the epoch arm a diagnostic quantity, not an estimate of the RESULT-001 estimand"
   },
   "inflation": "epoch arm minus patient-grouped arm, per repeat, averaged over the 10 repeats; repeat range; 95% percentile cluster bootstrap (pooled: resampling recordings; within-patient: resampling evaluable patients), 10,000 resamples, seed 20261010",
-  "reading": "descriptive only: no SESOI, no taxonomy, no test. A positive pooled inflation quantifies how far epoch-level splits overstate performance on vEpiSet; the within-patient inflation shows how much the RESULT-001 estimand itself depends on the split.",
+  "reading": "descriptive only: no SESOI, no taxonomy, no test. Josue 2026-10-20 (RDR-015 approval, verbatim): The epoch-split arm is a diagnostic evaluation-bias analysis, not an alternative estimate of the RESULT-001 procedure-level estimand. Because epochs from the same patient may appear in multiple test folds, a patient's held-out epochs can be scored by different fold models. This model mixing is inherent to epoch-level cross-validation and is retained intentionally. Any performance increase is interpreted as evidence that epoch-level partitioning permits patient-specific information to inflate apparent discrimination, not as a direct estimate of deployment performance on unseen patients.",
   "z_star": {"file": "artifacts/pilot/zstar.json", "value": 62.932850082760744},
   "seed": 20261010,
   "n_bootstrap": 10000,

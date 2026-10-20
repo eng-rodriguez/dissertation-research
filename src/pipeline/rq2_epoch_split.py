@@ -37,7 +37,7 @@ import inner_folds as inf  # noqa: E402
 import run_ladder as rl  # noqa: E402
 
 CONFIG = ROOT / "experiments/EXP-015-rq2-epoch-split/config.json"
-FROZEN_SHA256 = None  # set when Josue approves RDR-015; run refuses until then
+FROZEN_SHA256 = "6b7c37a737ea15188ea0c307100586d560ecf1725a8cf8381df3c1840b2f61ab"  # frozen 2026-10-20 (RDR-015 approved)
 MODEL, KIND, N_FOLDS = "b2", "hgb", 5
 
 

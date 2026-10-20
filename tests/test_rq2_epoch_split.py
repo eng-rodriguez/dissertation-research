@@ -39,12 +39,13 @@ def signature_cache(path: Path) -> None:
         np.savez_compressed(f, **arrs)
 
 
-def test_config_names_the_locked_protocol_and_is_not_frozen_yet():
-    c, _ = es.load_config()
+def test_frozen_config_names_the_locked_protocol():
+    c, sha = es.load_config()
+    assert sha == es.FROZEN_SHA256
+    es.check_frozen(sha)
     assert c["protocol"]["sha256"] == hashlib.sha256((ROOT / c["protocol"]["document"]).read_bytes()).hexdigest()
-    assert es.FROZEN_SHA256 is None
     with pytest.raises(SystemExit):
-        es.check_frozen(es.load_config()[1])
+        es.check_frozen("0" * 64)
 
 
 def test_epoch_folds_partition_and_stratify():
