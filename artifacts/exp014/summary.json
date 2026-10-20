@@ -1,0 +1,55 @@
+{
+  "experiment": "EXP-014",
+  "n_recordings": 69,
+  "n_ied_positive": 42,
+  "group_means": {
+    "E": {
+      "sleep_share": 0.6397911443948895,
+      "rel_delta": 0.6469606163366314,
+      "rel_sigma": 0.05598524977713327
+    },
+    "N": {
+      "sleep_share": 0.5546686646686646,
+      "rel_delta": 0.5765133803854011,
+      "rel_sigma": 0.07100452651660986
+    },
+    "F": {
+      "sleep_share": 0.35568136579530724,
+      "rel_delta": 0.584866091727377,
+      "rel_sigma": 0.0738665375009339
+    }
+  },
+  "models": {
+    "state_label": {
+      "auroc_mean_over_repeats": 0.6583774250440918,
+      "auroc_repeat_range": [
+        0.6432980599647267,
+        0.6723985890652557
+      ],
+      "auroc_repeat_averaged_probs": 0.634920634920635,
+      "bootstrap95": [
+        0.49051724137931035,
+        0.7763939555150224
+      ]
+    },
+    "state_label_plus_proxies": {
+      "auroc_mean_over_repeats": 0.6451499118165784,
+      "auroc_repeat_range": [
+        0.6172839506172839,
+        0.6834215167548502
+      ],
+      "auroc_repeat_averaged_probs": 0.6516754850088183,
+      "bootstrap95": [
+        0.515869708994709,
+        0.7772729305578142
+      ]
+    }
+  },
+  "config_sha256": "9f07fd23575044dd7cf479b4b3390fab8c358d574004df5e4a9f724e26d4477f",
+  "provenance": {
+    "git_commit": "b9cf7e363b18560eac3024b7b1ed8d885eddb5c0",
+    "python": "3.12.4",
+    "numpy": "2.5.3",
+    "sklearn": "1.9.1"
+  }
+}
