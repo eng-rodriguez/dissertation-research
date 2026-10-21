@@ -1,0 +1,23 @@
+{
+  "experiment": "EXP-017",
+  "description": "Node-strength FC rung (06 v1.1 §4.3 item 7 secondary FC features; descriptive per §4.4). Found unanalysed 2026-10-21 by the manuscript thread; specified after RESULT-001 was unblinded; cannot change any label.",
+  "protocol": {"document": "experiments/protocol/06-EXPERIMENTAL-PROTOCOL-v1.1.md",
+               "sha256": "39fdc48799160a675eb27084392a9d6cca35d6abae300d0121a4156fbea74654"},
+  "model": "b2_ns = B1 + B2 count + B2 topography + node strength (mean wPLI of each channel to the other 18, per band theta/alpha/beta: 57) + global mean wPLI per band (3); derived from the cached 513 edges (src/features/node_strength.py)",
+  "unchanged_from_exp004": "cache (salience-selected 2-s window, CAR), kept epochs, frozen manifest and inner folds, seeds, HGB grid and nested tuning, R9 weights, estimand, SESOI, pilot z*",
+  "models_run": ["b2_ns"],
+  "reference_units": "artifacts/exp004/units/hgb.jsonl",
+  "reference_models": ["b2", "b2_fc"],
+  "contrasts": [["b2_ns", "b2"], ["b2_fc", "b2_ns"]],
+  "contrast_readings": {
+    "b2_ns_vs_b2": "increment of a 60-feature FC summary over B2 (addresses whether the 513 edges dilute an FC signal)",
+    "b2_fc_vs_b2_ns": "edge-level FC against the node-strength summary"
+  },
+  "reporting": "M1 90%/95% and patient-cluster bootstrap; R6 heterogeneity; the taxonomy as a descriptive reading only; state strata as estimate + bootstrap 95%, no label (R10)",
+  "z_star": {"file": "artifacts/pilot/zstar.json", "value": 62.932850082760744},
+  "cache": "data/interim/features/salience2s",
+  "reference_cache_check": "artifacts/exp004/cache_check.json",
+  "scores": "data/processed/exp017/scores",
+  "out": "artifacts/exp017",
+  "runs_once": true
+}

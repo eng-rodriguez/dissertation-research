@@ -32,6 +32,7 @@ import b2 as fb2  # noqa: E402
 import estimand as est  # noqa: E402
 import f3_pilot_and_folds as f3  # noqa: E402
 import inner_folds as inf  # noqa: E402
+import node_strength as fns  # noqa: E402
 import ladder as L  # noqa: E402
 import taxonomy as tx  # noqa: E402
 
@@ -63,8 +64,11 @@ _CACHE: dict = {}
 def patient(cache: Path, eeg_id: str, blocks: tuple, evaluable: list, z_star: float) -> dict:
     key = (str(cache), eeg_id, blocks)
     if key not in _CACHE:
+        need = set(blocks) | set(BASE_KEYS) | ({"fc"} if "fc_ns" in blocks else set())
         with np.load(cache / f"{eeg_id}.npz") as z:
-            F = {k: z[k] for k in set(blocks) | set(BASE_KEYS) if k in z.files}
+            F = {k: z[k] for k in need if k in z.files}
+        if "fc_ns" in blocks and "fc_ns" not in F:  # EXP-017: derived from the cached edges, not stored
+            F["fc_ns"] = fns.node_strength(F["fc"])
         F["b2_count"] = fb2.salience_count(F["peak_z"], z_star)[:, None]
         _CACHE[key] = {"id": eeg_id, "y": F["label"], "s": F["state"], "evaluable": evaluable, "F": F}
     return _CACHE[key]

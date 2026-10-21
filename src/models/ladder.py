@@ -38,6 +38,7 @@ MODELS = {
     "b2_fcsurr": ["b1", "b2_count", "b2_topo", "fc_surr"],
     "b2_fc": ["b1", "b2_count", "b2_topo", "fc"],
     "b2_fc_delta": ["b1", "b2_count", "b2_topo", "fc", "fc_delta"],  # 4-s sensitivity only: exploratory delta rung
+    "b2_ns": ["b1", "b2_count", "b2_topo", "fc_ns"],  # EXP-017 only: node strength + global mean (06 §4.3 item 7)
     "pc1_fc_only": ["fc"],
 }
 
