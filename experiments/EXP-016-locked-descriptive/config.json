@@ -1,0 +1,20 @@
+{
+  "experiment": "EXP-016",
+  "description": "The two locked 06 v1.1 descriptive analyses not yet run, from the saved EXP-004 HGB predictions (no refit): RQ-4 within-patient IED-type check (06 §2) and results by temporal distance of non-IED epochs from the nearest IED marker (06 §4.2, D3). Found missing 2026-10-21 by the manuscript thread. Both are specified here after RESULT-001 was unblinded; both are descriptive and cannot change any label.",
+  "protocol": {"document": "experiments/protocol/06-EXPERIMENTAL-PROTOCOL-v1.1.md",
+               "sha256": "39fdc48799160a675eb27084392a9d6cca35d6abae300d0121a4156fbea74654"},
+  "rq4_within_patient": "patients evaluable (>= 5 IED and >= 5 non-IED in a state) separately with generalized-only positives and with focal-only positives (05: label 1 generalized, 2-5 focal); difference of the two Delta_p (B2 + FC - B2) within patient; mean over those patients with a 95% patient-cluster percentile bootstrap; per-patient values; no label",
+  "distance_definition": "seconds from the nearest IED marker (point '!' or run '!start'..'!end') to the closer edge of the 4-s epoch; 0 if a marker falls inside; kept non-IED epochs only (adjacent epochs stay excluded as in the primary set)",
+  "distance_bins_s": [[0, 30], [30, 120], [120, 600], [600, null]],
+  "distance_bins_status": "PROPOSED default on the decision card of 2026-10-21; replaced by Josue's choice before freezing",
+  "distance_metric": "per bin: negatives restricted to the bin, all IED epochs kept, evaluability recomputed; B2 + FC - B2 as estimate + 95% percentile bootstrap (R10, no label); mean within-patient AUROC of B2; patients and negatives per bin",
+  "seed": 20261010,
+  "n_bootstrap": 10000,
+  "cache": "data/interim/features/salience2s",
+  "scores": "data/processed/exp004/scores",
+  "epochs": "data/interim/vepiset/epochs.csv",
+  "events": "data/interim/vepiset/events.csv",
+  "reference_summary": "artifacts/exp004/summary_hgb.json",
+  "out": "artifacts/exp016",
+  "runs_once": true
+}
