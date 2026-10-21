@@ -1,0 +1,44 @@
+{
+  "experiment": "EXP-015",
+  "learner": "hgb",
+  "model": "b2",
+  "config_sha256": "6b7c37a737ea15188ea0c307100586d560ecf1725a8cf8381df3c1840b2f61ab",
+  "status": "descriptive (RDR-015); B2 only; does not involve the FC contrast or RESULT-001",
+  "n_recordings": 69,
+  "n_epochs": 18913,
+  "n_evaluable": 35,
+  "exp004_scores_reproduce_units": true,
+  "pooled_auroc": {
+    "epoch_split": 0.9695758458283745,
+    "patient_grouped": 0.83222773831335,
+    "inflation": 0.13734810751502458,
+    "inflation_repeat_range": [
+      0.11179621550517849,
+      0.18095742145509253
+    ],
+    "bootstrap95_recordings": [
+      0.047932362488555494,
+      0.2420612963738887
+    ]
+  },
+  "within_patient_auroc": {
+    "epoch_split": 0.8938519312186023,
+    "patient_grouped": 0.8557128678951864,
+    "inflation": 0.038139063323415885,
+    "inflation_repeat_range": [
+      0.027900499309963245,
+      0.04650672491620481
+    ],
+    "bootstrap95_patients": [
+      0.020204365683273513,
+      0.05787886685282096
+    ],
+    "patients_inflated": 30
+  },
+  "provenance": {
+    "git_commit": "04d98395c330f0a71cb4ed7413e4e1884fe9d3fe",
+    "python": "3.12.4",
+    "numpy": "2.5.3",
+    "sklearn": "1.9.1"
+  }
+}
