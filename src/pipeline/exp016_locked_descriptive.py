@@ -36,7 +36,7 @@ import run_ladder as rl  # noqa: E402
 import vepiset_audit as va  # noqa: E402
 
 CONFIG = ROOT / "experiments/EXP-016-locked-descriptive/config.json"
-FROZEN_SHA256 = None  # set when Josue chooses the distance bins; main refuses until then
+FROZEN_SHA256 = "573fbbfa9917a75a65551082dff7db01e622abffe8382671ad338c22ebfae590"  # frozen 2026-10-21 (bins chosen by Josue)
 EPOCH_S = va.EPOCH_SAMPLES / va.SFREQ
 
 

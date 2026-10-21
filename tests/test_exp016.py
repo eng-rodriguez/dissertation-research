@@ -79,12 +79,14 @@ def synthetic(tmp_path, monkeypatch):
     return c, L
 
 
-def test_config_names_the_locked_protocol_and_is_not_frozen_yet():
+def test_frozen_config_names_the_locked_protocol():
     c, sha = e16.load_config()
+    assert sha == e16.FROZEN_SHA256
+    e16.check_frozen(sha)
     assert c["protocol"]["sha256"] == hashlib.sha256((ROOT / c["protocol"]["document"]).read_bytes()).hexdigest()
-    assert e16.FROZEN_SHA256 is None
+    assert c["distance_bins_s"] == [[0, 30], [30, 120], [120, 600], [600, None]]
     with pytest.raises(SystemExit):
-        e16.check_frozen(sha)
+        e16.check_frozen("0" * 64)
 
 
 def test_distance_to_nearest_marker():

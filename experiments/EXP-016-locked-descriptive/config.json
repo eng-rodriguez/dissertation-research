@@ -6,7 +6,7 @@
   "rq4_within_patient": "patients evaluable (>= 5 IED and >= 5 non-IED in a state) separately with generalized-only positives and with focal-only positives (05: label 1 generalized, 2-5 focal); difference of the two Delta_p (B2 + FC - B2) within patient; mean over those patients with a 95% patient-cluster percentile bootstrap; per-patient values; no label",
   "distance_definition": "seconds from the nearest IED marker (point '!' or run '!start'..'!end') to the closer edge of the 4-s epoch; 0 if a marker falls inside; kept non-IED epochs only (adjacent epochs stay excluded as in the primary set)",
   "distance_bins_s": [[0, 30], [30, 120], [120, 600], [600, null]],
-  "distance_bins_status": "PROPOSED default on the decision card of 2026-10-21; replaced by Josue's choice before freezing",
+  "distance_bins_status": "chosen by Josue on the decision card, 2026-10-21 11:34 UTC (\"Proposed bins\")",
   "distance_metric": "per bin: negatives restricted to the bin, all IED epochs kept, evaluability recomputed; B2 + FC - B2 as estimate + 95% percentile bootstrap (R10, no label); mean within-patient AUROC of B2; patients and negatives per bin",
   "seed": 20261010,
   "n_bootstrap": 10000,
