@@ -1,6 +1,6 @@
 {
   "experiment": "EXP-017",
-  "description": "Node-strength FC rung (06 v1.1 §4.3 item 7 secondary FC features; descriptive per §4.4). Found unanalysed 2026-10-21 by the manuscript thread; specified after RESULT-001 was unblinded; cannot change any label.",
+  "description": "Node-strength FC rung (06 v1.1 §4.3 item 7 secondary FC features; descriptive per §4.4). Found unanalysed 2026-10-21 by the manuscript thread; Josue chose \"Run node strength\" on the decision card (2026-10-22 00:37 UTC; low-gamma FC stays exploratory and is not run). Specified after RESULT-001 was unblinded; cannot change any label.",
   "protocol": {"document": "experiments/protocol/06-EXPERIMENTAL-PROTOCOL-v1.1.md",
                "sha256": "39fdc48799160a675eb27084392a9d6cca35d6abae300d0121a4156fbea74654"},
   "model": "b2_ns = B1 + B2 count + B2 topography + node strength (mean wPLI of each channel to the other 18, per band theta/alpha/beta: 57) + global mean wPLI per band (3); derived from the cached 513 edges (src/features/node_strength.py)",

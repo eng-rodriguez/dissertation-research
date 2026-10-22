@@ -22,7 +22,7 @@ import exp010_epoch4s as e10  # noqa: E402
 import run_ladder as rl  # noqa: E402
 
 CONFIG = ROOT / "experiments/EXP-017-node-strength/config.json"
-FROZEN_SHA256 = None  # set when Josue chooses to run it; run refuses until then
+FROZEN_SHA256 = "e9669f7f6761f72b0772da2bf214c9d64b8ab91384c33e45db9a4412accdf5d7"  # frozen 2026-10-22 (Josue chose to run it)
 KIND = "hgb"
 
 

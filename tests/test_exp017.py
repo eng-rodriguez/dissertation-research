@@ -33,13 +33,14 @@ def test_node_strength_matches_a_direct_computation():
         assert np.isclose(ns[1, b * 20 + 19], e.mean())
 
 
-def test_config_names_the_locked_protocol_and_is_not_frozen_yet():
+def test_frozen_config_names_the_locked_protocol():
     c, sha = e17.load_config()
+    assert sha == e17.FROZEN_SHA256
+    e17.check_frozen(sha)
     assert c["protocol"]["sha256"] == hashlib.sha256((ROOT / c["protocol"]["document"]).read_bytes()).hexdigest()
     assert set(c["models_run"]) | set(c["reference_models"]) <= set(cf.L.MODELS)
-    assert e17.FROZEN_SHA256 is None
     with pytest.raises(SystemExit):
-        e17.check_frozen(sha)
+        e17.check_frozen("0" * 64)
 
 
 @pytest.fixture
