@@ -1,0 +1,330 @@
+{
+  "learner": "hgb",
+  "primary_interval": "m1",
+  "contrasts": {
+    "b2_fc_vs_b2": {
+      "role": "PRIMARY (confirmatory)",
+      "delta_hat": 0.00022666800647101133,
+      "n_e": 35,
+      "n_cells": 50,
+      "intervals": {
+        "0.90": [
+          -0.011948195603482852,
+          0.012401531616424873
+        ],
+        "bootstrap_0.90": [
+          -0.005429963581551925,
+          0.0055493994652737
+        ],
+        "0.95": [
+          -0.014405743615235072,
+          0.014859079628177093
+        ],
+        "bootstrap_0.95": [
+          -0.006515509766323525,
+          0.00667134261516602
+        ]
+      },
+      "label": "equivalent / bounded null",
+      "label_sensitivity_bootstrap": "equivalent / bounded null",
+      "heterogeneity": {
+        "sd_delta_p": 0.020011179300663776,
+        "prediction_interval_95": [
+          -0.04101781558712853,
+          0.041471151600070554
+        ],
+        "range": [
+          -0.0566581306017926,
+          0.06200317965023847
+        ],
+        "n_above_sesoi": 1,
+        "n_below_minus_sesoi": 2
+      }
+    },
+    "b2_fc_vs_b2_adj": {
+      "role": "secondary, not multiplicity-controlled",
+      "delta_hat": -0.002964613192525096,
+      "n_e": 35,
+      "n_cells": 50,
+      "intervals": {
+        "0.90": [
+          -0.01791807295211563,
+          0.011988846567065435
+        ],
+        "bootstrap_0.90": [
+          -0.010823821890918593,
+          0.0038635573568638077
+        ],
+        "0.95": [
+          -0.020936492416868693,
+          0.015007266031818503
+        ],
+        "bootstrap_0.95": [
+          -0.012539791746532875,
+          0.004989109644946714
+        ]
+      },
+      "label": "equivalent / bounded null",
+      "label_sensitivity_bootstrap": "equivalent / bounded null",
+      "heterogeneity": {
+        "sd_delta_p": 0.027035806869912776,
+        "prediction_interval_95": [
+          -0.058687360769368604,
+          0.05275813438431841
+        ],
+        "range": [
+          -0.1152368758002561,
+          0.035392535392535396
+        ],
+        "n_above_sesoi": 3,
+        "n_below_minus_sesoi": 3
+      }
+    },
+    "b2_fc_vs_b2_fcsurr": {
+      "role": "secondary, not multiplicity-controlled",
+      "delta_hat": 0.0008278985172747195,
+      "n_e": 35,
+      "n_cells": 50,
+      "intervals": {
+        "0.90": [
+          -0.009812340999645308,
+          0.011468138034194749
+        ],
+        "bootstrap_0.90": [
+          -0.003002017098652591,
+          0.004393427634637155
+        ],
+        "0.95": [
+          -0.01196011860990088,
+          0.01361591564445032
+        ],
+        "bootstrap_0.95": [
+          -0.0037357454762813494,
+          0.00499892151591582
+        ]
+      },
+      "label": "equivalent / bounded null",
+      "label_sensitivity_bootstrap": "equivalent / bounded null",
+      "heterogeneity": {
+        "sd_delta_p": 0.01360652433686594,
+        "prediction_interval_95": [
+          -0.027216129340651936,
+          0.028871926375201376
+        ],
+        "range": [
+          -0.041718213058419176,
+          0.025731707317073166
+        ],
+        "n_above_sesoi": 0,
+        "n_below_minus_sesoi": 1
+      }
+    },
+    "b2_fcsurr_vs_b2": {
+      "role": "secondary, not multiplicity-controlled",
+      "delta_hat": -0.0006012305108037072,
+      "n_e": 35,
+      "n_cells": 50,
+      "intervals": {
+        "0.90": [
+          -0.011203016332726076,
+          0.01000055531111866
+        ],
+        "bootstrap_0.90": [
+          -0.005960656213107638,
+          0.0045395488527381865
+        ],
+        "0.95": [
+          -0.013343031901063675,
+          0.01214057087945626
+        ],
+        "bootstrap_0.95": [
+          -0.006899199491247148,
+          0.0056040623823524595
+        ]
+      },
+      "label": "equivalent / bounded null",
+      "label_sensitivity_bootstrap": "equivalent / bounded null",
+      "heterogeneity": {
+        "sd_delta_p": 0.01916547946933769,
+        "prediction_interval_95": [
+          -0.04010266576656333,
+          0.03890020474495592
+        ],
+        "range": [
+          -0.04887804878048782,
+          0.04769475357710651
+        ],
+        "n_above_sesoi": 2,
+        "n_below_minus_sesoi": 3
+      }
+    },
+    "b2_adj_vs_b2": {
+      "role": "secondary, not multiplicity-controlled",
+      "delta_hat": 0.003191281198996108,
+      "n_e": 35,
+      "n_cells": 50,
+      "intervals": {
+        "0.90": [
+          -0.006910151570476272,
+          0.013292713968468489
+        ],
+        "bootstrap_0.90": [
+          -0.002026284853020535,
+          0.008661537104013451
+        ],
+        "0.95": [
+          -0.008949168746666195,
+          0.015331731144658411
+        ],
+        "bootstrap_0.95": [
+          -0.0029689026221338638,
+          0.009820092692588553
+        ]
+      },
+      "label": "equivalent / bounded null",
+      "label_sensitivity_bootstrap": "equivalent / bounded null",
+      "heterogeneity": {
+        "sd_delta_p": 0.01983568834292402,
+        "prediction_interval_95": [
+          -0.037691502875620946,
+          0.04407406527361316
+        ],
+        "range": [
+          -0.03741463414634149,
+          0.0585787451984635
+        ],
+        "n_above_sesoi": 3,
+        "n_below_minus_sesoi": 2
+      }
+    },
+    "b2_vs_b1": {
+      "role": "secondary, not multiplicity-controlled",
+      "delta_hat": 0.026024037299063784,
+      "n_e": 35,
+      "n_cells": 50,
+      "intervals": {
+        "0.90": [
+          0.008457769563209858,
+          0.04359030503491771
+        ],
+        "bootstrap_0.90": [
+          0.016263216579345933,
+          0.036894726466288046
+        ],
+        "0.95": [
+          0.004911943693517131,
+          0.04713613090461044
+        ],
+        "bootstrap_0.95": [
+          0.014874441866393846,
+          0.0393924562756019
+        ]
+      },
+      "label": "positive, meaningful magnitude not established",
+      "label_sensitivity_bootstrap": "positive, meaningful magnitude not established",
+      "heterogeneity": {
+        "sd_delta_p": 0.03774836823016456,
+        "prediction_interval_95": [
+          -0.051778071750178165,
+          0.10382614634830574
+        ],
+        "range": [
+          -0.01915584415584417,
+          0.16373812754409767
+        ],
+        "n_above_sesoi": 9,
+        "n_below_minus_sesoi": 0
+      }
+    },
+    "b1_vs_b0": {
+      "role": "secondary, not multiplicity-controlled",
+      "delta_hat": -0.04339851435563606,
+      "n_e": 35,
+      "n_cells": 50,
+      "intervals": {
+        "0.90": [
+          -0.07967411385439649,
+          -0.007122914856875641
+        ],
+        "bootstrap_0.90": [
+          -0.06629418076000868,
+          -0.021742781997691734
+        ],
+        "0.95": [
+          -0.08699649793025688,
+          0.0001994692189847616
+        ],
+        "bootstrap_0.95": [
+          -0.07150730638331339,
+          -0.01786658532385514
+        ]
+      },
+      "label": "inconclusive",
+      "label_sensitivity_bootstrap": "inferior",
+      "heterogeneity": {
+        "sd_delta_p": 0.08144056508523331,
+        "prediction_interval_95": [
+          -0.21125339187402215,
+          0.12445636316275004
+        ],
+        "range": [
+          -0.31004357298474944,
+          0.12004237288135595
+        ],
+        "n_above_sesoi": 4,
+        "n_below_minus_sesoi": 15
+      }
+    }
+  },
+  "pc1": {
+    "mean_auroc": 0.6986299062641386,
+    "lower95": 0.6324170695582061,
+    "pass": true
+  },
+  "gates": {
+    "pc3": true,
+    "pc1": true,
+    "both_pass": true
+  },
+  "gate": {
+    "experiment": "EXP-004",
+    "pc3": "PASS",
+    "pc3_evidence": {
+      "experiment": "EXP-007",
+      "report": "artifacts/protocol/pc3/exp007_report.json",
+      "sha256": "c2ab735b97c637933c4e8e476e812c5f6ff0bc3224fc0ec618328c5739a6d42c"
+    },
+    "coverage_check": "PASS",
+    "coverage_evidence": {
+      "experiment": "EXP-008 (EV-1b)",
+      "summary": "artifacts/protocol/ev1b/ev1_summary.json",
+      "sha256": "49a1c0c5312fdd327a00317e8b52d0a9606c43098787cb8fbc0193ced03a528a"
+    },
+    "primary_interval": "m1",
+    "protocol": {
+      "version": "06 v1.1 (RDR-014)",
+      "file": "experiments/protocol/06-EXPERIMENTAL-PROTOCOL-v1.1.md",
+      "sha256": "39fdc48799160a675eb27084392a9d6cca35d6abae300d0121a4156fbea74654"
+    },
+    "fold_manifest_sha256": "7f0f53fe83456386efb4a2ffd16db34ac169b7a7880f36d921bcf46fa2062c5d",
+    "z_star_file": "artifacts/pilot/zstar.json",
+    "learners": [
+      "hgb (primary)",
+      "lr (secondary)"
+    ],
+    "runs_once": true,
+    "approved_by": "Josue Rodriguez",
+    "approved_on": "2026-10-15",
+    "approval_record": "Decision card in the Workstream 03 thread, 'Approve unblinding EXP-004 so the confirmatory run executes once?', option 'Approve', 2026-10-15 21:29 UTC",
+    "open_items_not_blocking_the_run": [
+      "human statistician review (required before submission; preferred before final interpretation)",
+      "full F-5 citing-works recheck (before submission)"
+    ]
+  },
+  "provenance": {
+    "git_commit": "4de0667f5028338a1af6c701b5d5989569a48d31",
+    "python": "3.12.4",
+    "numpy": "2.5.3",
+    "sklearn": "1.9.1"
+  }
+}

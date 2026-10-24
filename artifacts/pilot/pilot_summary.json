@@ -1,0 +1,45 @@
+{
+  "experiment": "EXP-003",
+  "status": "exploratory/debug; never a scientific result (07)",
+  "design": "leave-one-recording-out over the 8 frozen pilot recordings; plan-A fixed HGB configuration",
+  "z_star": 62.932850082760744,
+  "evaluable_pilot_patients": [
+    "DA00100U",
+    "DA00102U",
+    "DA00103A",
+    "DA00103T"
+  ],
+  "mean_auroc_by_model": {
+    "b0": 0.7832,
+    "b1": 0.6584,
+    "b2": 0.6824,
+    "b2_adj": 0.7103,
+    "b2_fcsurr": 0.6961,
+    "b2_fc": 0.6812,
+    "pc1_fc_only": 0.7617
+  },
+  "b2_ceiling_check": {
+    "mean": 0.6824,
+    "min": 0.4903,
+    "max": 0.9806
+  },
+  "window_validity_share": 0.9209,
+  "window_validity_note": "diagnostic only; must not be used to tune the window rule (07 EXP-003)",
+  "n_epochs": {
+    "DA001008": 293,
+    "DA00100G": 301,
+    "DA00100U": 264,
+    "DA00102U": 276,
+    "DA00103A": 252,
+    "DA00103Q": 241,
+    "DA00103T": 229,
+    "DC11304C": 304
+  },
+  "runtime_s": 245,
+  "provenance": {
+    "git_commit": "567931059eb28be7664174d2d40fa42f98e6607d",
+    "python": "3.12.4",
+    "numpy": "2.5.3",
+    "sklearn": "1.9.1"
+  }
+}

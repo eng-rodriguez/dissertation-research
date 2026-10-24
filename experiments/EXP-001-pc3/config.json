@@ -1,0 +1,54 @@
+{
+  "experiment": "EXP-001",
+  "name": "PC-3 synthetic FC pipeline test (06 issue 4; wPLI and IAAFT as in 06 section 4.3)",
+  "status_of_criteria": "fixed before the FC implementation was run against them (committed before the implementation commit)",
+  "protocol": "06-EXPERIMENTAL-PROTOCOL.md v1.0 (RDR-013), configs/protocol_v1/fc_wpli.json",
+  "synthetic_design": {
+    "fs": 500,
+    "n_channels": 19,
+    "background": "independent per channel, Gaussian with 1/f power spectrum (exponent 1), no inter-channel coupling",
+    "reference": "CAR over the 19 channels, as in the real pipeline",
+    "window_s": 2.0,
+    "window_starts_s": "6 + 3k (k = 0..n_windows-1); the first and last 4 s of each recording are never used",
+    "bands": ["theta", "alpha", "beta"],
+    "lag_test": {
+      "duration_s": 100,
+      "n_windows": 30,
+      "coupled_pairs": [[0, 5], [2, 9], [7, 14], [11, 18]],
+      "lag_sign": [1, -1, 1, -1],
+      "lag_sign_meaning": "+1: channel j lags channel i (expected sign of sum Im(z_i conj z_j) > 0); -1: i lags j",
+      "lag": "integer-sample delay nearest to a quarter period at the band centre (theta 6, alpha 10.5, beta 21.5 Hz)",
+      "burst": "band-limited Gaussian noise (same Butterworth order-4 band-pass) times a 1.6-s Hann taper centred in each window; the delayed copy is added to the lagging channel",
+      "snr": 3.0,
+      "snr_meaning": "burst RMS over the taper's non-zero span = snr x the source channel's in-band background RMS"
+    },
+    "null_test": {
+      "duration_s": 190,
+      "n_windows": 60
+    },
+    "surrogate_realisations": 5,
+    "seeds": {
+      "background_lag": 2026101101,
+      "background_null": 2026101102,
+      "bursts": 2026101103,
+      "surrogates": "06 section 4.3 step 8 rule with eeg_id 'SYN-LAG-<band>' or 'SYN-NULL-<band>'"
+    }
+  },
+  "criteria": {
+    "lag_recovery": {
+      "min_mean_wpli_coupled_edge": 0.6,
+      "coupled_edges_are_the_top_edges": true,
+      "min_share_windows_correct_lag_direction": 0.95
+    },
+    "surrogate_destruction": {
+      "coupled_surrogate_mean_within_uncoupled_range": true,
+      "max_abs_diff_mean_surrogate_coupled_vs_uncoupled": 0.05
+    },
+    "null_coupling_match": {
+      "offset": "per window: mean over 171 edges of real wPLI minus mean of k-averaged surrogate wPLI; 95% t-interval over windows",
+      "max_abs_offset_ci_bound": 0.02,
+      "max_ks_distance_real_vs_single_realisation": 0.10
+    },
+    "pass_rule": "PASS only if every criterion holds in every primary band (theta, alpha, beta)"
+  }
+}

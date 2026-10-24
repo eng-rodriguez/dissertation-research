@@ -1,0 +1,76 @@
+{
+  "experiment": "EXP-002",
+  "result": "FAIL",
+  "config_sha256": "b327c66b278c5bc28cd22b852d421b500c4a895d9270a2d1e38bce26773937ce",
+  "scenarios": {
+    "null_homog": {
+      "n_datasets": 1000,
+      "theta": -0.012602645449692352,
+      "theta_mc_se": 0.0004669806811179101,
+      "coverage_0.95": 0.986,
+      "mc_se_0.95": 0.0037153734670958734,
+      "limit_0.95": 0.9,
+      "coverage_0.90": 0.955,
+      "mc_se_0.90": 0.00655553201502365,
+      "limit_0.90": 0.85,
+      "verdict": "PASS"
+    },
+    "null_hetero": {
+      "n_datasets": 1000,
+      "theta": -0.01307398460581517,
+      "theta_mc_se": 0.0004426259995155525,
+      "coverage_0.95": 0.978,
+      "mc_se_0.95": 0.004638534251247911,
+      "limit_0.95": 0.9,
+      "coverage_0.90": 0.951,
+      "mc_se_0.90": 0.006826346021115546,
+      "limit_0.90": 0.85,
+      "verdict": "PASS"
+    },
+    "pos_hetero": {
+      "n_datasets": 2000,
+      "theta": 0.09712963773539357,
+      "theta_mc_se": 0.0008632616423707753,
+      "coverage_0.95": 0.909,
+      "mc_se_0.95": 0.0064311352030570765,
+      "limit_0.95": 0.9,
+      "coverage_0.90": 0.841,
+      "mc_se_0.90": 0.008176765864325577,
+      "limit_0.90": 0.85,
+      "verdict": "FAIL"
+    },
+    "null_highvar": {
+      "n_datasets": 1000,
+      "theta": -0.01875160198632954,
+      "theta_mc_se": 0.0005299593794243235,
+      "coverage_0.95": 0.983,
+      "mc_se_0.95": 0.004087909000944127,
+      "limit_0.95": 0.9,
+      "coverage_0.90": 0.947,
+      "mc_se_0.90": 0.007084560677981384,
+      "limit_0.90": 0.85,
+      "verdict": "PASS"
+    },
+    "pos_sesoi": {
+      "n_datasets": 2000,
+      "theta": 0.03124244584819431,
+      "theta_mc_se": 0.000694257561350425,
+      "coverage_0.95": 0.925,
+      "mc_se_0.95": 0.0058896094946948715,
+      "limit_0.95": 0.9,
+      "coverage_0.90": 0.868,
+      "mc_se_0.90": 0.007568883669339885,
+      "limit_0.90": 0.85,
+      "verdict": "PASS"
+    }
+  },
+  "tuning_check": {
+    "scenario": "null_hetero",
+    "n_paired": 30,
+    "role": "descriptive; not part of the verdict",
+    "mean_estimate_diff_tuned_minus_fixed": -0.0016059033036003789,
+    "sd_estimate_diff": 0.0021992780764063186,
+    "median_halfwidth95_ratio_tuned_over_fixed": 1.092498093285806,
+    "median_s2_ratio_tuned_over_fixed": 1.1935521561449671
+  }
+}

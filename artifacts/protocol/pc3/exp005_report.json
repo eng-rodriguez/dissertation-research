@@ -1,0 +1,232 @@
+{
+  "experiment": "EXP-005",
+  "result": "FAIL",
+  "checks": {
+    "theta": {
+      "lag_min_wpli": true,
+      "lag_top_edges": true,
+      "lag_direction": true,
+      "null_offset": true,
+      "null_ks": true,
+      "surr_direction_at_chance": true,
+      "surr_vs_shared_spectrum_null": false
+    },
+    "alpha": {
+      "lag_min_wpli": true,
+      "lag_top_edges": true,
+      "lag_direction": true,
+      "null_offset": true,
+      "null_ks": true,
+      "surr_direction_at_chance": true,
+      "surr_vs_shared_spectrum_null": false
+    },
+    "beta": {
+      "lag_min_wpli": true,
+      "lag_top_edges": true,
+      "lag_direction": true,
+      "null_offset": true,
+      "null_ks": true,
+      "surr_direction_at_chance": true,
+      "surr_vs_shared_spectrum_null": false
+    }
+  },
+  "report": {
+    "theta": {
+      "lag": {
+        "mean_wpli_coupled": [
+          0.9648473508355916,
+          0.9446909855365212,
+          0.9472844549954047,
+          0.9541476972979012
+        ],
+        "max_mean_wpli_uncoupled": 0.6214766855042454,
+        "coupled_are_top_edges": true,
+        "share_correct_direction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "delay_samples": 21
+      },
+      "surrogate": {
+        "mean_wpli_coupled": [
+          0.5107080984010324,
+          0.5566916194512808,
+          0.5212001664445153,
+          0.5020092856783563
+        ],
+        "uncoupled_mean_range": [
+          0.31319686967255184,
+          0.5036020681147226
+        ],
+        "diff_mean_coupled_vs_uncoupled": 0.1047717684756605,
+        "share_injected_direction": [
+          0.49333333333333335,
+          0.54,
+          0.43333333333333335,
+          0.4066666666666667
+        ],
+        "mean_wpli_shared_spectrum_null": [
+          0.4599086697377978,
+          0.44516861784487144,
+          0.5145763114285077,
+          0.4331784995918692
+        ],
+        "diff_vs_shared_spectrum_null": [
+          0.05079942866323456,
+          0.11152300160640932,
+          0.006623855016007596,
+          0.06883078608648713
+        ]
+      },
+      "null": {
+        "mean_real": 0.37385495838804866,
+        "mean_surrogate_kavg": 0.37163250624561817,
+        "offset_mean": 0.0022224521424304886,
+        "offset_ci95": [
+          -0.002729231895826523,
+          0.007174136180687501
+        ],
+        "ks_distance": 0.01208576998050681,
+        "sd_real": 0.24757592080111163,
+        "sd_surrogate_single": 0.2436078314228205,
+        "sd_surrogate_kavg": 0.12255737609386551
+      }
+    },
+    "alpha": {
+      "lag": {
+        "mean_wpli_coupled": [
+          0.9493258572999045,
+          0.9588403467398404,
+          0.9509486747045053,
+          0.9481930540108098
+        ],
+        "max_mean_wpli_uncoupled": 0.6235023340236098,
+        "coupled_are_top_edges": true,
+        "share_correct_direction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "delay_samples": 12
+      },
+      "surrogate": {
+        "mean_wpli_coupled": [
+          0.5066554663848715,
+          0.5127949259626438,
+          0.5074919121952555,
+          0.5045164278530699
+        ],
+        "uncoupled_mean_range": [
+          0.29485328523662985,
+          0.46822517654647566
+        ],
+        "diff_mean_coupled_vs_uncoupled": 0.12813433914973638,
+        "share_injected_direction": [
+          0.4666666666666667,
+          0.47333333333333333,
+          0.5466666666666666,
+          0.5
+        ],
+        "mean_wpli_shared_spectrum_null": [
+          0.4535964508028714,
+          0.41857433297987634,
+          0.4472010780118631,
+          0.3916969918466013
+        ],
+        "diff_vs_shared_spectrum_null": [
+          0.053059015582000046,
+          0.09422059298276741,
+          0.06029083418339237,
+          0.11281943600646865
+        ]
+      },
+      "null": {
+        "mean_real": 0.342930700120728,
+        "mean_surrogate_kavg": 0.3341114353147456,
+        "offset_mean": 0.008819264805982389,
+        "offset_ci95": [
+          0.0035158822388620245,
+          0.014122647373102752
+        ],
+        "ks_distance": 0.02183235867446398,
+        "sd_real": 0.23092048422654762,
+        "sd_surrogate_single": 0.22543242429626215,
+        "sd_surrogate_kavg": 0.1100926656105629
+      }
+    },
+    "beta": {
+      "lag": {
+        "mean_wpli_coupled": [
+          0.9433892462693246,
+          0.9363964264982848,
+          0.9566399367545276,
+          0.946333941804429
+        ],
+        "max_mean_wpli_uncoupled": 0.4025608521729893,
+        "coupled_are_top_edges": true,
+        "share_correct_direction": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "delay_samples": 6
+      },
+      "surrogate": {
+        "mean_wpli_coupled": [
+          0.3374338727055511,
+          0.28052045294403893,
+          0.313589935341289,
+          0.3223530759981405
+        ],
+        "uncoupled_mean_range": [
+          0.1678241700581972,
+          0.2971876464303373
+        ],
+        "diff_mean_coupled_vs_uncoupled": 0.09273047429462938,
+        "share_injected_direction": [
+          0.5466666666666666,
+          0.48,
+          0.5,
+          0.46
+        ],
+        "mean_wpli_shared_spectrum_null": [
+          0.26498625677397697,
+          0.2732004318888392,
+          0.26363963342900065,
+          0.2567086161523396
+        ],
+        "diff_vs_shared_spectrum_null": [
+          0.07244761593157412,
+          0.0073200210551997436,
+          0.04995030191228833,
+          0.06564445984580092
+        ]
+      },
+      "null": {
+        "mean_real": 0.19320213806426137,
+        "mean_surrogate_kavg": 0.1939978047849842,
+        "offset_mean": -0.0007956667207228064,
+        "offset_ci95": [
+          -0.003798318227648379,
+          0.002206984786202766
+        ],
+        "ks_distance": 0.012865497076023413,
+        "sd_real": 0.14206158306124045,
+        "sd_surrogate_single": 0.14227321617868885,
+        "sd_surrogate_kavg": 0.06499743456515675
+      }
+    }
+  },
+  "config": "experiments/EXP-005-pc3/config.json",
+  "runtime_s": 107.7,
+  "environment": {
+    "python": "3.13.16",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "machine": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39"
+  }
+}

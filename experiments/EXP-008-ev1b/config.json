@@ -1,0 +1,153 @@
+{
+  "experiment": "EXP-008",
+  "status": "FROZEN 2026-10-12 (Josue approved on the decision card: freeze and run, 15:26 UTC). M1 is the only decision-bearing interval; NB is descriptive and cannot replace M1. Changing anything here after the freeze needs a protocol-change RDR.",
+  "name": "EV-1b: synthetic coverage check of the candidate M1 interval (post-EV-1 protocol change; 11 LOG-2026-10-12-M1-CANDIDATE)",
+  "code": "src/design/ev1_coverage.py",
+  "dgp": {
+    "recount_csv": "artifacts/dataset_audit/evaluable_recount.csv",
+    "ied_cap_per_state": 120,
+    "nonied_cap_per_state": 60,
+    "d_base": 8,
+    "patient_offset_sd": 0.6,
+    "base_shift": [
+      1.8,
+      0.5
+    ],
+    "direction_heterogeneity": 0.7,
+    "sleep_offset": 0.5
+  },
+  "design": {
+    "manifest": "artifacts/protocol/f3/fold_manifest.csv",
+    "channel_qc": "artifacts/dataset_audit/channel_qc.csv",
+    "state_matrix": "artifacts/dataset_audit/subject_state_matrix.csv",
+    "fixed_config": {
+      "learning_rate": 0.05,
+      "max_leaf_nodes": 15,
+      "min_samples_leaf": 100,
+      "l2_regularization": 1
+    },
+    "max_iter": 300,
+    "early_stopping": false,
+    "learner_mode": "plan A: fixed configuration (as EXP-002)"
+  },
+  "inference": {
+    "decision_interval": "m1",
+    "method": "src/evaluation/taxonomy.py m1_ci: (1/J + n_test/n_train) * S^2 + s^2(Delta_p)/n_E, t with n_E - 1 df",
+    "description": "an augmented conservative variance estimator that adds explicit patient-sampling variance to the Nadeau-Bengio corrected repeated-CV variance to protect against shared training-set variance inadequately represented by the fold-mean variance",
+    "descriptive_only": [
+      "nb (the locked R7 interval)"
+    ],
+    "levels": [
+      0.9,
+      0.95
+    ],
+    "test_train_ratio": 0.25
+  },
+  "scenarios": {
+    "null_homog": {
+      "d_F": 24,
+      "gamma": 0.0,
+      "tau": 0.0
+    },
+    "null_hetero": {
+      "d_F": 24,
+      "gamma": 0.0,
+      "tau": 0.6
+    },
+    "pos_hetero": {
+      "d_F": 24,
+      "gamma": 2.5,
+      "tau": 0.4
+    },
+    "null_highvar": {
+      "d_F": 96,
+      "gamma": 0.0,
+      "tau": 0.6
+    },
+    "pos_sesoi": {
+      "d_F": 24,
+      "gamma": 1.6,
+      "tau": 0.4
+    },
+    "pos_mid_hetero": {
+      "d_F": 24,
+      "gamma": 1.95,
+      "tau": 0.4,
+      "target": "theta ~ +0.05 to +0.06 (stress 1)"
+    },
+    "pos_highvar_hetero": {
+      "d_F": 96,
+      "gamma": 2.9,
+      "tau": 0.6,
+      "target": "theta ~ +0.05 to +0.06 (stress 2; tau as null_highvar)"
+    },
+    "pos_boundary_ne33": {
+      "d_F": 24,
+      "gamma": 2.5,
+      "tau": 0.4,
+      "demote_e_to_n": 2,
+      "target": "pos_hetero gain with n_E = 33 (stress 3): the 2 E patients with the fewest evaluable IED epochs become training-only N"
+    }
+  },
+  "truth": {
+    "monte_carlo_training_sets": 200,
+    "test_patients_per_set": 300,
+    "max_theta_mc_se": 0.001
+  },
+  "criteria": {
+    "min_coverage_95": 0.9,
+    "min_coverage_90": 0.85,
+    "max_mc_se": 0.01,
+    "datasets_per_scenario": {
+      "null_homog": 1000,
+      "null_hetero": 1000,
+      "null_highvar": 1000,
+      "pos_hetero": 2000,
+      "pos_sesoi": 2000,
+      "pos_mid_hetero": 2000,
+      "pos_highvar_hetero": 2000,
+      "pos_boundary_ne33": 2000
+    },
+    "indeterminate": "a 1,000-dataset scenario that is INDETERMINATE is extended once to 2,000 (pre-registered); nothing else changes",
+    "fail": "any scenario FAIL: stop; no further ad-hoc variance inflation; new RDR considering a fundamentally different method (e.g. nested-CV inference)"
+  },
+  "seeds": {
+    "datasets": 2026101601,
+    "theta": 2026101602,
+    "calibration": 2026101603,
+    "learner": "repeat seed + outer fold (locked)"
+  },
+  "output_dir": "artifacts/protocol/ev1b",
+  "calibration": {
+    "seed": 2026101603,
+    "method": "theta only (training sets + fresh test patients; no intervals, no coverage), src/design/ev1_coverage.py theta --gamma",
+    "scan_m40": {
+      "pos_mid_hetero": {
+        "1.8": 0.043,
+        "1.9": 0.0505,
+        "2.0": 0.0578,
+        "2.1": 0.0652
+      },
+      "pos_highvar_hetero": {
+        "2.0": 0.0044,
+        "3.0": 0.0611,
+        "4.0": 0.1197
+      }
+    },
+    "confirm_m200": {
+      "pos_mid_hetero": {
+        "gamma": 1.95,
+        "theta": 0.0563,
+        "mc_se": 0.0008
+      },
+      "pos_highvar_hetero": {
+        "gamma": 2.9,
+        "theta": 0.054,
+        "mc_se": 0.0009
+      }
+    },
+    "outputs": "artifacts/protocol/ev1b/calibration/",
+    "note": "theta used for coverage is recomputed with the theta seed 2026101602 at m = 200, as for every scenario"
+  },
+  "driver": "experiments/EXP-008-ev1b/run_all.sh"
+}

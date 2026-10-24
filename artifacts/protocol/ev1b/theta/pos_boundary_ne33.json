@@ -1,0 +1,8 @@
+{
+  "scenario": "pos_boundary_ne33",
+  "gamma_override": null,
+  "m": 200,
+  "theta": 0.0979988903912899,
+  "theta_mc_se": 0.0007807230416075474,
+  "sd_over_training_sets": 0.011041091138985677
+}

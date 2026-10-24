@@ -58,8 +58,15 @@ def signal_epoch_flags(root: Path):
     return flags
 
 
-def classify(epochs: list[dict], qc_flags: list[bool]) -> list[str | None]:
-    """Exclusion reason per epoch (None = kept). epochs sorted by start, same order as qc_flags."""
+LIFTABLE = ("ied_no_marker", "nonied_marker", "adjacent")  # 06 §4.2: "sensitivity includes them"
+
+
+def classify(epochs: list[dict], qc_flags: list[bool], lift: frozenset = frozenset()) -> list[str | None]:
+    """Exclusion reason per epoch (None = kept). epochs sorted by start, same order as qc_flags.
+
+    lift: exclusion rules skipped for the excluded-epochs sensitivity analysis (EXP-013); only LIFTABLE ones."""
+    if set(lift) - set(LIFTABLE):
+        raise ValueError(f"only {LIFTABLE} can be lifted (06 §4.2)")
     full = [e["start"] for e in epochs if e["end"] - e["start"] == va.EPOCH_SAMPLES]
     edges = {min(full), max(full)} if full else set()
     ied_starts = {e["start"] for e in epochs if e["label"] in va.IED_LABELS}
@@ -72,11 +79,12 @@ def classify(epochs: list[dict], qc_flags: list[bool]) -> list[str | None]:
             r = "edge"
         elif f:
             r = "epoch_qc"
-        elif is_ied and not e["has_ied_event"]:
+        elif is_ied and not e["has_ied_event"] and "ied_no_marker" not in lift:
             r = "ied_no_marker"
-        elif not is_ied and e["has_ied_event"]:
+        elif not is_ied and e["has_ied_event"] and "nonied_marker" not in lift:
             r = "nonied_marker"
-        elif not is_ied and ({e["start"] - va.EPOCH_SAMPLES, e["start"] + va.EPOCH_SAMPLES} & ied_starts):
+        elif not is_ied and ({e["start"] - va.EPOCH_SAMPLES, e["start"] + va.EPOCH_SAMPLES} & ied_starts) \
+                and "adjacent" not in lift:
             r = "adjacent"
         elif e["state"] not in ("wake", "sleep"):
             r = "state"

@@ -1,0 +1,425 @@
+{
+  "DA001003": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA001005": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA001006": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA001007": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA001009": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100A": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100B": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100C": {
+    "coverage": "sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100D": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100E": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100I": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100K": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100L": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100M": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100N": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100O": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100P": {
+    "coverage": "sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100Q": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DA00100R": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00100S": {
+    "coverage": "wake",
+    "evaluable_states": [
+      "wake"
+    ],
+    "group": "E"
+  },
+  "DA00100T": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00100V": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00100W": {
+    "coverage": "wake",
+    "evaluable_states": [
+      "wake"
+    ],
+    "group": "E"
+  },
+  "DA00100X": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00100Y": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [
+      "wake",
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00100Z": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [],
+    "group": "N"
+  },
+  "DA001010": {
+    "coverage": "wake",
+    "evaluable_states": [
+      "wake"
+    ],
+    "group": "E"
+  },
+  "DA00102Q": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00102R": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [
+      "wake",
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00102S": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [
+      "wake",
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00102T": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [
+      "wake",
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00102V": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00102W": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [
+      "wake",
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00102X": {
+    "coverage": "sleep",
+    "evaluable_states": [],
+    "group": "N"
+  },
+  "DA00102Y": {
+    "coverage": "wake",
+    "evaluable_states": [
+      "wake"
+    ],
+    "group": "E"
+  },
+  "DA001030": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA001031": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA001032": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA001033": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA001034": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA001035": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA001038": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA001039": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00103B": {
+    "coverage": "wake",
+    "evaluable_states": [
+      "wake"
+    ],
+    "group": "E"
+  },
+  "DA00103C": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [
+      "wake",
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00103D": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00103E": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00103F": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00103G": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "N"
+  },
+  "DA00103I": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [],
+    "group": "N"
+  },
+  "DA00103J": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [
+      "wake",
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00103L": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [
+      "wake",
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00103M": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00103N": {
+    "coverage": "wake",
+    "evaluable_states": [
+      "wake"
+    ],
+    "group": "E"
+  },
+  "DA00103O": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00103P": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00103R": {
+    "coverage": "sleep",
+    "evaluable_states": [],
+    "group": "N"
+  },
+  "DA00103S": {
+    "coverage": "sleep",
+    "evaluable_states": [
+      "sleep"
+    ],
+    "group": "E"
+  },
+  "DA00103V": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "N"
+  },
+  "DC113049": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "N"
+  },
+  "DC11304D": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DC11304E": {
+    "coverage": "sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DC11304F": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DC11304G": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DC11304H": {
+    "coverage": "wake",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DC11304I": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DC11304J": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DC11304K": {
+    "coverage": "sleep",
+    "evaluable_states": [],
+    "group": "F"
+  },
+  "DC11304L": {
+    "coverage": "wake+sleep",
+    "evaluable_states": [],
+    "group": "F"
+  }
+}

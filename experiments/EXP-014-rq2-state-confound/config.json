@@ -1,0 +1,20 @@
+{
+  "experiment": "EXP-014",
+  "description": "RQ-2 state-confound quantification (06 v1.1 issue 9 item 7; §2 RQ-2): a state-only classifier on patient-level IED status, patient-grouped on the frozen manifest. Run plan F approved by Josue 2026-10-17. Descriptive; feeds the evaluation-validity chapter; does not touch RESULT-001.",
+  "protocol": {"document": "experiments/protocol/06-EXPERIMENTAL-PROTOCOL-v1.1.md",
+               "sha256": "39fdc48799160a675eb27084392a9d6cca35d6abae300d0121a4156fbea74654"},
+  "unit": "recording (= patient), the 69 primary recordings; target = IED-positive (groups E and N, 42) vs IED-free (group F, 27)",
+  "features": {
+    "state_label": ["sleep_share: share of the recording's kept epochs annotated sleep (06 §4.2 primary set; mixed/unlabelled already excluded)"],
+    "state_label_plus_proxies": ["sleep_share", "mean relative delta power (B1 rel_delta, mean over channels and kept epochs)", "mean relative sigma power (B1 rel_sigma, same)"],
+    "source": "the EXP-004 feature cache data/interim/features/salience2s (labels never enter the features)"
+  },
+  "models": ["state_label", "state_label_plus_proxies"],
+  "learner": "LogisticRegression(C=1.0, lbfgs, max_iter 5000) after StandardScaler fitted on the training recordings; unweighted; no tuning (69 recordings)",
+  "evaluation": "for each of the 10 frozen repeats, the 5 outer folds of the F-3 manifest (primary set): fit on 4 folds, predict the held-out recordings; per repeat the AUROC over all 69 held-out predictions; reported as the mean over repeats with the repeat range",
+  "interval": "95% percentile bootstrap over recordings (10,000 resamples, seed 20261010) of the AUROC of the repeat-averaged held-out probabilities",
+  "reading": "descriptive: an AUROC near 0.5 means state composition and state proxies carry little patient-level IED information on vEpiSet; a high AUROC quantifies a patient-level state confound that epoch-pooled or patient-level evaluations would inherit. The within-patient same-state primary estimand is not affected either way.",
+  "seed": 20261010,
+  "cache": "data/interim/features/salience2s",
+  "out": "artifacts/exp014"
+}

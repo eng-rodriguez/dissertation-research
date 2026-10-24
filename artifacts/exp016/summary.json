@@ -1,0 +1,156 @@
+{
+  "experiment": "EXP-016",
+  "learner": "hgb",
+  "check": {
+    "primary_delta_recomputed": 0.00022666800647101133,
+    "matches": true
+  },
+  "status": "descriptive; locked 06 analyses; never relabels RESULT-001",
+  "rq4_within_patient": {
+    "n_patients_both_types": 5,
+    "per_patient": {
+      "DA00102T": {
+        "delta_generalized": -0.0005050505050504972,
+        "delta_focal": -0.014545454545454518,
+        "difference": 0.01404040404040402
+      },
+      "DA001038": {
+        "delta_generalized": 0.0,
+        "delta_focal": 0.017543859649122796,
+        "difference": -0.017543859649122796
+      },
+      "DA00103N": {
+        "delta_generalized": 0.005830280830280865,
+        "delta_focal": 0.006695156695156712,
+        "difference": -0.0008648758648758473
+      },
+      "DA00103O": {
+        "delta_generalized": 0.0015842839036755319,
+        "delta_focal": 0.0011950027159152387,
+        "difference": 0.0003892811877602932
+      },
+      "DA00103S": {
+        "delta_generalized": 0.0,
+        "delta_focal": 0.00027124773960216506,
+        "difference": -0.00027124773960216506
+      }
+    },
+    "note": "difference = Delta_p(generalized positives) - Delta_p(focal positives), B2 + FC - B2; descriptive, no label (06 \u00a72 RQ-4, explicitly underpowered)",
+    "mean_difference": -0.0008500596050872989,
+    "bootstrap95": [
+      -0.010502709099842054,
+      0.008315743328401546
+    ]
+  },
+  "distance_bins": {
+    "[0, 30)": {
+      "b2_fc_vs_b2": {
+        "delta_hat": 0.00071418961811506,
+        "n_e": 35,
+        "reported_interval": "bootstrap (06 \u00a74.4 R10)",
+        "intervals": {
+          "0.90": [
+            -0.010831613147253184,
+            0.012259992383483303
+          ],
+          "bootstrap_0.90": [
+            -0.004762464698402191,
+            0.005842132193405068
+          ],
+          "0.95": [
+            -0.013162182551489945,
+            0.014590561787720065
+          ],
+          "bootstrap_0.95": [
+            -0.005728559641106385,
+            0.00694805540202807
+          ]
+        }
+      },
+      "b2_mean_within_patient_auroc": 0.853786285595915,
+      "n_patients": 35,
+      "n_negatives": 3684
+    },
+    "[30, 120)": {
+      "b2_fc_vs_b2": {
+        "delta_hat": -0.0018733568570272396,
+        "n_e": 30,
+        "reported_interval": "bootstrap (06 \u00a74.4 R10)",
+        "intervals": {
+          "0.90": [
+            -0.01613126129860203,
+            0.012384547584547548
+          ],
+          "bootstrap_0.90": [
+            -0.007889637962080183,
+            0.003907543775991008
+          ],
+          "0.95": [
+            -0.019035516214881115,
+            0.015288802500826634
+          ],
+          "bootstrap_0.95": [
+            -0.009112078422607486,
+            0.004810748519920424
+          ]
+        }
+      },
+      "b2_mean_within_patient_auroc": 0.8683387843278043,
+      "n_patients": 30,
+      "n_negatives": 2761
+    },
+    "[120, 600)": {
+      "b2_fc_vs_b2": {
+        "delta_hat": -0.004767077372273998,
+        "n_e": 12,
+        "reported_interval": "bootstrap (06 \u00a74.4 R10)",
+        "intervals": {
+          "0.90": [
+            -0.03287447638150941,
+            0.023340321636961408
+          ],
+          "bootstrap_0.90": [
+            -0.017243192296909113,
+            0.007514130734854143
+          ],
+          "0.95": [
+            -0.03921470311296274,
+            0.029680548368414744
+          ],
+          "bootstrap_0.95": [
+            -0.01959053623043192,
+            0.010023909532748565
+          ]
+        }
+      },
+      "b2_mean_within_patient_auroc": 0.8781431099094821,
+      "n_patients": 12,
+      "n_negatives": 801
+    },
+    "[600, inf)": {
+      "b2_fc_vs_b2": {
+        "delta_hat": null,
+        "n_e": 0,
+        "note": "fewer than 3 patients"
+      },
+      "b2_mean_within_patient_auroc": null,
+      "n_patients": 0,
+      "n_negatives": 0
+    },
+    "negatives_distance_quantiles_s": {
+      "0.1": 6.689999999999994,
+      "0.25": 12.378499999999988,
+      "0.5": 29.24200000000002,
+      "0.75": 64.69,
+      "0.9": 129.07199999999997
+    },
+    "note": "negatives restricted by distance to the nearest IED marker; IED epochs all kept; R10 format"
+  },
+  "config_sha256": "573fbbfa9917a75a65551082dff7db01e622abffe8382671ad338c22ebfae590",
+  "provenance": {
+    "git_commit": "8ac2cb446c6c7512d0866e1e54effd37eba267f1",
+    "python": "3.12.4",
+    "numpy": "2.5.3",
+    "sklearn": "1.9.1"
+  }
+}
